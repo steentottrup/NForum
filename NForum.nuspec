@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>NForum</id>
+		<version>0.3.0.40310</version>
+		<title>Generic .NET Forum</title>
+		<authors>Steen F. Tøttrup</authors>
+		<owners>Steen F. Tøttrup</owners>
+		<licenseUrl>http://dotnetforum.codeplex.com/license</licenseUrl>
+		<projectUrl>http://dotnetforum.codeplex.com</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>A generic forum / bulleting board solution for .NET projects.</description>
+		<language>en-GB</language>
+		<dependencies>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="nforum.core\bin\release\NForum.Core.dll" target="lib\net45\NForum.Core.dll" />
+		<file src="nforum.core\bin\release\NForum.Core.pdb" target="lib\net45\NForum.Core.pdb" />
+
+		<!--<file src="install.ps1" target="tools\install.ps1" />-->
+	</files>
+</package>
