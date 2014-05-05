@@ -1,4 +1,4 @@
 NForum
 ======
 
-A generic forum engine for .NET
+A forum engine for .NET
