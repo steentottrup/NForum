@@ -1,12 +1,15 @@
 ﻿using NForum.Core;
+using NForum.Core.Abstractions;
 using NForum.Core.Abstractions.Data;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Linq;
 
 namespace NForum.Persistence.EntityFramework {
 
@@ -15,23 +18,52 @@ namespace NForum.Persistence.EntityFramework {
 		private DbTransaction transaction;
 
 		public IDbSet<Forum> Forums { get; set; }
-		public IDbSet<Board> Boards { get; set; }
 		public IDbSet<Category> Categories { get; set; }
 		public IDbSet<Topic> Topics { get; set; }
 		public IDbSet<Post> Posts { get; set; }
 		public IDbSet<User> Users { get; set; }
+		public IDbSet<ForumConfiguration> ForumConfigurations { get; set; }
 
-		public UnitOfWork()
-			: base("Default") {
+		public UnitOfWork() : this("DefaultConnection") { }
+		public UnitOfWork(String nameOrConnectionString) : base(nameOrConnectionString) { }
+
+		public override Int32 SaveChanges() {
+			IEnumerable<DbEntityEntry> changed = this.ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged);
+			foreach (DbEntityEntry entry in changed) {
+				Object entity = entry.Entity;
+				DateTime? dt;
+				if (entity is IAuthoredElement) {
+					IAuthoredElement auth = entity as IAuthoredElement;
+					if (HandleDate("Created", entry, out dt)) {
+						auth.Created = dt.Value;
+					}
+					if (HandleDate("Changed", entry, out dt)) {
+						auth.Changed = dt.Value;
+					}
+				}
+				else if (entity is ITracker) {
+					ITracker tracker = entity as ITracker;
+					if (HandleDate("LastViewed", entry, out dt)) {
+						tracker.LastViewed = dt.Value;
+					}
+				}
+				// TODO: Others!!
+			}
+
+			return base.SaveChanges();
 		}
 
-		//public Int32 SaveChanges() {
-		//	return base.SaveChanges();
+		private Boolean HandleDate(String propertyName, DbEntityEntry entry, out DateTime? dt) {
+			dt = null;
+			if (entry.State == EntityState.Added || entry.CurrentValues[propertyName] != entry.OriginalValues[propertyName]) {
+				return entry.DateChanged(propertyName, out dt);
+			}
+			return false;
+		}
+
+		//public IRepository<TEntity> Repository<TEntity>() where TEntity : class {
+		//	throw new NotImplementedException();
 		//}
-
-		public IRepository<TEntity> Repository<TEntity>() where TEntity : class {
-			throw new NotImplementedException();
-		}
 
 		public void BeginTransaction() {
 			this.objectContext = ((IObjectContextAdapter)this).ObjectContext;
@@ -73,19 +105,7 @@ namespace NForum.Persistence.EntityFramework {
 			// No default cascaded deleted on one-to-many!
 			modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 
-			modelBuilder.Entity<Board>().HasKey(b => b.Id);
-			modelBuilder.Entity<Board>().Property(b => b.Name).IsRequired().HasMaxLength(Constants.FieldLengths.BoardName);
-			modelBuilder.Entity<Board>().Property(b => b.Description).HasMaxLength(Int32.MaxValue);
-			modelBuilder.Entity<Board>().Property(b => b.SortOrder).IsRequired();
-			modelBuilder.Entity<Board>().Property(b => b.CustomProperties).HasMaxLength(Int32.MaxValue);
-			modelBuilder.Entity<Board>().Ignore(b => b.CustomData);
-			modelBuilder.Entity<Board>().Property(b => b.TopicsPerPage).IsRequired();
-			modelBuilder.Entity<Board>().Property(b => b.PostsPerPage).IsRequired();
-			// A board can have many categories
-			modelBuilder.Entity<Board>().HasMany(x => x.Categories).WithRequired(i => i.Board);
-
 			modelBuilder.Entity<Category>().HasKey(c => c.Id);
-			modelBuilder.Entity<Category>().Property(c => c.BoardId).IsRequired();
 			modelBuilder.Entity<Category>().Property(c => c.Name).IsRequired().HasMaxLength(Constants.FieldLengths.CategoryName);
 			modelBuilder.Entity<Category>().Property(c => c.Description).HasMaxLength(Int32.MaxValue);
 			modelBuilder.Entity<Category>().Property(c => c.SortOrder).IsRequired();
@@ -151,8 +171,11 @@ namespace NForum.Persistence.EntityFramework {
 			modelBuilder.Entity<User>().Property(u => u.CustomProperties).HasMaxLength(Int32.MaxValue);
 			modelBuilder.Entity<User>().Ignore(u => u.CustomData);
 
-			modelBuilder.Entity<TopicReport>().HasKey(tr => tr.Id);
-			modelBuilder.Entity<TopicReport>().HasRequired(tr => tr.Topic);
+			modelBuilder.Entity<ForumConfiguration>().HasKey(fc => fc.Id);
+			modelBuilder.Entity<ForumConfiguration>().Ignore(fc => fc.CustomData);
+
+			//modelBuilder.Entity<TopicReport>().HasKey(tr => tr.Id);
+			//modelBuilder.Entity<TopicReport>().HasRequired(tr => tr.Topic);
 		}
 	}
 }

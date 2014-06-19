@@ -51,9 +51,5 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 			}
 			return this.GetExpandedForum().FirstOrDefault(f => f.Id == forum.ParentForumId);
 		}
-
-		public IEnumerable<Forum> ByBoard(Board board) {
-			return this.GetExpandedForum().Where(b => b.Category.BoardId == board.Id);
-		}
 	}
 }

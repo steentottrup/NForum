@@ -8,23 +8,19 @@ using System.Linq;
 namespace NForum.Persistence.EntityFramework.Repositories {
 
 	public class CategoryRepository : RepositoryBase<Category>, ICategoryRepository {
-		private readonly UnitOfWork uow;
 
-		public CategoryRepository(UnitOfWork uow)
-			: base(uow) {
-			this.uow = uow;
-		}
+		public CategoryRepository(UnitOfWork uow) : base(uow) { }
 
 		public Category ByName(String name) {
-			return this.uow.Set<Category>().FirstOrDefault(b => b.Name == name);
+			return this.set.FirstOrDefault(b => b.Name == name);
 		}
 
 		public Category ByTopic(Topic topic) {
-			return this.uow.Set<Category>().Include(c => c.Forums).FirstOrDefault(c => c.Forums.Any(f => f.Id == topic.ForumId) == true);
+			return this.set.Include(c => c.Forums).FirstOrDefault(c => c.Forums.Any(f => f.Id == topic.ForumId) == true);
 		}
 
 		public Category ByForum(Forum forum) {
-			return this.uow.Set<Category>().FirstOrDefault(c => c.Id == forum.CategoryId);
+			return this.set.FirstOrDefault(c => c.Id == forum.CategoryId);
 		}
 	}
 }

@@ -8,7 +8,6 @@ namespace NForum.Core {
 
 	public class Category : INamedElement, ISortableElement, ICustomPropertyHolder,ICloneable {
 		public Int32 Id { get; set; }
-		public Int32 BoardId { get; set; }
 		public String Name { get; set; }
 		public String Description { get; set; }
 		public Int32 SortOrder { get; set; }
@@ -22,14 +21,11 @@ namespace NForum.Core {
 		/// </summary>
 		public XDocument CustomData { get; set; }
 
-		public virtual Board Board { get; set; }
-
 		public virtual ICollection<Forum> Forums { get; set; }
 
 		public Object Clone() {
 			return new Category {
 				Id = this.Id,
-				BoardId = this.BoardId,
 				Name = this.Name,
 				Description = this.Description,
 				SortOrder = this.SortOrder,

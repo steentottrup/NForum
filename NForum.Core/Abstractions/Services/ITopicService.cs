@@ -13,6 +13,7 @@ namespace NForum.Core.Abstractions.Services {
 		IEnumerable<Topic> Read(Forum forum, Int32 pageIndex, Boolean includeQuarantined, Boolean includeDeleted);
 
 		Topic Update(Topic topic);
+		Topic Update(Topic topic, TopicState newState);
 
 		void Delete(Topic topic);
 	}

@@ -14,25 +14,28 @@ namespace NForum.Core.Services {
 		protected readonly IPostRepository postRepo;
 		protected readonly ITopicRepository topicRepo;
 		protected readonly IForumRepository forumRepo;
-		protected readonly IBoardRepository boardRepo;
 		protected readonly ILogger logger;
 		protected readonly IEventPublisher eventPublisher;
+		protected readonly IForumConfigurationService confService;
+		protected readonly IPermissionService permService;
 
 		public PostService(IUserProvider userProvider,
-							IPostRepository postRepo,
-							ITopicRepository topicRepo,
 							IForumRepository forumRepo,
-							IBoardRepository boardRepo,
+							ITopicRepository topicRepo,
+							IPostRepository postRepo,
+							IEventPublisher eventPublisher,
 							ILogger logger,
-							IEventPublisher eventPublisher) {
+							IPermissionService permService,
+							IForumConfigurationService confService) {
 
 			this.userProvider = userProvider;
 			this.postRepo = postRepo;
 			this.topicRepo = topicRepo;
 			this.forumRepo = forumRepo;
-			this.boardRepo = boardRepo;
 			this.logger = logger;
 			this.eventPublisher = eventPublisher;
+			this.permService = permService;
+			this.confService = confService;
 		}
 
 		/// <summary>
@@ -44,18 +47,7 @@ namespace NForum.Core.Services {
 		/// <returns>The new post.</returns>
 		/// <exception cref="System.ArgumentNullException">Topic, subject and message are all required (not null) arguments.</exception>
 		public Post Create(Topic topic, String subject, String message) {
-			if (topic == null) {
-				throw new ArgumentNullException("topic");
-			}
-			if (String.IsNullOrWhiteSpace(subject)) {
-				throw new ArgumentNullException("subject");
-			}
-			if (String.IsNullOrWhiteSpace(message)) {
-				throw new ArgumentNullException("message");
-			}
-			// Let's get the topic from the data-storage!
-			Topic oldTopic = this.topicRepo.Read(topic.Id);
-			return this.Create(oldTopic, null, subject, message);
+			return this.Create(topic, null, subject, message);
 		}
 
 		/// <summary>
@@ -67,8 +59,14 @@ namespace NForum.Core.Services {
 		/// <returns>The new post.</returns>
 		/// <exception cref="System.ArgumentNullException">Post, subject and message are all required (not null) arguments.</exception>
 		public Post Create(Post post, String subject, String message) {
-			if (post == null) {
-				throw new ArgumentNullException("post");
+			// Let's get the topic from the data-storage!
+			Topic parentTopic = this.topicRepo.Read(post.TopicId);
+			return this.Create(parentTopic, post, subject, message);
+		}
+
+		protected Post Create(Topic topic, Post post, String subject, String message) {
+			if (topic == null) {
+				throw new ArgumentNullException("topic");
 			}
 			if (String.IsNullOrWhiteSpace(subject)) {
 				throw new ArgumentNullException("subject");
@@ -77,17 +75,27 @@ namespace NForum.Core.Services {
 				throw new ArgumentNullException("message");
 			}
 			// Let's get the topic from the data-storage!
-			Topic parentTopic = this.topicRepo.Read(post.TopicId);
-			// Let's get the post from the data-storage!
-			Post oldPost = this.postRepo.Read(post.Id);
-			return this.Create(parentTopic, oldPost, subject, message);
-		}
-
-		private Post Create(Topic topic, Post post, String subject, String message) {
-			if (!this.HasAccess(topic.ForumId, AccessFlag.Reply)) {
-				this.logger.WriteFormat("User does not have permissions to create a new post, subject: {0}", subject);
-				throw new PermissionException("reply access");
+			topic = this.topicRepo.Read(topic.Id);
+			if (topic == null) {
+				throw new ArgumentException("topic does not exist");
 			}
+			if (post != null) {
+				// Let's get the topic from the data-storage!
+				post = this.postRepo.Read(post.Id);
+				if (post == null) {
+					throw new ArgumentException("post does not exist");
+				}
+			}
+
+			this.logger.WriteFormat("Create called on PostService, subject: {0}, topic id: {1}", subject, topic.Id);
+			AccessFlag flag = this.permService.GetAccessFlag(this.userProvider.CurrentUser, topic.Forum);
+			if ((flag & AccessFlag.Reply) != AccessFlag.Reply) {
+				this.logger.WriteFormat("User does not have permissions to create a new post in topic {1}, subject: {0}", subject, topic.Id);
+				throw new PermissionException("post, create");
+			}
+
+
+
 
 			Post p = new Post {
 				Author = this.userProvider.CurrentUser,
@@ -102,6 +110,7 @@ namespace NForum.Core.Services {
 				State = PostState.None,
 				Subject = subject
 			};
+			// TODO: Custom properties?
 
 			// Was a parent post given?
 			if (post != null) {
@@ -126,7 +135,14 @@ namespace NForum.Core.Services {
 		/// <param name="id">The id of the post needed.</param>
 		/// <returns>The post with the given id, or null.</returns>
 		public Post Read(Int32 id) {
-			return this.postRepo.Read(id);
+			this.logger.WriteFormat("Read called on PostService, Id: {0}", id);
+			Post post = this.postRepo.Read(id);
+			if (!this.permService.HasAccess(this.userProvider.CurrentUser, post.Topic.Forum, (Int64)AccessFlag.Read)) {
+				this.logger.WriteFormat("User does not have permissions to read the post, id: {0}", post.Id);
+				throw new PermissionException("topic, read");
+			}
+
+			return post;
 		}
 
 		/// <summary>
@@ -136,14 +152,7 @@ namespace NForum.Core.Services {
 		/// <param name="pageIndex">The page requested (0 indexed).</param>
 		/// <returns>A list of posts from the given topic.</returns>
 		public IEnumerable<Post> Read(Topic topic, Int32 pageIndex) {
-			if (topic == null) {
-				throw new ArgumentNullException("topic");
-			}
-			Forum forum = this.forumRepo.Read(topic.ForumId);
-			// We need to know how many posts to show per page, let's get the board!
-			Board board = this.boardRepo.ByForum(forum);
-			// Let the repo get the posts, and return them!
-			return this.postRepo.Read(topic, board.PostsPerPage, pageIndex);
+			return this.Read(topic, pageIndex, false, false);
 		}
 
 		/// <summary>
@@ -160,9 +169,9 @@ namespace NForum.Core.Services {
 			}
 			Forum forum = this.forumRepo.Read(topic.ForumId);
 			// We need to know how many posts to show per page, let's get the board!
-			Board board = this.boardRepo.ByForum(forum);
+			Int32 postsPerPage = this.confService.Read().PostsPerPage();
 			// Let the repo get the posts, and return them!
-			return this.postRepo.Read(topic, board.PostsPerPage, pageIndex, includeQuarantined, includeDeleted);
+			return this.postRepo.Read(topic, postsPerPage, pageIndex, includeQuarantined, includeDeleted);
 		}
 
 		/// <summary>
@@ -172,7 +181,89 @@ namespace NForum.Core.Services {
 		/// <returns>The updated post.</returns>
 		/// <remarks>Please note, only some properties are taken from the give post, others are automatically updated (changed, editor, etc.) and others can not be updated by this method (state, etc.).</remarks>
 		public Post Update(Post post) {
-			return this.Update(post, false);
+			if (post == null) {
+				throw new ArgumentNullException("post");
+			}
+			this.logger.WriteFormat("Update called on PostService, Id: {0}", post.Id);
+			// Let's get the topic from the data-storage!
+			Post oldPost = this.Read(post.Id);
+			if (oldPost == null) {
+				this.logger.WriteFormat("Update post failed, no post with the given id was found, Id: {0}", post.Id);
+				throw new ArgumentException("psot does not exist");
+			}
+			Post originalPost = oldPost.Clone() as Post;
+
+			// Author with "update" access or moderator?
+			AccessFlag flag = this.permService.GetAccessFlag(this.userProvider.CurrentUser, oldPost.Topic.Forum);
+			if ((flag & AccessFlag.Priority) != AccessFlag.Update) {
+				this.logger.WriteFormat("User does not have permissions to update a post, id: {1}, subject: {0}", post.Subject, post.Id);
+				throw new PermissionException("topic, update");
+			}
+
+			Boolean changed = false;
+			if (oldPost.Subject != post.Subject) {
+				oldPost.Subject = post.Subject;
+				changed = true;
+			}
+			if (oldPost.Message != post.Message) {
+				oldPost.Message = post.Message;
+				changed = true;
+			}
+			if (oldPost.CustomProperties != post.CustomProperties) {
+				oldPost.CustomProperties = post.CustomProperties;
+				changed = true;
+			}
+
+			if (changed) {
+				oldPost.Editor = this.userProvider.CurrentUser;
+				oldPost.EditorId = this.userProvider.CurrentUser.Id;
+				oldPost.Changed = DateTime.UtcNow;
+				oldPost = this.postRepo.Update(oldPost);
+				this.logger.WriteFormat("Post updated in postService, Id: {0}", oldPost.Id);
+				this.eventPublisher.Publish<PostUpdated>(new PostUpdated {
+					Post = originalPost,
+					UpdatedPost = oldPost
+				});
+				this.logger.WriteFormat("Update events in PostService fired, Id: {0}", oldPost.Id);
+			}
+			return oldPost;
+		}
+
+		/// <summary>
+		/// Method for updating state on a post.
+		/// </summary>
+		/// <param name="post">The post to update.</param>
+		/// <param name="newState">The new state of the post.</param>
+		/// <returns></returns>
+		public Post Update(Post post, PostState newState) {
+			if (post == null) {
+				throw new ArgumentNullException("post");
+			}
+			this.logger.WriteFormat("Update called on PostService, Id: {0}", post.Id);
+			// Let's get the topic from the data-storage!
+			Post oldPost = this.Read(post.Id);
+			if (oldPost == null) {
+				this.logger.WriteFormat("Update post failed, no post with the given id was found, Id: {0}", post.Id);
+				throw new ArgumentException("post does not exist");
+			}
+
+			Post originalPost = oldPost.Clone() as Post;
+			// Has state changed?
+			if (oldPost.State != newState) {
+				oldPost.State = newState;
+
+				oldPost.Editor = this.userProvider.CurrentUser;
+				oldPost.EditorId = this.userProvider.CurrentUser.Id;
+				oldPost.Changed = DateTime.UtcNow;
+				oldPost = this.postRepo.Update(oldPost);
+				this.logger.WriteFormat("Post updated in PostService, Id: {0}", oldPost.Id);
+				this.eventPublisher.Publish<PostStateUpdated>(new PostStateUpdated {
+					OriginalPost = originalPost,
+					UpdatedPost = oldPost
+				});
+				this.logger.WriteFormat("Update events in PostService fired, Id: {0}", oldPost.Id);
+			}
+			return oldPost;
 		}
 
 		/// <summary>
@@ -180,76 +271,20 @@ namespace NForum.Core.Services {
 		/// </summary>
 		/// <param name="post">The post to delete.</param>
 		public void Delete(Post post) {
-			if (post == null) {
+			if (post== null) {
 				throw new ArgumentNullException("post");
 			}
-			// TODO: Permissions!?!?!?
+			this.logger.WriteFormat("Delete called on PostService, Id: {0}", post.Id);
+			if (!this.permService.HasAccess(this.userProvider.CurrentUser, post.Topic.Forum, (Int64)AccessFlag.Delete)) {
+				this.logger.WriteFormat("User does not have permissions to delete a post, id: {1}, subject: {0}", post.Subject, post.Id);
+				throw new PermissionException("post, delete");
+			}
+			// TODO: posts, attachments, etc
 			this.postRepo.Delete(post);
-		}
-
-		private Post Update(Post post, Boolean updateState) {
-			if (post == null) {
-				throw new ArgumentNullException("post");
-			}
-
-			Post oldPost = this.postRepo.Read(post.Id);
-			Post originalPost = oldPost.Clone() as Post;
-			if (oldPost != null) {
-				Forum forum = this.forumRepo.ByPost(post);
-				// Author with "update" access or moderator?
-				if (!(this.HasAccess(forum.Id, AccessFlag.Update) && post.AuthorId == this.userProvider.CurrentUser.Id) &&
-					!this.IsModerator(forum.Id)) {
-
-					throw new PermissionException("Not author and not moderator");
-				}
-
-				Boolean changed = false;
-				if (oldPost.Subject != post.Subject) {
-					oldPost.Subject = post.Subject;
-					changed = true;
-				}
-				if (oldPost.Message != post.Message) {
-					oldPost.Message = post.Message;
-					changed = true;
-				}
-				if (post.CustomProperties != oldPost.CustomProperties) {
-					oldPost.CustomProperties = post.CustomProperties;
-					changed = true;
-				}
-				if (updateState && oldPost.State != post.State) {
-					// TODO: Permissions?!??!
-					oldPost.State = post.State;
-					changed = true;
-				}
-
-				if (changed) {
-					oldPost.Editor = this.userProvider.CurrentUser;
-					oldPost.EditorId = this.userProvider.CurrentUser.Id;
-					oldPost.Changed = DateTime.UtcNow;
-					oldPost = this.postRepo.Update(oldPost);
-					this.logger.WriteFormat("Post updated in PostService, Id: {0}", post.Id);
-					this.eventPublisher.Publish<PostUpdated>(new PostUpdated {
-						Post = originalPost,
-						UpdatedPost = oldPost
-					});
-					this.logger.WriteFormat("Update events in PostService fired, Id: {0}", post.Id);
-				}
-
-				return oldPost;
-			}
-			this.logger.WriteFormat("Update post failed, no post with the given id was found, Id: {0}", post.Id);
-			// TODO:
-			throw new ApplicationException();
-		}
-
-		private Boolean HasAccess(Int32 forumId, AccessFlag flag) {
-			Forum forum = this.forumRepo.Read(forumId);
-			// TODO:
-			return true;
-		}
-
-		private Boolean IsModerator(Int32 forumId) {
-			return this.HasAccess(forumId, AccessFlag.Moderator);
+			this.eventPublisher.Publish<PostDeleted>(new PostDeleted {
+				Post = post
+			});
+			this.logger.WriteFormat("Delete events in PostService fired, Id: {0}", post.Id);
 		}
 	}
 }

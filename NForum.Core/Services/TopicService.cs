@@ -10,37 +10,74 @@ using System.Collections.Generic;
 namespace NForum.Core.Services {
 
 	public class TopicService : ITopicService {
-		private readonly IUserProvider userProvider;
-		private readonly ITopicRepository topicRepo;
-		private readonly IBoardRepository boardRepo;
-		private readonly IForumRepository forumRepo;
-		private readonly ILogger logger;
+		protected readonly IUserProvider userProvider;
+		protected readonly ITopicRepository topicRepo;
+		protected readonly IForumRepository forumRepo;
+		protected readonly ILogger logger;
 		protected readonly IEventPublisher eventPublisher;
+		protected readonly IForumConfigurationService confService;
+		protected readonly IPermissionService permService;
 
 		public TopicService(IUserProvider userProvider,
-							ITopicRepository topicRepo,
 							IForumRepository forumRepo,
-							IBoardRepository boardRepo,
+							ITopicRepository topicRepo,
+							IEventPublisher eventPublisher,
 							ILogger logger,
-							IEventPublisher eventPublisher) {
+							IPermissionService permService,
+							IForumConfigurationService confService) {
 
 			this.userProvider = userProvider;
 			this.topicRepo = topicRepo;
 			this.forumRepo = forumRepo;
-			this.boardRepo = boardRepo;
+			this.confService = confService;
 			this.logger = logger;
 			this.eventPublisher = eventPublisher;
+			this.permService = permService;
 		}
 
+		/// <summary>
+		/// Method for creating a new topic.
+		/// </summary>
+		/// <param name="forum">The parent forum of the topic.</param>
+		/// <param name="subject">The subject of the topic.</param>
+		/// <param name="message">The content/message of the topic.</param>
+		/// <returns>The newly created topic.</returns>
 		public Topic Create(Forum forum, String subject, String message) {
-			// Let's get the forum from the data-storage!
-			Forum oldForum = this.forumRepo.Read(forum.Id);
-			return this.Create(oldForum, subject, message, TopicType.Regular);
+			return this.Create(forum, subject, message, TopicType.Regular);
 		}
 
+		/// <summary>
+		/// Method for creating a new topic.
+		/// </summary>
+		/// <param name="forum">The parent forum of the topic.</param>
+		/// <param name="subject">The subject of the topic.</param>
+		/// <param name="message">The content/message of the topic.</param>
+		/// <param name="type">The type of the topic </param>
+		/// <returns>The newly created topic.</returns>
 		public Topic Create(Forum forum, String subject, String message, TopicType type) {
-			if (!this.HasAccess(forum.Id, AccessFlag.Create)) {
-				throw new PermissionException("create access");
+			if (forum == null) {
+				throw new ArgumentNullException("forum");
+			}
+			if (String.IsNullOrWhiteSpace(subject)) {
+				throw new ArgumentNullException("subject");
+			}
+			if (String.IsNullOrWhiteSpace(message)) {
+				throw new ArgumentNullException("message");
+			}
+			forum = this.forumRepo.Read(forum.Id);
+			if (forum == null) {
+				throw new ArgumentException("forum does not exist");
+			}
+
+			this.logger.WriteFormat("Create called on TopicService, subject: {0}, forum id: {1}", subject, forum.Id);
+			AccessFlag flag = this.permService.GetAccessFlag(this.userProvider.CurrentUser, forum);
+			if ((flag & AccessFlag.Create) != AccessFlag.Create) {
+				this.logger.WriteFormat("User does not have permissions to create a new topic in forum {1}, subject: {0}", subject, forum.Id);
+				throw new PermissionException("topic, create");
+			}
+			if (type != TopicType.Regular && (flag & AccessFlag.Priority) != AccessFlag.Priority) {
+				this.logger.WriteFormat("User does not have permissions to set topic type on new topic in forum {1}, subject: {0}", subject, forum.Id);
+				throw new PermissionException("topic, type");
 			}
 
 			Topic t = new Topic {
@@ -57,110 +94,198 @@ namespace NForum.Core.Services {
 				Subject = subject,
 				Type = type
 			};
+			// TODO: Custom properties?
 
-			return this.topicRepo.Create(t);
+			this.topicRepo.Create(t);
+			this.logger.WriteFormat("Topic created in TopicService, Id: {0}", t.Id);
+			this.eventPublisher.Publish<TopicCreated>(new TopicCreated {
+				Topic = t
+			});
+			this.logger.WriteFormat("Create events in TopicService fired, Id: {0}", t.Id);
+
+			return t;
 		}
 
+		/// <summary>
+		/// Method for reading a topic by its id.
+		/// </summary>
+		/// <param name="id">Id of the topic to read.</param>
+		/// <returns></returns>
 		public Topic Read(Int32 id) {
-			return this.topicRepo.Read(id);
+			this.logger.WriteFormat("Read called on TopicService, Id: {0}", id);
+			Topic topic = this.topicRepo.Read(id);
+			if (!this.permService.HasAccess(this.userProvider.CurrentUser, topic.Forum, (Int64)AccessFlag.Read)) {
+				this.logger.WriteFormat("User does not have permissions to read the topic, id: {0}", topic.Id);
+				throw new PermissionException("topic, read");
+			}
+
+			return topic;
 		}
 
+		/// <summary>
+		/// Method for reading a topic by its subject.
+		/// </summary>
+		/// <param name="name">The subject of the topic to read.</param>
+		/// <returns></returns>
 		public Topic Read(String subject) {
-			return this.topicRepo.BySubject(subject);
+			this.logger.WriteFormat("Read called on TopicService, subject: {0}", subject);
+			Topic topic = this.topicRepo.BySubject(subject);
+			if (!this.permService.HasAccess(this.userProvider.CurrentUser, topic.Forum, (Int64)AccessFlag.Read)) {
+				this.logger.WriteFormat("User does not have permissions to read the topic, subject: {0}", topic.Subject);
+				throw new PermissionException("topic, read");
+			}
+
+			return topic;
 		}
 
+		/// <summary>
+		/// Method for reading a "page" full of topic.
+		/// </summary>
+		/// <param name="forum">The forum where the topics should be read from.</param>
+		/// <param name="pageIndex">The page.</param>
+		/// <returns></returns>
 		public IEnumerable<Topic> Read(Forum forum, Int32 pageIndex) {
-			// We need to know how many topics to show per page, let's get the board!
-			Board board = this.boardRepo.ByForum(forum);
-			// Let the repo get the topics, and return them!
-			return this.topicRepo.Read(forum, board.TopicsPerPage, pageIndex);
+			return this.Read(forum, pageIndex, false, false);
 		}
 
+		/// <summary>
+		/// Method for reading a "page" full of topic.
+		/// </summary>
+		/// <param name="forum">The forum where the topics should be read from.</param>
+		/// <param name="pageIndex">The page.</param>
+		/// <param name="includeQuarantined">True if quarantined topics should be included.</param>
+		/// <param name="includeDeleted">True if deleted topics should be included.</param>
+		/// <returns></returns>
 		public IEnumerable<Topic> Read(Forum forum, Int32 pageIndex, Boolean includeQuarantined, Boolean includeDeleted) {
-			// We need to know how many topics to show per page, let's get the board!
-			Board board = this.boardRepo.ByForum(forum);
+			this.logger.Write("Read called on TopicService");
+			// We need to know how many topics to show per page, let's get the configuration!
+			Int32 topicsPerPage = this.confService.Read().TopicsPerPage();
 			// Let the repo get the topics, and return them!
-			return this.topicRepo.Read(forum, board.TopicsPerPage, pageIndex, includeQuarantined, includeDeleted);
+			return this.topicRepo.Read(forum, topicsPerPage, pageIndex, includeQuarantined, includeDeleted);
 		}
 
+		/// <summary>
+		/// Method for updating a topic.
+		/// </summary>
+		/// <param name="topic">The changed topic.</param>
+		/// <returns>The updated topic.</returns>
 		public Topic Update(Topic topic) {
 			return this.Update(topic, false);
 		}
 
-		private Topic Update(Topic topic, Boolean updateStateAndType) {
+		protected Topic Update(Topic topic, Boolean updateType) {
 			if (topic == null) {
 				throw new ArgumentNullException("topic");
 			}
+			this.logger.WriteFormat("Update called on TopicService, Id: {0}", topic.Id);
 			// Let's get the topic from the data-storage!
 			Topic oldTopic = this.Read(topic.Id);
+			if (oldTopic == null) {
+				this.logger.WriteFormat("Update topic failed, no topic with the given id was found, Id: {0}", topic.Id);
+				throw new ArgumentException("topic does not exist");
+			}
 			Topic originalTopic = oldTopic.Clone() as Topic;
 
-			if (oldTopic != null) {
-				// Author with "update" access or moderator?
-				if (!(this.HasAccess(oldTopic.ForumId, AccessFlag.Update) && oldTopic.AuthorId == this.userProvider.CurrentUser.Id) &&
-					!this.IsModerator(oldTopic.ForumId)) {
-
-					throw new PermissionException("Not author and not moderator");
-				}
-
-				Boolean changed = false;
-				if (updateStateAndType && oldTopic.Type != topic.Type) {
-					// Does the user has permissions to change type?
-					if (!this.HasAccess(oldTopic.ForumId, AccessFlag.Priority)) {
-						throw new PermissionException("priority");
-					}
-					oldTopic.Type = topic.Type;
-					changed = true;
-				}
-				if (oldTopic.Subject != topic.Subject) {
-					oldTopic.Subject = topic.Subject;
-					changed = true;
-				}
-				if (oldTopic.Message != topic.Message) {
-					oldTopic.Message = topic.Message;
-					changed = true;
-				}
-				if (updateStateAndType && oldTopic.State != topic.State) {
-					// TODO: Permissions?!??!
-					oldTopic.State = topic.State;
-					changed = true;
-				}
-				if (oldTopic.CustomProperties != topic.CustomProperties) {
-					oldTopic.CustomProperties = topic.CustomProperties;
-					changed = true;
-				}
-
-				if (changed) {
-					oldTopic.Editor = this.userProvider.CurrentUser;
-					oldTopic.EditorId = this.userProvider.CurrentUser.Id;
-					oldTopic.Changed = DateTime.UtcNow;
-					oldTopic = this.topicRepo.Update(oldTopic);
-					this.logger.WriteFormat("Topic updated in TopicService, Id: {0}", oldTopic.Id);
-					this.eventPublisher.Publish<TopicUpdated>(new TopicUpdated {
-						Topic = originalTopic,
-						UpdatedTopic = oldTopic
-					});
-					this.logger.WriteFormat("Update events in TopicService fired, Id: {0}", oldTopic.Id);
-				}
-				return oldTopic;
+			// Author with "update" access or moderator?
+			AccessFlag flag = this.permService.GetAccessFlag(this.userProvider.CurrentUser, oldTopic.Forum);
+			if ((flag & AccessFlag.Priority) != AccessFlag.Update) {
+				this.logger.WriteFormat("User does not have permissions to update a topic, id: {1}, subject: {0}", topic.Subject, topic.Id);
+				throw new PermissionException("topic, update");
 			}
-			this.logger.WriteFormat("Update topic failed, no topic with the given id was found, Id: {0}", topic.Id);
-			// TODO:
-			throw new ApplicationException();
+
+			Boolean changed = false;
+			if (updateType && ((flag & AccessFlag.Priority) != AccessFlag.Priority)) {
+				this.logger.WriteFormat("User does not have permissions to change type on a topic, id: {1}, subject: {0}", topic.Subject, topic.Id);
+				throw new PermissionException("topic, update");
+			}
+			else {
+				oldTopic.Type = topic.Type;
+				changed = true;
+			}
+			if (oldTopic.Subject != topic.Subject) {
+				oldTopic.Subject = topic.Subject;
+				changed = true;
+			}
+			if (oldTopic.Message != topic.Message) {
+				oldTopic.Message = topic.Message;
+				changed = true;
+			}
+			if (oldTopic.CustomProperties != topic.CustomProperties) {
+				oldTopic.CustomProperties = topic.CustomProperties;
+				changed = true;
+			}
+
+			if (changed) {
+				oldTopic.Editor = this.userProvider.CurrentUser;
+				oldTopic.EditorId = this.userProvider.CurrentUser.Id;
+				oldTopic.Changed = DateTime.UtcNow;
+				oldTopic = this.topicRepo.Update(oldTopic);
+				this.logger.WriteFormat("Topic updated in TopicService, Id: {0}", oldTopic.Id);
+				this.eventPublisher.Publish<TopicUpdated>(new TopicUpdated {
+					Topic = originalTopic,
+					UpdatedTopic = oldTopic
+				});
+				this.logger.WriteFormat("Update events in TopicService fired, Id: {0}", oldTopic.Id);
+			}
+			return oldTopic;
 		}
 
+		/// <summary>
+		/// Method for updating state on a topic.
+		/// </summary>
+		/// <param name="topic">The topic to update.</param>
+		/// <param name="newState">The new state of the topic.</param>
+		/// <returns></returns>
+		public Topic Update(Topic topic, TopicState newState) {
+			if (topic == null) {
+				throw new ArgumentNullException("topic");
+			}
+			this.logger.WriteFormat("Update called on TopicService, Id: {0}", topic.Id);
+			// Let's get the topic from the data-storage!
+			Topic oldTopic = this.Read(topic.Id);
+			if (oldTopic == null) {
+				this.logger.WriteFormat("Update topic failed, no topic with the given id was found, Id: {0}", topic.Id);
+				throw new ArgumentException("topic does not exist");
+			}
+
+			Topic originalTopic = oldTopic.Clone() as Topic;
+			// Has state changed?
+			if (oldTopic.State != newState) {
+				oldTopic.State = newState;
+
+				oldTopic.Editor = this.userProvider.CurrentUser;
+				oldTopic.EditorId = this.userProvider.CurrentUser.Id;
+				oldTopic.Changed = DateTime.UtcNow;
+				oldTopic = this.topicRepo.Update(oldTopic);
+				this.logger.WriteFormat("Topic updated in TopicService, Id: {0}", oldTopic.Id);
+				this.eventPublisher.Publish<TopicStateUpdated>(new TopicStateUpdated {
+					OriginalTopic = originalTopic,
+					UpdatedTopic = oldTopic
+				});
+				this.logger.WriteFormat("Update events in TopicService fired, Id: {0}", oldTopic.Id);
+			}
+			return oldTopic;
+		}
+
+		/// <summary>
+		/// Method for deleting a topic.
+		/// </summary>
+		/// <param name="topic">The topic to delete.</param>
 		public void Delete(Topic topic) {
+			if (topic == null) {
+				throw new ArgumentNullException("topic");
+			}
+			this.logger.WriteFormat("Delete called on TopicService, Id: {0}", topic.Id);
+			if (!this.permService.HasAccess(this.userProvider.CurrentUser, topic.Forum, (Int64)AccessFlag.Delete)) {
+				this.logger.WriteFormat("User does not have permissions to delete a topic, id: {1}, subject: {0}", topic.Subject, topic.Id);
+				throw new PermissionException("topic, delete");
+			}
+			// TODO: posts, attachments, etc
 			this.topicRepo.Delete(topic);
-		}
-
-		private Boolean HasAccess(Int32 forumId, AccessFlag flag) {
-			Forum forum = this.forumRepo.Read(forumId);
-			// TODO:
-			return true;
-		}
-
-		private Boolean IsModerator(Int32 forumId) {
-			return this.HasAccess(forumId, AccessFlag.Moderator);
+			this.eventPublisher.Publish<TopicDeleted>(new TopicDeleted {
+				Topic = topic
+			});
+			this.logger.WriteFormat("Delete events in TopicService fired, Id: {0}", topic.Id);
 		}
 	}
 }

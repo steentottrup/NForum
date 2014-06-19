@@ -12,7 +12,7 @@ namespace NForum.Core.Abstractions.Services {
 		Forum Read(Int32 id);
 		Forum Read(String name);
 		IEnumerable<Forum> Read(Category category);
-		IEnumerable<Forum> Read(Board board);
+		IEnumerable<Forum> Read();
 
 		Forum Update(Forum forum);
 

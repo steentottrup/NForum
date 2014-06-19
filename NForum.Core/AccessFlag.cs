@@ -17,7 +17,7 @@ namespace NForum.Core {
 		/// </summary>
 		Create = 2,
 		/// <summary>
-		/// Access to reply to existing topics/posts.
+		/// Access to replying to existing topics/posts.
 		/// </summary>
 		Reply = 4,
 		/// <summary>
@@ -33,7 +33,7 @@ namespace NForum.Core {
 		/// </summary>
 		Vote = 32,
 		/// <summary>
-		/// Moderator access, access to editing posts/topics posted by other users.
+		/// Moderator access, access to editing/deleting posts/topics posted by other users.
 		/// </summary>
 		Moderator = 64,
 		/// <summary>

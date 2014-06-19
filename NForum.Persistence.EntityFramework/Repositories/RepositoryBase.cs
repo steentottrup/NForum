@@ -11,11 +11,14 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 		protected DbContext context;
 
 		protected RepositoryBase(DbContext context) {
-			this.set = context.Set<TEntity>();
+			this.context = context;
+			this.set = this.context.Set<TEntity>();
 		}
 
 		public virtual TEntity Create(TEntity newEntity) {
-			return this.set.Add(newEntity);
+			TEntity entity = this.set.Add(newEntity);
+			this.context.SaveChanges();
+			return entity;
 		}
 
 		public virtual TEntity Read(Int32 id) {
@@ -28,11 +31,13 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 
 		public virtual TEntity Update(TEntity entity) {
 			// TODO: ???
+			this.context.SaveChanges();
 			return entity;
 		}
 
 		public virtual void Delete(TEntity entity) {
 			this.set.Remove(entity);
+			this.context.SaveChanges();
 		}
 
 		public virtual void Delete(Int32 id) {

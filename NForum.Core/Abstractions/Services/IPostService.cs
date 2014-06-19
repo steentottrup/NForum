@@ -55,6 +55,14 @@ namespace NForum.Core.Abstractions.Services {
 		Post Update(Post post);
 
 		/// <summary>
+		/// Method for updating state on a post.
+		/// </summary>
+		/// <param name="post">The post that gets the state property updated.</param>
+		/// <param name="newState">The new state.</param>
+		/// <returns>The post with state updated.</returns>
+		Post Update(Post post, PostState newState);
+
+		/// <summary>
 		/// Method for deleting a post.
 		/// </summary>
 		/// <param name="post">The post to delete.</param>

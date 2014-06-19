@@ -1,8 +1,8 @@
-﻿using System;
+﻿//using System;
 
-namespace NForum.Core.Events.Payloads {
+//namespace NForum.Core.Events.Payloads {
 
-	public class BoardCreated {
-		public Board Board { get; set; }
-	}
-}
+//	public class BoardCreated {
+//		public Board Board { get; set; }
+//	}
+//}

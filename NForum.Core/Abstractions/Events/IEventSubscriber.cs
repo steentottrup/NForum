@@ -10,11 +10,12 @@ namespace NForum.Core.Abstractions.Events {
 		/// Method for handling the event here and now.
 		/// </summary>
 		/// <param name="payload"></param>
-		void Handle(Object payload);
-		/// <summary>
-		/// Can this listener only have one event of the given type at a given moment in time?
-		/// </summary>
-		Boolean UniqueEvent { get; }
+		/// <param name="request">The current request context.</param>
+		void Handle(Object payload, IRequest request);
+		///// <summary>
+		///// Can this listener only have one event of the given type at a given moment in time?
+		///// </summary>
+		//Boolean UniqueEvent { get; }
 		/// <summary>
 		/// Priority, in ascending order.
 		/// </summary>
@@ -30,6 +31,12 @@ namespace NForum.Core.Abstractions.Events {
 		/// The generic handle method.
 		/// </summary>
 		/// <param name="payload"></param>
-		void Handle(TPayload payload);
+		/// <param name="request">The current request context.</param>
+		void Handle(TPayload payload, IRequest request);
 	}
+
+	/// <summary>
+	/// A catch-all interface for event subscriber classes.
+	/// </summary>
+	public interface ICatchAllEventSubscriber : IEventSubscriber { }
 }

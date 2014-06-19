@@ -16,6 +16,6 @@ namespace NForum.IoC {
 		/// Validate the builders requirements.
 		/// </summary>
 		/// <param name="feedback">Container for returned feedback.</param>
-		void ValidateRequirements(IList<ApplicationRequirement> feedback);
+		//void ValidateRequirements(IList<ApplicationRequirement> feedback);
 	}
 }
