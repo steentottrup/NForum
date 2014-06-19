@@ -10,6 +10,7 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
+using System.Reflection;
 
 namespace NForum.Persistence.EntityFramework {
 
@@ -25,40 +26,58 @@ namespace NForum.Persistence.EntityFramework {
 		public IDbSet<ForumConfiguration> ForumConfigurations { get; set; }
 
 		public UnitOfWork() : this("DefaultConnection") { }
-		public UnitOfWork(String nameOrConnectionString) : base(nameOrConnectionString) { }
+		public UnitOfWork(String nameOrConnectionString)
+			: base(nameOrConnectionString) {
 
-		public override Int32 SaveChanges() {
-			IEnumerable<DbEntityEntry> changed = this.ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged);
-			foreach (DbEntityEntry entry in changed) {
-				Object entity = entry.Entity;
-				DateTime? dt;
-				if (entity is IAuthoredElement) {
-					IAuthoredElement auth = entity as IAuthoredElement;
-					if (HandleDate("Created", entry, out dt)) {
-						auth.Created = dt.Value;
-					}
-					if (HandleDate("Changed", entry, out dt)) {
-						auth.Changed = dt.Value;
-					}
-				}
-				else if (entity is ITracker) {
-					ITracker tracker = entity as ITracker;
-					if (HandleDate("LastViewed", entry, out dt)) {
-						tracker.LastViewed = dt.Value;
-					}
-				}
-				// TODO: Others!!
-			}
-
-			return base.SaveChanges();
+			((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectContext_ObjectMaterialized;
+			((IObjectContextAdapter)this).ObjectContext.SavingChanges += ObjectContext_SavingChanges;
 		}
 
-		private Boolean HandleDate(String propertyName, DbEntityEntry entry, out DateTime? dt) {
-			dt = null;
-			if (entry.State == EntityState.Added || entry.CurrentValues[propertyName] != entry.OriginalValues[propertyName]) {
-				return entry.DateChanged(propertyName, out dt);
+		private void ObjectContext_SavingChanges(Object sender, EventArgs e) {
+			IEnumerable<DbEntityEntry> changed = this.ChangeTracker.Entries().Where(en => en.State != EntityState.Unchanged);
+			foreach (DbEntityEntry entry in changed) {
+				Object entity = entry.Entity;
+				// Get any DateTime properties!
+				PropertyInfo[] props = entity.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType == typeof(DateTime)).ToArray();
+				foreach (PropertyInfo info in props) {
+					entry.DateChange(info.Name);
+				}
+
+				// Get any nullable DateTime properties!
+				props = entity.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType == typeof(DateTime?)).ToArray();
+				foreach (PropertyInfo info in props) {
+					entry.DateChange(info.Name);
+				}
 			}
-			return false;
+		}
+
+		private void ObjectContext_ObjectMaterialized(Object sender, ObjectMaterializedEventArgs e) {
+			// TODO: StopWatch!!
+			Object entity = e.Entity;
+
+			// Get any DateTime properties!
+			PropertyInfo[] props = entity.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType == typeof(DateTime)).ToArray();
+			foreach (PropertyInfo info in props) {
+				Object value = info.GetValue(entity);
+				DateTime? dt = value as DateTime?;
+				if (value != null) {
+					// Let's fix the DateTime properties, it's straight out of the database,
+					// so they should all be UTC
+					info.SetValue(entity, dt.Value.FixTimeZone());
+				}
+			}
+
+			// Get any nullable DateTime properties!
+			props = entity.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType == typeof(DateTime?)).ToArray();
+			foreach (PropertyInfo info in props) {
+				Object value = info.GetValue(entity);
+				DateTime? dt = value as DateTime?;
+				if (value != null) {
+					// Let's fix the DateTime properties, it's straight out of the database,
+					// so they should all be UTC
+					info.SetValue(entity, dt.FixTimeZone());
+				}
+			}
 		}
 
 		//public IRepository<TEntity> Repository<TEntity>() where TEntity : class {

@@ -1,20 +1,27 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 
 namespace NForum.Persistence.EntityFramework {
 
 	public static class DbEntityEntryExtensions {
 
-		public static Boolean DateChanged(this DbEntityEntry entry, String propertyName, out DateTime? dt) {
-			dt = entry.CurrentValues[propertyName] as DateTime?;
-			if (dt.HasValue) {
-				if (dt.Value.Kind != DateTimeKind.Utc && dt.Value.Kind != DateTimeKind.Unspecified) {
-					dt = dt.Value.ToUniversalTime();
-					return true;
+		public static void DateChange(this DbEntityEntry entry, String propertyName) {
+			if (entry.State == EntityState.Added || entry.CurrentValues[propertyName] != entry.OriginalValues[propertyName]) {
+				DateTime? dt = entry.CurrentValues[propertyName] as DateTime?;
+				if (dt.HasValue) {
+					// Already UTC?
+					if (dt.Value.Kind != DateTimeKind.Utc) {
+						// Nope, we need to change the data then!
+						if (dt.Value.Kind == DateTimeKind.Unspecified) {
+							// Unspecified? Probably a newly created DateTime without providing a Kind parameter!
+							dt = new DateTime(dt.Value.Ticks, DateTimeKind.Local);
+						}
+						dt = dt.Value.ToUniversalTime();
+						entry.CurrentValues[propertyName] = dt;
+					}
 				}
 			}
-
-			return false;
 		}
 	}
 }
