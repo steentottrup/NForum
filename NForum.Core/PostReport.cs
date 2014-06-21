@@ -23,8 +23,8 @@ namespace NForum.Core {
 		public DateTime? ResolvedTimestamp { get; set; }
 		public Int32? ResolverId { get; set; }
 
-		public User Reporter { get; set; }
-		public User Resolver { get; set; }
-		public Post Post { get; set; }
+		public virtual User Reporter { get; set; }
+		public virtual User Resolver { get; set; }
+		public virtual Post Post { get; set; }
 	}
 }

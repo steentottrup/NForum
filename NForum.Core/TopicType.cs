@@ -13,7 +13,7 @@ namespace NForum.Core {
 		Sticky = 1,
 		/// <summary>
 		/// An announcement topic, this topic will be at the very top of the topic list, above stickies.
-		/// Announcement will be show at the very top of each page in the forum.
+		/// Announcement will be shown at the very top of each page in the forum.
 		/// </summary>
 		Announcement = 0
 	}

@@ -9,7 +9,7 @@ namespace NForum.Core {
 		public Int32 ForumId { get; set; }
 		public Int32 UserId { get; set; }
 
-		public Forum Forum { get; set; }
-		public User User { get; set; }
+		public virtual Forum Forum { get; set; }
+		public virtual User User { get; set; }
 	}
 }

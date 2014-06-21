@@ -9,8 +9,8 @@ namespace NForum.Core {
 		public Int32 GroupId { get; set; }
 		public Int32 AccessMaskId { get; set; }
 
-		public Forum Forum { get; set; }
-		public Group Group { get; set; }
-		public AccessMask AccessMask { get; set; }
+		public virtual Forum Forum { get; set; }
+		public virtual Group Group { get; set; }
+		public virtual AccessMask AccessMask { get; set; }
 	}
 }

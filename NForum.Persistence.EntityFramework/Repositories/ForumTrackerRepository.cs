@@ -9,6 +9,10 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 
 	public class ForumTrackerRepository : RepositoryBase<ForumTracker>, IForumTrackerRepository {
 
+		public ForumTrackerRepository(UnitOfWork uow)
+			: base(uow) {
+		}
+
 		public ForumTracker ByUserAndForum(User user, Forum forum) {
 			return this.set
 					.FirstOrDefault(ft => ft.UserId == user.Id && ft.ForumId == forum.Id);

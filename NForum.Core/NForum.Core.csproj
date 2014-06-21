@@ -55,6 +55,7 @@
     <Compile Include="Abstractions\Data\IPostRepository.cs" />
     <Compile Include="Abstractions\Data\IRepository.cs" />
     <Compile Include="Abstractions\Data\ITopicRepository.cs" />
+    <Compile Include="Abstractions\Data\ITopicTrackerRepository.cs" />
     <Compile Include="Abstractions\Data\IUserRepository.cs" />
     <Compile Include="Abstractions\Events\IEventSubscriber.cs" />
     <Compile Include="Abstractions\Events\IEventPublisher.cs" />
@@ -142,7 +143,6 @@
     <Compile Include="Services\FollowerService.cs" />
     <Compile Include="Services\ForumConfigurationService.cs" />
     <Compile Include="Services\ForumService.cs" />
-    <Compile Include="Services\NoAuthenticatedUserFoundException.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\PostService.cs" />
     <Compile Include="Services\SMTPMailService.cs" />
