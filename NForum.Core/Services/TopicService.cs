@@ -221,8 +221,7 @@ namespace NForum.Core.Services {
 				oldTopic.Changed = DateTime.UtcNow;
 				oldTopic = this.topicRepo.Update(oldTopic);
 				this.logger.WriteFormat("Topic updated in TopicService, Id: {0}", oldTopic.Id);
-				this.eventPublisher.Publish<TopicUpdated>(new TopicUpdated {
-					Topic = originalTopic,
+				this.eventPublisher.Publish<TopicUpdated>(new TopicUpdated(originalTopic) {
 					UpdatedTopic = oldTopic
 				});
 				this.logger.WriteFormat("Update events in TopicService fired, Id: {0}", oldTopic.Id);
@@ -258,8 +257,7 @@ namespace NForum.Core.Services {
 				oldTopic.Changed = DateTime.UtcNow;
 				oldTopic = this.topicRepo.Update(oldTopic);
 				this.logger.WriteFormat("Topic updated in TopicService, Id: {0}", oldTopic.Id);
-				this.eventPublisher.Publish<TopicStateUpdated>(new TopicStateUpdated {
-					OriginalTopic = originalTopic,
+				this.eventPublisher.Publish<TopicStateUpdated>(new TopicStateUpdated(originalTopic) {
 					UpdatedTopic = oldTopic
 				});
 				this.logger.WriteFormat("Update events in TopicService fired, Id: {0}", oldTopic.Id);

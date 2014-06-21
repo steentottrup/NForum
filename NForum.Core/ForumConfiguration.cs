@@ -20,12 +20,14 @@ namespace NForum.Core {
 		/// </summary>
 		public XDocument CustomData { get; set; }
 
-		public static class FieldNames {
+		public static class PropertyNames {
 			public const String PostsPerPage = "PostsPerPage";
 			public const String TopicsPerPage = "TopicsPerPage";
 			public const String Theme = "Theme";
 			public const String InstallationDate = "InstallDate";
 			public const String Version = "Version";
+			public const String SenderName = "SenderName";
+			public const String SenderEmailAddress = "SenderEmailAddress";
 		}
 	}
 }

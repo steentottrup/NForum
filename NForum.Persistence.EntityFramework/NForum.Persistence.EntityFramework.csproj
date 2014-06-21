@@ -55,8 +55,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BoardRepository.cs" />
     <Compile Include="Repositories\CategoryRepository.cs" />
+    <Compile Include="Repositories\FollowForumRepository.cs" />
+    <Compile Include="Repositories\FollowTopicRepository.cs" />
     <Compile Include="Repositories\ForumConfigurationRepository.cs" />
     <Compile Include="Repositories\ForumRepository.cs" />
+    <Compile Include="Repositories\IForumTrackerRepository.cs" />
     <Compile Include="Repositories\PostRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\TopicRepository.cs" />

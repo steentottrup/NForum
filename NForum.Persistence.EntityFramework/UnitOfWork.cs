@@ -23,7 +23,12 @@ namespace NForum.Persistence.EntityFramework {
 		public IDbSet<Topic> Topics { get; set; }
 		public IDbSet<Post> Posts { get; set; }
 		public IDbSet<User> Users { get; set; }
+		public IDbSet<FollowForum> FollowForums { get; set; }
+		public IDbSet<FollowTopic> FollowTopics { get; set; }
 		public IDbSet<ForumConfiguration> ForumConfigurations { get; set; }
+		public IDbSet<Attachment> Attachments { get; set; }
+		public IDbSet<ForumTracker> ForumTrackers { get; set; }
+		public IDbSet<TopicTracker> TopicTrackers { get; set; }
 
 		public UnitOfWork() : this("DefaultConnection") { }
 		public UnitOfWork(String nameOrConnectionString)
@@ -124,6 +129,8 @@ namespace NForum.Persistence.EntityFramework {
 			// No default cascaded deleted on one-to-many!
 			modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 
+			// TODO: Tablename prefix!?!?
+
 			modelBuilder.Entity<Category>().HasKey(c => c.Id);
 			modelBuilder.Entity<Category>().Property(c => c.Name).IsRequired().HasMaxLength(Constants.FieldLengths.CategoryName);
 			modelBuilder.Entity<Category>().Property(c => c.Description).HasMaxLength(Int32.MaxValue);
@@ -182,16 +189,46 @@ namespace NForum.Persistence.EntityFramework {
 			modelBuilder.Entity<Post>().HasRequired(x => x.Topic);
 			modelBuilder.Entity<Post>().HasOptional(x => x.ParentPost);
 
+			modelBuilder.Entity<User>().ToTable("ForumUser");
 			modelBuilder.Entity<User>().HasKey(u => u.Id);
 			modelBuilder.Entity<User>().Property(u => u.Name).IsRequired().HasMaxLength(Constants.FieldLengths.UserName);
 			modelBuilder.Entity<User>().Property(u => u.FullName).HasMaxLength(Constants.FieldLengths.FullName);
 			modelBuilder.Entity<User>().Property(u => u.EmailAddress).IsRequired().HasMaxLength(Constants.FieldLengths.EmailAddress);
 			modelBuilder.Entity<User>().Property(u => u.ProviderId).IsRequired().HasMaxLength(Constants.FieldLengths.ProviderId);
 			modelBuilder.Entity<User>().Property(u => u.CustomProperties).HasMaxLength(Int32.MaxValue);
+			modelBuilder.Entity<User>().Property(u => u.Culture).IsRequired().HasMaxLength(Constants.FieldLengths.Culture);
+			modelBuilder.Entity<User>().Property(u => u.TimeZone).IsRequired().HasMaxLength(Constants.FieldLengths.TimeZone);
 			modelBuilder.Entity<User>().Ignore(u => u.CustomData);
 
 			modelBuilder.Entity<ForumConfiguration>().HasKey(fc => fc.Id);
+			modelBuilder.Entity<ForumConfiguration>().Property(u => u.CustomProperties).HasMaxLength(Int32.MaxValue);
 			modelBuilder.Entity<ForumConfiguration>().Ignore(fc => fc.CustomData);
+
+			modelBuilder.Entity<FollowForum>().HasKey(ff => ff.Id);
+			modelBuilder.Entity<FollowForum>().Property(ff => ff.UserId).IsRequired();
+			modelBuilder.Entity<FollowForum>().Property(ff => ff.ForumId).IsRequired();
+
+			modelBuilder.Entity<FollowTopic>().HasKey(ft => ft.Id);
+			modelBuilder.Entity<FollowTopic>().Property(ft => ft.UserId).IsRequired();
+			modelBuilder.Entity<FollowTopic>().Property(ft => ft.TopicId).IsRequired();
+
+			modelBuilder.Entity<Attachment>().HasKey(a => a.Id);
+			modelBuilder.Entity<Attachment>().Property(a => a.Filename).IsRequired().HasMaxLength(Constants.FieldLengths.Filename);
+			modelBuilder.Entity<Attachment>().Property(a => a.Path).IsRequired().HasMaxLength(Constants.FieldLengths.Path);
+			modelBuilder.Entity<Attachment>().Property(a => a.PostId).IsRequired();
+			modelBuilder.Entity<Attachment>().Property(a => a.AuthorId).IsRequired();
+			modelBuilder.Entity<Attachment>().Property(a => a.Size).IsRequired();
+			modelBuilder.Entity<Attachment>().Property(a => a.Created).IsRequired();
+
+			modelBuilder.Entity<ForumTracker>().HasKey(ft => ft.Id);
+			modelBuilder.Entity<ForumTracker>().Property(ft => ft.UserId).IsRequired();
+			modelBuilder.Entity<ForumTracker>().Property(ft => ft.ForumId).IsRequired();
+			modelBuilder.Entity<ForumTracker>().Property(ft => ft.LastViewed).IsRequired();
+
+			modelBuilder.Entity<TopicTracker>().HasKey(tt => tt.Id);
+			modelBuilder.Entity<TopicTracker>().Property(tt => tt.UserId).IsRequired();
+			modelBuilder.Entity<TopicTracker>().Property(tt => tt.TopicId).IsRequired();
+			modelBuilder.Entity<TopicTracker>().Property(tt => tt.LastViewed).IsRequired();
 
 			//modelBuilder.Entity<TopicReport>().HasKey(tr => tr.Id);
 			//modelBuilder.Entity<TopicReport>().HasRequired(tr => tr.Topic);

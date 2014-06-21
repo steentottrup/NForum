@@ -3,7 +3,12 @@
 namespace NForum.Core.Events.Payloads {
 
 	public class PostUpdated {
-		public Post Post { get; set; }
+
+		public PostUpdated(Post original) {
+			this.OriginalPost = original;
+		}
+
+		public Post OriginalPost { get; private set; }
 		public Post UpdatedPost { get; set; }
 	}
 }

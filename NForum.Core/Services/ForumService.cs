@@ -238,8 +238,7 @@ namespace NForum.Core.Services {
 			if (changed) {
 				oldForum = this.forumRepo.Update(oldForum);
 				this.logger.WriteFormat("Forum updated in ForumService, Id: {0}", forum.Id);
-				this.eventPublisher.Publish<ForumUpdated>(new ForumUpdated {
-					Forum = originalForum,
+				this.eventPublisher.Publish<ForumUpdated>(new ForumUpdated(originalForum) {
 					UpdatedForum = oldForum
 				});
 				this.logger.WriteFormat("Update events in ForumService fired, Id: {0}", forum.Id);

@@ -10,7 +10,7 @@ namespace NForum.Core {
 		//public Int32 DownloadCount { get; set; }
 		public String Path { get; set; }
 		public Int32 AuthorId { get; set; }
-		private DateTime Created { get; set; }
+		public DateTime Created { get; set; }
 
 		public virtual User Author { get; set; }
 		public virtual Post Post { get; set; }

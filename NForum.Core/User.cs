@@ -11,6 +11,8 @@ namespace NForum.Core {
 		public String FullName { get; set; }
 		public String EmailAddress { get; set; }
 		public String ProviderId { get; set; }
+		public String Culture { get; set; }
+		public String TimeZone { get; set; }
 
 		public String CustomProperties { get; set; }
 		public XDocument CustomData { get; set; }

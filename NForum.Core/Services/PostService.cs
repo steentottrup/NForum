@@ -220,8 +220,7 @@ namespace NForum.Core.Services {
 				oldPost.Changed = DateTime.UtcNow;
 				oldPost = this.postRepo.Update(oldPost);
 				this.logger.WriteFormat("Post updated in postService, Id: {0}", oldPost.Id);
-				this.eventPublisher.Publish<PostUpdated>(new PostUpdated {
-					Post = originalPost,
+				this.eventPublisher.Publish<PostUpdated>(new PostUpdated(originalPost) {
 					UpdatedPost = oldPost
 				});
 				this.logger.WriteFormat("Update events in PostService fired, Id: {0}", oldPost.Id);
@@ -257,8 +256,7 @@ namespace NForum.Core.Services {
 				oldPost.Changed = DateTime.UtcNow;
 				oldPost = this.postRepo.Update(oldPost);
 				this.logger.WriteFormat("Post updated in PostService, Id: {0}", oldPost.Id);
-				this.eventPublisher.Publish<PostStateUpdated>(new PostStateUpdated {
-					OriginalPost = originalPost,
+				this.eventPublisher.Publish<PostStateUpdated>(new PostStateUpdated(originalPost) {
 					UpdatedPost = oldPost
 				});
 				this.logger.WriteFormat("Update events in PostService fired, Id: {0}", oldPost.Id);

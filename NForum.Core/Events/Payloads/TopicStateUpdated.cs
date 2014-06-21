@@ -3,7 +3,12 @@
 namespace NForum.Core.Events.Payloads {
 
 	public class TopicStateUpdated {
-		public Topic OriginalTopic { get; set; }
+
+		public TopicStateUpdated(Topic original) {
+			this.OriginalTopic = original;
+		}
+
+		public Topic OriginalTopic { get; private set; }
 		public Topic UpdatedTopic { get; set; }
 	}
 }

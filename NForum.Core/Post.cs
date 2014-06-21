@@ -1,5 +1,6 @@
 ﻿using NForum.Core.Abstractions;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
@@ -28,6 +29,8 @@ namespace NForum.Core {
 		public virtual User Author { get; set; }
 		public virtual User Editor { get; set; }
 		public virtual Post ParentPost { get; set; }
+
+		public virtual ICollection<Attachment> Attachments { get; set; }
 
 		public Object Clone() {
 			return new Post {

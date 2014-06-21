@@ -149,8 +149,7 @@ namespace NForum.Core.Services {
 			if (changed) {
 				oldCategory = this.categoryRepo.Update(oldCategory);
 				this.logger.WriteFormat("Board updated in CategoryService, Id: {0}", category.Id);
-				this.eventPublisher.Publish<CategoryUpdated>(new CategoryUpdated {
-					Category = originalCategory,
+				this.eventPublisher.Publish<CategoryUpdated>(new CategoryUpdated(originalCategory) {
 					UpdatedCategory = oldCategory
 				});
 				this.logger.WriteFormat("Update events in CategoryService fired, Id: {0}", category.Id);

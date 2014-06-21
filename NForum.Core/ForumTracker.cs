@@ -11,15 +11,20 @@ namespace NForum.Core {
 		/// </summary>
 		public DateTime LastViewed { get; set; }
 		/// <summary>
-		/// The forum tracked.
+		/// The Id of the forum tracked.
 		/// </summary>
 		public Int32 ForumId { get; set; }
 		/// <summary>
-		/// The user tracked.
+		/// The Id of the user tracked.
 		/// </summary>
 		public Int32 UserId { get; set; }
-
-		public Forum Forum { get; set; }
-		public User User { get; set; }
+		/// <summary>
+		/// The forum tracked.
+		/// </summary>
+		public virtual Forum Forum { get; set; }
+		/// <summary>
+		/// The user tracked.
+		/// </summary>
+		public virtual User User { get; set; }
 	}
 }
