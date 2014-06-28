@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NForum.Core.Extensions {
+namespace NForum.Core {
 
 	public static class ForumExtensions {
 

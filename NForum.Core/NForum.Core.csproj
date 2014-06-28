@@ -68,7 +68,7 @@
     <Compile Include="Abstractions\INamedElement.cs" />
     <Compile Include="Abstractions\INameValueCollection.cs" />
     <Compile Include="Abstractions\IReport.cs" />
-    <Compile Include="Abstractions\IRequest.cs" />
+    <Compile Include="Abstractions\IState.cs" />
     <Compile Include="Abstractions\ISortableElement.cs" />
     <Compile Include="Abstractions\ITracker.cs" />
     <Compile Include="Abstractions\Providers\IRegionalSettingsProvider.cs" />
@@ -92,7 +92,6 @@
     <Compile Include="AccessFlag.cs" />
     <Compile Include="AccessMask.cs" />
     <Compile Include="Attachment.cs" />
-    <Compile Include="Board.cs" />
     <Compile Include="Category.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CRUD.cs" />
@@ -130,8 +129,6 @@
     <Compile Include="ForumTracker.cs" />
     <Compile Include="Group.cs" />
     <Compile Include="GroupMember.cs" />
-    <Compile Include="Owin\ReadableStringCollectionWrapper.cs" />
-    <Compile Include="Owin\WebServerRequest.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="PostReport.cs" />
     <Compile Include="PostState.cs" />
@@ -159,7 +156,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

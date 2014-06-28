@@ -21,7 +21,7 @@ namespace NForum.Core.Events {
 		/// <summary>
 		/// The current request context.
 		/// </summary>
-		private readonly IRequest request;
+		private readonly IState request;
 
 		/// <summary>
 		/// Constructor for the EventPublisher class.
@@ -29,7 +29,7 @@ namespace NForum.Core.Events {
 		/// <param name="subscribers">The list of event listeners.</param>
 		/// <param name="logger"></param>
 		/// <param name="request"></param>
-		public EventPublisher(IEnumerable<IEventSubscriber> subscribers, ILogger logger, IRequest request) {
+		public EventPublisher(IEnumerable<IEventSubscriber> subscribers, ILogger logger, IState request) {
 			this.subscribers = subscribers;
 			this.logger = logger;
 			this.request = request;

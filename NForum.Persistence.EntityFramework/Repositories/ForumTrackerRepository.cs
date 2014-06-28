@@ -30,5 +30,12 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 					.Where(ft => ft.UserId == user.Id && ft.Forum.ParentForumId == forum.Id)
 					.ToList();
 		}
+
+		public IEnumerable<ForumTracker> ByUserAndForums(User user, IEnumerable<Forum> forums) {
+			return this.set
+					.Include(ft => ft.Forum)
+					.Where(ft => ft.UserId == user.Id && ft.Forum.ParentForumId.HasValue && forums.Select(f => f.Id).Contains(ft.Forum.ParentForumId.Value) == true)
+					.ToList();
+		}
 	}
 }

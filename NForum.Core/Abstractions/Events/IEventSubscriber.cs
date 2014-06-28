@@ -11,7 +11,7 @@ namespace NForum.Core.Abstractions.Events {
 		/// </summary>
 		/// <param name="payload"></param>
 		/// <param name="request">The current request context.</param>
-		void Handle(Object payload, IRequest request);
+		void Handle(Object payload, IState request);
 		///// <summary>
 		///// Can this listener only have one event of the given type at a given moment in time?
 		///// </summary>
@@ -32,7 +32,7 @@ namespace NForum.Core.Abstractions.Events {
 		/// </summary>
 		/// <param name="payload"></param>
 		/// <param name="request">The current request context.</param>
-		void Handle(TPayload payload, IRequest request);
+		void Handle(TPayload payload, IState request);
 	}
 
 	/// <summary>

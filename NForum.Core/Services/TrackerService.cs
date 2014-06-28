@@ -1,11 +1,25 @@
 ﻿using NForum.Core.Abstractions.Data;
 using NForum.Core.Abstractions.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NForum.Core.Services {
 
 	public class TrackerService : ITrackerService {
 		protected readonly IForumTrackerRepository ftRepo;
+
+		public IEnumerable<ForumTracker> GetTrackingInfo(User user, IEnumerable<Forum> forums) {
+			if (forums == null) {
+				throw new ArgumentNullException("forum");
+			}
+			IEnumerable<ForumTracker> output = new List<ForumTracker>();
+			// TODO: Access forum??
+			if (forums.Any() && user != null) {
+				output = this.ftRepo.ByUserAndForums(user, forums);
+			}
+			return output;
+		}
 
 		public ForumTracker GetTrackingInfo(User user, Forum forum) {
 			if (user != null) {

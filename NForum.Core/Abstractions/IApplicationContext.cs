@@ -6,6 +6,6 @@ namespace NForum.Core.Abstractions {
 
 	public interface IApplicationContext {
 		IUserProvider UserProvider { get; }
-		IRequest Request { get; set; }
+		IState Request { get; set; }
 	}
 }

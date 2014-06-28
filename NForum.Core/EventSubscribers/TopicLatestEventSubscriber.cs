@@ -24,7 +24,7 @@ namespace NForum.Core.EventSubscribers {
 			this.logger = logger;
 		}
 
-		public void Handle(Object payload, IRequest request) {
+		public void Handle(Object payload, IState request) {
 			if (payload is PostCreated) {
 				this.Handle((PostCreated)payload, request);
 			}
@@ -39,7 +39,7 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
-		public void Handle(PostCreated payload, IRequest request) {
+		public void Handle(PostCreated payload, IState request) {
 			// Let's get the post in question, other subscribers might have updated it!
 			Post post = this.postRepo.Read(payload.Post.Id);
 			// Is the post visible?
@@ -56,7 +56,7 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
-		public void Handle(PostStateUpdated payload, IRequest request) {
+		public void Handle(PostStateUpdated payload, IState request) {
 			// Let's get the post in question, other subscribers might have updated it!
 			Post post = this.postRepo.Read(payload.UpdatedPost.Id);
 			// Did an actual change occure, or are we back to the original?
@@ -77,7 +77,7 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
-		public void Handle(PostDeleted payload, IRequest request) {
+		public void Handle(PostDeleted payload, IState request) {
 			// Let's get the post in question, other subscribers might have updated it!
 			Post post = this.postRepo.Read(payload.Post.Id);
 			Topic topic = post.Topic;

@@ -46,7 +46,7 @@ namespace NForum.Core.EventSubscribers {
 			this.confService = confService;
 		}
 
-		public void Handle(Object payload, IRequest request) {
+		public void Handle(Object payload, IState request) {
 			if (payload is PostCreated) {
 				this.Handle((PostCreated)payload, request);
 			}
@@ -64,28 +64,28 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
-		public void Handle(PostCreated payload, IRequest request) {
+		public void Handle(PostCreated payload, IState request) {
 			Post post = this.postRepo.Read(payload.Post.Id);
 			if (post.IsVisible()) {
 				this.InformTopicFollowers(post.Topic, post);
 			}
 		}
 
-		public void Handle(TopicCreated payload, IRequest request) {
+		public void Handle(TopicCreated payload, IState request) {
 			Topic topic = this.topicRepo.Read(payload.Topic.Id);
 			if (topic.IsVisible()) {
 				this.InformForumFollowers(topic.Forum, topic);
 			}
 		}
 
-		public void Handle(TopicStateUpdated payload, IRequest request) {
+		public void Handle(TopicStateUpdated payload, IState request) {
 			Topic topic = this.topicRepo.Read(payload.UpdatedTopic.Id);
 			if (topic.GonePublic(payload.OriginalTopic)) {
 				this.InformForumFollowers(topic.Forum, topic);
 			}
 		}
 
-		public void Handle(PostStateUpdated payload, IRequest request) {
+		public void Handle(PostStateUpdated payload, IState request) {
 			Post post = this.postRepo.Read(payload.UpdatedPost.Id);
 			if (post.GonePublic(payload.OriginalPost)) {
 				this.InformTopicFollowers(post.Topic, post);

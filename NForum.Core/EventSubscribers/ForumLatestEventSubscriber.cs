@@ -31,7 +31,7 @@ namespace NForum.Core.EventSubscribers {
 			this.logger = logger;
 		}
 
-		public void Handle(Object payload, IRequest request) {
+		public void Handle(Object payload, IState request) {
 			if (payload is TopicCreated) {
 				this.Handle((TopicCreated)payload, request);
 			}
@@ -55,7 +55,7 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
-		public void Handle(TopicCreated payload, IRequest request) {
+		public void Handle(TopicCreated payload, IState request) {
 			// Let's get the topic in question, other subscribers might have updated it!
 			Topic topic = this.topicRepo.Read(payload.Topic.Id);
 			if (topic.State == TopicState.None) {
@@ -72,7 +72,7 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
-		public void Handle(TopicStateUpdated payload, IRequest request) {
+		public void Handle(TopicStateUpdated payload, IState request) {
 			Topic topic = this.topicRepo.Read(payload.UpdatedTopic.Id);
 			// Did an actual change occure, or are we back to the original?
 			if ((payload.OriginalTopic.IsVisible() && !topic.IsVisible()) ||
@@ -106,7 +106,7 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
-		public void Handle(TopicDeleted payload, IRequest request) {
+		public void Handle(TopicDeleted payload, IState request) {
 			// Let's get the forum in question, other subscribers might have updated it!
 			Topic topic = this.topicRepo.Read(payload.Topic.Id);
 			Forum forum = topic.Forum;
@@ -128,15 +128,15 @@ namespace NForum.Core.EventSubscribers {
 			// TODO:
 		}
 
-		public void Handle(PostCreated payload, IRequest request) {
+		public void Handle(PostCreated payload, IState request) {
 			// TODO:
 		}
 
-		public void Handle(PostStateUpdated payload, IRequest request) {
+		public void Handle(PostStateUpdated payload, IState request) {
 			// TODO:
 		}
 
-		public void Handle(PostDeleted payload, IRequest request) {
+		public void Handle(PostDeleted payload, IState request) {
 			// TODO:
 		}
 

@@ -6,7 +6,7 @@ namespace NForum.Core.Abstractions {
 	/// <summary>
 	/// Represents a request
 	/// </summary>
-	public interface IRequest {
+	public interface IState {
 		/// <summary>
 		/// Gets the url for this request.
 		/// </summary>
@@ -20,22 +20,17 @@ namespace NForum.Core.Abstractions {
 		/// <summary>
 		/// Gets the querystring for this request.
 		/// </summary>
-		INameValueCollection QueryString { get; }
+		IEnumerable<KeyValuePair<String, String>> QueryString { get; }
 
 		/// <summary>
 		/// Gets the headers for this request.
 		/// </summary>
-		INameValueCollection Headers { get; }
-
-		/// <summary>
-		/// Gets the owin environment
-		/// </summary>
-		IDictionary<String, Object> Environment { get; }
+		IEnumerable<KeyValuePair<String, String>> Headers { get; }
 
 		/// <summary>
 		/// Reads the form of the http request
 		/// </summary>
 		/// <returns></returns>
-		Task<INameValueCollection> ReadForm();
+		Task<IEnumerable<KeyValuePair<String, String>>> ReadForm();
 	}
 }
