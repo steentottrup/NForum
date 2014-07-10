@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="CategoryServiceTests.cs" />
     <Compile Include="ForumServiceTests.cs" />
+    <Compile Include="LatestPostTopicTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

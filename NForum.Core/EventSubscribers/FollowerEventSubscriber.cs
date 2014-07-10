@@ -99,7 +99,7 @@ namespace NForum.Core.EventSubscribers {
 			String senderName = this.confService.Read().SenderName();
 			String senderEmailAddress = this.confService.Read().SenderEmailAddress();
 			MailType type = MailType.Weekly;
-			if (this.confService.Read().Exists("DefaultFollowerFrequency")) {
+			if (this.confService.Read().CustomPropertyExists("DefaultFollowerFrequency")) {
 				Enum.TryParse<MailType>(this.confService.Read().GetCustomPropertyString("DefaultFollowerFrequency"), out type);
 			}
 
@@ -110,7 +110,6 @@ namespace NForum.Core.EventSubscribers {
 				if (!regionalCache.ContainsKey(follower.Culture + follower.TimeZone)) {
 					// We're going to need a "hard-coded" regional settings, using the regular provider will give us the settings of the current user!
 					regionalCache.Add(follower.Culture + follower.TimeZone, new RegionalSettingsProvider(new CultureInfo(follower.Culture), TimeZoneInfo.FindSystemTimeZoneById(follower.TimeZone)));
-
 				}
 				IRegionalSettingsProvider regSettings = regionalCache[follower.Culture + follower.TimeZone];
 
@@ -118,7 +117,7 @@ namespace NForum.Core.EventSubscribers {
 				String body = this.textProvider.Get(regSettings, "NForum.Core.EventSubscribers.FollowerEventSubscriberForum", "Body", new { User = follower, Topic = topic, Forum = forum });
 
 				MailType userMailType = type;
-				if (follower.Exists("FollowerFrequency")) {
+				if (follower.CustomPropertyExists("FollowerFrequency")) {
 					Enum.TryParse<MailType>(follower.GetCustomPropertyString("FollowerFrequency"), out userMailType);
 				}
 
@@ -133,7 +132,7 @@ namespace NForum.Core.EventSubscribers {
 			String senderName = this.confService.Read().SenderName();
 			String senderEmailAddress = this.confService.Read().SenderEmailAddress();
 			MailType type = MailType.Weekly;
-			if (this.confService.Read().Exists("DefaultFollowerFrequency")) {
+			if (this.confService.Read().CustomPropertyExists("DefaultFollowerFrequency")) {
 				Enum.TryParse<MailType>(this.confService.Read().GetCustomPropertyString("DefaultFollowerFrequency"), out type);
 			}
 
@@ -152,7 +151,7 @@ namespace NForum.Core.EventSubscribers {
 				String body = this.textProvider.Get(regSettings, "NForum.Core.EventSubscribers.FollowerEventSubscriberTopic", "Body", new { User = follower, Post = post, Topic = topic });
 
 				MailType userMailType = type;
-				if (follower.Exists("FollowerFrequency")) {
+				if (follower.CustomPropertyExists("FollowerFrequency")) {
 					Enum.TryParse<MailType>(follower.GetCustomPropertyString("FollowerFrequency"), out userMailType);
 				}
 

@@ -107,7 +107,7 @@ namespace NForum.Core {
 			return String.Empty;
 		}
 
-		public static Boolean Exists(this ICustomPropertyHolder holder, String key) {
+		public static Boolean CustomPropertyExists(this ICustomPropertyHolder holder, String key) {
 			LoadProperties(holder);
 			return holder.CustomData.Root.Elements("CustomProperty").Any() &&
 					holder.CustomData.Root.Elements("CustomProperty").Any(p => p.Attribute("Name") != null && p.Attribute("Name").Value == key);

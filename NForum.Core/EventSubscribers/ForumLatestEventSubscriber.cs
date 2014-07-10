@@ -63,8 +63,7 @@ namespace NForum.Core.EventSubscribers {
 				// Is the topic newer than the latest in the parent forum?
 				if (forum.LatestTopic == null || forum.LatestTopic.Created < topic.Created) {
 					// Yes, well, then this is the latest!
-					forum.LatestTopic = topic;
-					forum.LatestPost = null;
+					forum.UpdateLatest(topic);
 					this.forumRepo.Update(forum);
 
 					this.UpdateParents(forum, topic);
@@ -83,8 +82,7 @@ namespace NForum.Core.EventSubscribers {
 									.OrderByDescending(t => t.Created)
 									.FirstOrDefault();
 				if (forum.LatestTopic != latest) {
-					forum.LatestTopic = latest;
-					forum.LatestPost = null;
+					forum.UpdateLatest(latest);
 					this.forumRepo.Update(forum);
 
 					this.UpdateParents(forum, latest);
@@ -92,12 +90,86 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
+		public void Handle(TopicDeleted payload, IState request) {
+			// Let's get the topic in question, other subscribers might have updated it!
+			Topic topic = this.topicRepo.Read(payload.Topic.Id);
+			Forum forum = topic.Forum;
+			if (forum.LatestTopic != null && forum.LatestTopic.Id == topic.Id) {
+				// This is the latest topic, so we need to update the forum!
+				Topic latest = forum.Topics.Where(t => t.IsVisible() && t.Id != topic.Id).OrderByDescending(t => t.Created).FirstOrDefault();
+				if (latest != null) {
+					forum.UpdateLatest(latest);
+				}
+				else {
+					forum.LatestTopic = null;
+					forum.LatestPost = null;
+				}
+				forumRepo.Update(forum);
+
+				this.UpdateParents(forum, latest);
+			}
+		}
+
+		public void Handle(PostCreated payload, IState request) {
+			// Let's get the post in question, other subscribers might have updated it!
+			Post post = this.postRepo.Read(payload.Post.Id);
+			if (post.State == PostState.None) {
+				Topic topic = this.topicRepo.Read(post.TopicId);
+				// Is the post newer than the latest in the topic?
+				if (topic.LatestPost == null || topic.LatestPost.Created < post.Created) {
+					// Yes, well, then this is the latest!
+					topic.LatestPost = post;
+					this.topicRepo.Update(topic);
+
+					this.UpdateParents(topic.Forum, post);
+				}
+			}
+		}
+
+		public void Handle(PostStateUpdated payload, IState request) {
+			Post post = this.postRepo.Read(payload.UpdatedPost.Id);
+			// Did an actual change occure, or are we back to the original?
+			if ((payload.OriginalPost.IsVisible() && !post.IsVisible()) ||
+				(!payload.OriginalPost.IsVisible() && post.IsVisible())) {
+
+				Topic topic = post.Topic;
+				Post latest = topic.Posts.Where(p => p.IsVisible())
+									.OrderByDescending(p => p.Created)
+									.FirstOrDefault();
+				if (topic.LatestPost != latest) {
+					topic.LatestPost = latest;
+					this.topicRepo.Update(topic);
+
+					this.UpdateParents(topic.Forum, latest);
+					this.forumRepo.Update(topic.Forum);
+				}
+			}
+		}
+
+		public void Handle(PostDeleted payload, IState request) {
+			// Let's get the post in question, other subscribers might have updated it!
+			Post post = this.postRepo.Read(payload.Post.Id);
+			Topic topic = post.Topic;
+			if (topic.LatestPost != null && topic.LatestPost.Id == post.Id) {
+				// This is the latest post, so we need to update the topic!
+				Post latest = topic.Posts.Where(p => p.IsVisible() && p.Id != post.Id).OrderByDescending(p => p.Created).FirstOrDefault();
+				if (latest != null) {
+					topic.LatestPost = latest;
+				}
+				else {
+					topic.LatestPost = null;
+				}
+				topicRepo.Update(topic);
+
+				this.UpdateParents(topic.Forum, latest);
+			}
+		}
+
 		private void UpdateParents(Forum forum, Topic topic) {
 			while (forum.ParentForum != null) {
 				forum = forum.ParentForum;
 				if (forum.LatestTopic == null || forum.LatestTopic.Created < topic.Created) {
-					forum.LatestTopic = topic;
-					forum.LatestPost = null;
+					forum.UpdateLatest(topic);
 					this.forumRepo.Update(forum);
 				}
 				else {
@@ -106,38 +178,21 @@ namespace NForum.Core.EventSubscribers {
 			}
 		}
 
-		public void Handle(TopicDeleted payload, IState request) {
-			// Let's get the forum in question, other subscribers might have updated it!
-			Topic topic = this.topicRepo.Read(payload.Topic.Id);
-			Forum forum = topic.Forum;
-			if (forum.LatestTopic.Id == topic.Id) {
-				// This is the latest topic, so we need to update the forum!
-				Topic latest = forum.Topics.Where(t => t.IsVisible() && t.Id != topic.Id).OrderByDescending(t => t.Created).FirstOrDefault();
-				if (latest != null) {
-					forum.LatestTopic = latest;
-					// TODO: Latest post!
-				}
-				else {
-					forum.LatestTopic = null;
-					// TODO: Latest post!
-				}
-				forumRepo.Update(forum);
+		private void UpdateParents(Forum forum, Post post) {
+			// Empty forum (should never happen, this is a post, so we should have a topic) OR
+			// new post never than latest topic OR
+			// new post never than latest post
+			if ((forum.LatestPost == null && forum.LatestTopic == null) ||
+				(forum.LatestTopic != null && forum.LatestTopic.Created < post.Created) ||
+				(forum.LatestPost != null && forum.LatestPost.Created < post.Created)) {
 
-				this.UpdateParents(forum, latest);
+				forum.UpdateLatest(post);
+				this.forumRepo.Update(forum);
+
+				if (forum.ParentForum != null) {
+					this.UpdateParents(forum.ParentForum, post);
+				}
 			}
-			// TODO:
-		}
-
-		public void Handle(PostCreated payload, IState request) {
-			// TODO:
-		}
-
-		public void Handle(PostStateUpdated payload, IState request) {
-			// TODO:
-		}
-
-		public void Handle(PostDeleted payload, IState request) {
-			// TODO:
 		}
 
 		public Byte Priority {

@@ -21,5 +21,20 @@ namespace NForum.Core {
 			}
 			return true;
 		}
+
+		public static void UpdateLatest(this Forum f, Post p) {
+			f.LatestPost = p;
+			f.LatestTopic = null;
+		}
+
+		public static void UpdateLatest(this Forum f, Topic t) {
+			if (t.LatestPost != null) {
+				f.UpdateLatest(t.LatestPost);
+			}
+			else {
+				f.LatestTopic = t;
+				f.LatestPost = null;
+			}
+		}
 	}
 }

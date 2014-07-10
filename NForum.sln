@@ -19,6 +19,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{EC5669BE-2D6E-47E8-84EF-E50CE78D0948}"
 	ProjectSection(SolutionItems) = preProject
 		NForum.nuspec = NForum.nuspec
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NForum.IoC", "NForum.IoC\NForum.IoC.csproj", "{A60C5439-4CD6-4655-9C1F-EF86AB5FBAD1}"
@@ -26,6 +27,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementations", "Implementations", "{03BD69E8-F973-45DF-AD96-B43EAACE4A20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NForum.Logging.NLog", "NForum.Logging.NLog\NForum.Logging.NLog.csproj", "{5404AB20-E19F-4184-BD50-AC01BE365E72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{042DDD64-A647-4693-BB31-8A0907ED8378}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NForum.Tests.CommonMocks", "NForum.Tests.CommonMocks\NForum.Tests.CommonMocks.csproj", "{BDBC24C2-7F95-44B3-910E-1BCC5BEF3869}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NForum.Tests.BasicStructure", "NForum.Tests.BasicStructure\NForum.Tests.BasicStructure.csproj", "{5593DC8A-F5BE-473E-BC3E-0C7FB91A6A04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +59,14 @@ Global
 		{5404AB20-E19F-4184-BD50-AC01BE365E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5404AB20-E19F-4184-BD50-AC01BE365E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5404AB20-E19F-4184-BD50-AC01BE365E72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDBC24C2-7F95-44B3-910E-1BCC5BEF3869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDBC24C2-7F95-44B3-910E-1BCC5BEF3869}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDBC24C2-7F95-44B3-910E-1BCC5BEF3869}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDBC24C2-7F95-44B3-910E-1BCC5BEF3869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5593DC8A-F5BE-473E-BC3E-0C7FB91A6A04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5593DC8A-F5BE-473E-BC3E-0C7FB91A6A04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5593DC8A-F5BE-473E-BC3E-0C7FB91A6A04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5593DC8A-F5BE-473E-BC3E-0C7FB91A6A04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +75,7 @@ Global
 		{48FE8944-31A0-4F3E-96D2-7E64115B7B85} = {03BD69E8-F973-45DF-AD96-B43EAACE4A20}
 		{A7FC3E71-E4F0-4EA7-ACCA-43FEB3AE64B5} = {03BD69E8-F973-45DF-AD96-B43EAACE4A20}
 		{5404AB20-E19F-4184-BD50-AC01BE365E72} = {03BD69E8-F973-45DF-AD96-B43EAACE4A20}
+		{BDBC24C2-7F95-44B3-910E-1BCC5BEF3869} = {042DDD64-A647-4693-BB31-8A0907ED8378}
+		{5593DC8A-F5BE-473E-BC3E-0C7FB91A6A04} = {042DDD64-A647-4693-BB31-8A0907ED8378}
 	EndGlobalSection
 EndGlobal
