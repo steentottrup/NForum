@@ -35,7 +35,7 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 				.Include(t => t.Author)
 				// TODO: hm...?!?!?!
 				.Include(t => t.Posts)
-				.Include(t => t.LatestPost)
+				//.Include(t => t.LatestPost)
 				// TODO: Working ?!?!?
 				.OrderByDescending(t => t.Posts.Any(p => p.State == PostState.None || (p.State == PostState.Deleted && includeDeleted) || (p.State == PostState.Quarantined && includeDeleted)) ? t.Posts.Where(p => p.State == PostState.None || (p.State == PostState.Deleted && includeDeleted) || (p.State == PostState.Quarantined && includeDeleted)).OrderByDescending(po => po.Created).First().Created : t.Created)
 				.Skip(pageIndex * perPage)

@@ -13,6 +13,9 @@ using NForum.Core.Abstractions.Services;
 using NForum.Core.Abstractions.Providers;
 using NForum.Core.Services;
 using NForum.Core.Events;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
+using NForum.Persistence.EntityFramework.Migrations;
 //using NUnit.Framework;
 
 namespace NForum.Tests.BasicStructure {
@@ -50,6 +53,8 @@ namespace NForum.Tests.BasicStructure {
 		//[Test]
 		[TestMethod]
 		public void Creating() {
+			Database.SetInitializer(new MigrateDatabaseToLatestVersion<UnitOfWork, MigrationConf>());
+
 			using (UnitOfWork uow = new UnitOfWork()) {
 				ICategoryService categoryService = this.GetCategoryService(uow);
 

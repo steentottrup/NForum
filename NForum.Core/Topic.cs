@@ -1,36 +1,36 @@
 ﻿using NForum.Core.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
 namespace NForum.Core {
 
-	public class Topic : ICustomPropertyHolder, IAuthoredElement, ICloneable {
+	/// <summary>
+	/// Class representing a topic in a forum
+	/// </summary>
+	public class Topic : BaseTopic, ICustomPropertyHolder, IAuthoredElement, ICloneable {
+		/// <summary>
+		/// The unique identifier of the topic
+		/// </summary>
 		public Int32 Id { get; set; }
-		public Int32 ForumId { get; set; }
-		public Int32 AuthorId { get; set; }
-		public Int32 EditorId { get; set; }
 
-		public Int32? LatestPostId { get; set; }
-
-		public DateTime Created { get; set; }
-		public DateTime Changed { get; set; }
-
-		public TopicState State { get; set; }
-		public TopicType Type { get; set; }
-
-		public String Subject { get; set; }
-		public String Message { get; set; }
-
-		public String CustomProperties { get; set; }
-		public XDocument CustomData { get; set; }
-
+		/// <summary>
+		/// The parent forum
+		/// </summary>
 		public virtual Forum Forum { get; set; }
+		/// <summary>
+		/// The topic author
+		/// </summary>
 		public virtual User Author { get; set; }
+		/// <summary>
+		/// The latest editor of the topic
+		/// </summary>
 		public virtual User Editor { get; set; }
-		public virtual Post LatestPost { get; set; }
+		//public virtual Post LatestPost { get; set; }
 
+		/// <summary>
+		/// Collection of posts belonging to the topic
+		/// </summary>
 		public virtual ICollection<Post> Posts { get; set; }
 
 		public Object Clone() {
@@ -39,7 +39,7 @@ namespace NForum.Core {
 				ForumId = this.ForumId,
 				AuthorId = this.AuthorId,
 				EditorId = this.EditorId,
-				LatestPostId = this.LatestPostId,
+				//LatestPostId = this.LatestPostId,
 				Created = this.Created,
 				Changed = this.Changed,
 				State = this.State,

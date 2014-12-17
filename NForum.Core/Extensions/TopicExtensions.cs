@@ -13,15 +13,16 @@ namespace NForum.Core {
 		/// <returns>Returns true if posts have been created since the user last viewed the topic, else false.</returns>
 		public static Boolean UnRead(this Topic t, TopicTracker tt, User user) {
 			// No user, or topic created later then last viewed (does that make sense?), or latest post created before last view?
-			if (user == null ||
-				(tt != null && 
-					(tt.LastViewed >= t.Created ||
-						(t.LatestPost != null && tt.LastViewed >= t.LatestPost.Created)
-					)
-				)) {
+			// TODO:
+			//if (user == null ||
+			//	(tt != null && 
+			//		(tt.LastViewed >= t.Created ||
+			//			(t.LatestPost != null && tt.LastViewed >= t.LatestPost.Created)
+			//		)
+			//	)) {
 
-				return false;
-			}
+			//	return false;
+			//}
 			return true;
 		}
 

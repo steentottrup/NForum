@@ -11,7 +11,7 @@ NForum is a no BS forum engine implementation, including the basic features need
 * Using services, repositories, providers and other well known patterns, to make it easy to replace parts if needed.
 * A solution that is not tied to any web server technology (it's just an engine)
 * Events (pub/sub) to make it easy to plug new features into the engine
-* Entity Framework implementation included for storing elements in a database
+* Entity Framework implementation included for storing elements in a SQL database
 * Lucene.NET implementation included for searching
 * MIT License
 
@@ -19,7 +19,7 @@ NForum is a no BS forum engine implementation, including the basic features need
 
 * Unlimited number of categories
 * Unlimited number of forums and sub-forums
-* Follow/unfollow forums and topics to get an e-mail when a new topic/message is posted
+* Follow/unfollow forums and topics to get notified when a new topic/message is posted
 * Forum/Topic tracker to keep track of unread/read forums and topics
 * Topic types are: Regular, sticky and announcement
 * Topic state includes: Deleted, moved, quarantined and locked

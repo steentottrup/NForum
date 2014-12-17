@@ -10,13 +10,30 @@ using NForum.Core.Services;
 using NForum.Persistence.EntityFramework;
 using NForum.Persistence.EntityFramework.Repositories;
 using NForum.Tests.CommonMocks;
+using StackExchange.Profiling;
+using StackExchange.Profiling.EntityFramework6;
 using System;
 using System.Collections.Generic;
+
+using IUserProvider = NForum.Core.Abstractions.Providers.IUserProvider;
 
 namespace NForum.Tests.BasicStructure {
 
 	[TestClass]
 	public class ForumServiceTests {
+
+		[TestInitialize]
+		public void Init() {
+			//MiniProfiler.Start();
+			//MiniProfilerEF6.Initialize();
+		}
+
+		[TestCleanup]
+		public void TearDown() {
+			//String output = MiniProfiler.Current.RenderPlainText();
+			//System.IO.File.WriteAllText(@"c:\temp\nforumprofiling.txt", output);
+			//MiniProfiler.Stop();
+		}
 
 		private void GetForumService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService) {
 			ICategoryRepository cateRepo = new CategoryRepository(uow);
@@ -49,6 +66,7 @@ namespace NForum.Tests.BasicStructure {
 		[TestMethod]
 		public void Creating() {
 			using (UnitOfWork uow = new UnitOfWork()) {
+				uow.BeginTransaction();
 				IForumService forumService;
 				ICategoryService categoryService;
 				this.GetForumService(uow, out categoryService, out forumService);
@@ -59,6 +77,8 @@ namespace NForum.Tests.BasicStructure {
 				String description = "bla bla";
 				Int32 sortOrder = 50;
 				Forum forum = forumService.Create(category, name, description, sortOrder);
+
+				uow.Commit();
 
 				forum = forumService.Read(forum.Id);
 

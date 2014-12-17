@@ -18,11 +18,12 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 		private IQueryable<Forum> GetExpandedForum() {
 			return this.uow.Set<Forum>()
 				.Include(f => f.Category)
-				.Include(f => f.LatestPost)
-				.Include(f => f.LatestTopic)
+				// TODO:
+				//.Include(f => f.LatestPost)
+				//.Include(f => f.LatestTopic)
 				.Include(f => f.ParentForum)
-				.Include(f => f.LatestPost.Author)
-				.Include(f => f.LatestTopic.Author)
+				//.Include(f => f.LatestPost.Author)
+				//.Include(f => f.LatestTopic.Author)
 				// TODO:
 				//.Include(f=>f.SubForums)
 				;
