@@ -42,6 +42,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
@@ -59,15 +60,21 @@
   <ItemGroup>
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\ForumController.cs" />
+    <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Helpers\CategoryHelper.cs" />
     <Compile Include="Models\CategoryBase.cs" />
     <Compile Include="Models\CategoryCreate.cs" />
     <Compile Include="Models\CategoryRead.cs" />
     <Compile Include="Models\CategoryUpdate.cs" />
-    <Compile Include="Models\ErrorModel.cs" />
+    <Compile Include="Models\Error.cs" />
     <Compile Include="Models\Extensions\CategoryExtensions.cs" />
+    <Compile Include="Models\Extensions\ForumExtensions.cs" />
+    <Compile Include="Models\ForumBase.cs" />
+    <Compile Include="Models\ForumRead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\WebApiUserProvider.cs" />
+    <Compile Include="RouteHack.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

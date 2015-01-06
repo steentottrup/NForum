@@ -2,7 +2,7 @@
 
 namespace NForum.Api.Web.Models {
 
-	public class ErrorModel {
+	public class Error {
 		public String[] Errors { get; set; }
 	}
 }

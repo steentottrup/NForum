@@ -1,5 +1,13 @@
 ﻿var ajax = {};
 
+ajax.configure = function (settings) {
+	if (settings) {
+		if (settings.onUnauthorized) {
+			ajax.onUnauthorized = settings.onUnauthorized;
+		}
+	}
+};
+
 ajax.send = function (url, callback, method, data, sync) {
 	var request = new XMLHttpRequest();
 	request.open(method, url, sync);
@@ -7,6 +15,11 @@ ajax.send = function (url, callback, method, data, sync) {
 		if (request.readyState == XMLHttpRequest.DONE) {
 			if (request.status === 200) {
 				callback(JSON.parse(request.response));
+			}
+			else if (request.status === 401) {
+				if (ajax.onUnauthorized) {
+					ajax.onUnauthorized(request);
+				}
 			}
 			else {
 				console.log(request.status);

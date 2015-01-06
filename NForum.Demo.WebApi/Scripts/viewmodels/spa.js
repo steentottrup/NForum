@@ -8,7 +8,7 @@ var ViewModel = function () {
 	self.NewCategoryName = ko.observable("");
 
 	self.NewReturned = function (data) {
-		console.log(data);
+		self.Categories.push(data);
 		self.NewCategoryName("");
 	};
 
@@ -22,8 +22,18 @@ var ViewModel = function () {
 		ajax.post("/api/nforum/category", { "name": self.NewCategoryName(), sortOrder: 1 }, self.NewReturned);
 	};
 
-	ajax.get("/api/nforum/category", null, self.DataReturned);
+	self.Init = function() {
+		ajax.get("/api/nforum/category/list", null, self.DataReturned);
+	};
+
+	self.Unauthorized = function (request) {
+		console.log("ups");
+	};
 };
 
 var vm = new ViewModel();
+
+ajax.configure({ onUnauthorized: vm.Unauthorized });
+
 ko.applyBindings(vm);
+vm.Init();

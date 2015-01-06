@@ -70,6 +70,9 @@ namespace NForum.Demo.WebApi.App_Start {
 			kernel.Bind<IState>().To<WebApiState>();
 			kernel.Bind<IPermissionService>().To<PermissionService>();
 
+			kernel.Bind<IForumService>().To<ForumService>();
+			kernel.Bind<IForumRepository>().To<ForumRepository>();
+
 			kernel.Bind<UnitOfWork>().To<UnitOfWork>();
 		}
 	}
