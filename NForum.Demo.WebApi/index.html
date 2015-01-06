@@ -5,13 +5,20 @@
 </head>
 <body>
 	<ul data-bind="foreach: Categories">
-		<li data-bind="text: Name"></li>
+		<li><a href="#" data-bind="text: Name, click: AddForum"></a></li>
 	</ul>
 	<a href="#" data-bind="click: Add">Add</a>
 	<input type="text" data-bind="value: NewCategoryName" />
 
+	<br />
+	<input type="text" data-bind="value: NewUserName" />
+	<input type="text" data-bind="value: NewEmailAddress" />
+	<input type="password" data-bind="value: NewPassword" />
+	<button data-bind="click: CreateUser">create</button>
+
 	<script type="text/javascript" src="/scripts/vanillaAjax.js"></script>
 	<script type="text/javascript" src="/scripts/knockout-3.2.0.js"></script>
+	<script type="text/javascript" src="/scripts/knockout.mapping.js"></script>
 	<script type="text/javascript" src="/scripts/viewmodels/spa.js"></script>
 </body>
 </html>

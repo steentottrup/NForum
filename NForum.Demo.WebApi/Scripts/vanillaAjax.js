@@ -5,6 +5,9 @@ ajax.configure = function (settings) {
 		if (settings.onUnauthorized) {
 			ajax.onUnauthorized = settings.onUnauthorized;
 		}
+		if (settings.token) {
+			ajax.token = settings.token;
+		}
 	}
 };
 
@@ -26,6 +29,10 @@ ajax.send = function (url, callback, method, data, sync) {
 			}
 		}
 	};
+
+	if (ajax.token) {
+		request.setRequestHeader("Authorization", "Bearer " + ajax.token);
+	}
 	request.setRequestHeader("Accept", "application/json");
 	request.setRequestHeader("Content-Type", "application/json");
 	if (method == "POST") {

@@ -18,5 +18,7 @@ namespace NForum.Core.Abstractions.Services {
 		/// <param name="name">The name of the user needed.</param>
 		/// <returns>The user with the given name, or null.</returns>
 		User Read(String name);
+
+		User Create(String providerId, String name, String emailAddress, String culture, String timezone);
 	}
 }

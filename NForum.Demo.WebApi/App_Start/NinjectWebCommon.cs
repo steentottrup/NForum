@@ -10,6 +10,7 @@ namespace NForum.Demo.WebApi.App_Start {
 	using NForum.Core.Abstractions.Services;
 	using NForum.Core.Events;
 	using NForum.Core.Services;
+	using NForum.Demo.WebApi.Identity;
 	using NForum.Demo.WebApi.Providers;
 	using NForum.Logging.NLog;
 	using NForum.Persistence.EntityFramework;
@@ -64,16 +65,23 @@ namespace NForum.Demo.WebApi.App_Start {
 		private static void RegisterServices(IKernel kernel) {
 			kernel.Bind<ICategoryService>().To<CategoryService>();
 			kernel.Bind<IUserProvider>().To<WebApiUserProvider>();
-			kernel.Bind<ICategoryRepository>().To<CategoryRepository>();
 			kernel.Bind<IEventPublisher>().To<EventPublisher>();
 			kernel.Bind<ILogger>().To<NLogLogger>();
 			kernel.Bind<IState>().To<WebApiState>();
 			kernel.Bind<IPermissionService>().To<PermissionService>();
-
 			kernel.Bind<IForumService>().To<ForumService>();
+
+			kernel.Bind<IUserService>().To<UserService>();
+			kernel.Bind<IUserRepository>().To<UserRepository>();
+
+			kernel.Bind<ICategoryRepository>().To<CategoryRepository>();
 			kernel.Bind<IForumRepository>().To<ForumRepository>();
 
+			// Entity Framework implementation specific
 			kernel.Bind<UnitOfWork>().To<UnitOfWork>();
+
+			// Demo site specific:
+			kernel.Bind<AuthRepository>().To<AuthRepository>();
 		}
 	}
 }
