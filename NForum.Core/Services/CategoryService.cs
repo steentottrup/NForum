@@ -37,7 +37,11 @@ namespace NForum.Core.Services {
 		/// <param name="description">The description of the category.</param>
 		/// <param name="sortOrder">The sort order/placement of the category.</param>
 		/// <returns>The newly created category.</returns>
+		/// <exception cref="System.ArgumentNullException">If the provided name is null/empty.</exception>
 		public Category Create(String name, String description, Int32 sortOrder) {
+			if (String.IsNullOrWhiteSpace(name)) {
+				throw new ArgumentNullException("name");
+			}
 			this.logger.WriteFormat("Create called on CategoryService, Name: {0}, Description: {1}, Sort Order: {2}", name, description, sortOrder);
 			if (!this.permService.CanCreateCategory(this.userProvider.CurrentUser)) {
 				this.logger.WriteFormat("User does not have permissions to create a new category, name: {0}", name);
@@ -68,9 +72,11 @@ namespace NForum.Core.Services {
 		public Category Read(Int32 id) {
 			this.logger.WriteFormat("Read called on CategoryService, Id: {0}", id);
 			Category category = this.categoryRepo.Read(id);
-			if (!this.permService.HasAccess(this.userProvider.CurrentUser, category, CRUD.Read)) {
-				this.logger.WriteFormat("User does not have permissions to read the category, id: {0}", category.Id);
-				throw new PermissionException("category, read");
+			if (category != null) {
+				if (!this.permService.HasAccess(this.userProvider.CurrentUser, category, CRUD.Read)) {
+					this.logger.WriteFormat("User does not have permissions to read the category, id: {0}", category.Id);
+					throw new PermissionException("category, read");
+				}
 			}
 
 			return category;
@@ -84,9 +90,11 @@ namespace NForum.Core.Services {
 		public Category Read(String name) {
 			this.logger.WriteFormat("Read called on CategoryService, name: {0}", name);
 			Category category = this.categoryRepo.ByName(name);
-			if (!this.permService.HasAccess(this.userProvider.CurrentUser, category, CRUD.Read)) {
-				this.logger.WriteFormat("User does not have permissions to read the category, name: {0}", category.Name);
-				throw new PermissionException("category, read");
+			if (category != null) {
+				if (!this.permService.HasAccess(this.userProvider.CurrentUser, category, CRUD.Read)) {
+					this.logger.WriteFormat("User does not have permissions to read the category, name: {0}", category.Name);
+					throw new PermissionException("category, read");
+				}
 			}
 
 			return category;
@@ -111,6 +119,7 @@ namespace NForum.Core.Services {
 		/// </summary>
 		/// <param name="category">The changed category.</param>
 		/// <returns>The updated category.</returns>
+		/// <exception cref="System.ArgumentNullException">If the provided Category is null.</exception>
 		public Category Update(Category category) {
 			if (category == null) {
 				throw new ArgumentNullException("category");
@@ -161,6 +170,7 @@ namespace NForum.Core.Services {
 		/// Method for deleting a category.
 		/// </summary>
 		/// <param name="category">The category to delete.</param>
+		/// <exception cref="System.ArgumentNullException">If the provided Category is null.</exception>
 		public void Delete(Category category) {
 			if (category == null) {
 				throw new ArgumentNullException("category");

@@ -3,7 +3,7 @@ NForum
 
 NForum is an open source Bulletin Board System / Discussion Forum engine for .NET. The source code is 100% done in C#, using .NET version 4.5.1.
 
-NForum is a no BS forum engine implementation, including the basic features needed to run a modern day forum, and an easy way of adding your own needed features.
+NForum is a no BS forum engine implementation, including the basic features needed to run a modern day forum, and an easy way of adding your own needed features, without changing the code base.
 
 ## Project Features
 

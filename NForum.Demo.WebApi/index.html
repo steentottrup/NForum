@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+	<ul data-bind="foreach: Categories">
+		<li data-bind="text: Name"></li>
+	</ul>
+	<a href="#" data-bind="click: Add">Add</a>
+	<input type="text" data-bind="value: NewCategoryName" />
+
+	<script type="text/javascript" src="/scripts/vanillaAjax.js"></script>
+	<script type="text/javascript" src="/scripts/knockout-3.2.0.js"></script>
+	<script type="text/javascript" src="/scripts/viewmodels/spa.js"></script>
+</body>
+</html>

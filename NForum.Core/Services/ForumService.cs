@@ -65,6 +65,7 @@ namespace NForum.Core.Services {
 		/// <param name="description">The description of the forum.</param>
 		/// <param name="sortOrder">The sort order/placement of the forum.</param>
 		/// <returns>The newly created forum.</returns>
+		/// <exception cref="System.ArgumentNullException">If the provided category is null.</exception>
 		public Forum Create(Category category, Forum parentForum, String name, String description, Int32 sortOrder) {
 			if (category == null) {
 				throw new ArgumentNullException("category");
@@ -124,6 +125,7 @@ namespace NForum.Core.Services {
 		/// <param name="description">The description of the forum.</param>
 		/// <param name="sortOrder">The sort order/placement of the forum.</param>
 		/// <returns>The newly created forum.</returns>
+		/// <exception cref="System.ArgumentNullException">If the provided parent forum is null.</exception>
 		public Forum Create(Forum parentForum, String name, String description, Int32 sortOrder) {
 			if (parentForum == null) {
 				throw new ArgumentNullException("parentForum");
@@ -139,9 +141,11 @@ namespace NForum.Core.Services {
 		public Forum Read(Int32 id) {
 			this.logger.WriteFormat("Read called on ForumService, Id: {0}", id);
 			Forum forum = this.forumRepo.Read(id);
-			if (!this.permService.HasAccess(this.userProvider.CurrentUser, forum, CRUD.Read)) {
-				this.logger.WriteFormat("User does not have permissions to read the forum, id: {0}", forum.Id);
-				throw new PermissionException("forum, read");
+			if (forum != null) {
+				if (!this.permService.HasAccess(this.userProvider.CurrentUser, forum, CRUD.Read)) {
+					this.logger.WriteFormat("User does not have permissions to read the forum, id: {0}", forum.Id);
+					throw new PermissionException("forum, read");
+				}
 			}
 
 			return forum;
@@ -155,9 +159,11 @@ namespace NForum.Core.Services {
 		public Forum Read(String name) {
 			this.logger.WriteFormat("Read called on ForumService, name: {0}", name);
 			Forum forum = this.forumRepo.ByName(name);
-			if (!this.permService.HasAccess(this.userProvider.CurrentUser, forum, CRUD.Read)) {
-				this.logger.WriteFormat("User does not have permissions to read the forum, name: {0}", forum.Name);
-				throw new PermissionException("forum, read");
+			if (forum != null) {
+				if (!this.permService.HasAccess(this.userProvider.CurrentUser, forum, CRUD.Read)) {
+					this.logger.WriteFormat("User does not have permissions to read the forum, name: {0}", forum.Name);
+					throw new PermissionException("forum, read");
+				}
 			}
 
 			return forum;
