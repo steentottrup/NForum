@@ -62,7 +62,6 @@
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\ForumController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
-    <Compile Include="Helpers\CategoryHelper.cs" />
     <Compile Include="Models\CategoryBase.cs" />
     <Compile Include="Models\CategoryCreate.cs" />
     <Compile Include="Models\CategoryRead.cs" />
