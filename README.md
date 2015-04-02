@@ -24,3 +24,7 @@ NForum is a no BS forum engine implementation, including the basic features need
 * Topic types are: Regular, sticky and announcement
 * Topic state includes: Deleted, moved, quarantined and locked
 * Post state includes: Deleted and quarantined
+
+## Roadmap
+
+* Run on ASP.NET 5 and ASP.NET 5 Core
