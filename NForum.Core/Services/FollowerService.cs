@@ -12,9 +12,11 @@ namespace NForum.Core.Services {
 		protected readonly IFollowTopicRepository topicRepo;
 		protected readonly IUserProvider userProvider;
 		protected readonly ILogger logger;
+		protected readonly IPermissionService permService;
 
 		public FollowerService(IFollowForumRepository forumRepo,
 								IFollowTopicRepository topicRepo,
+								IPermissionService permService,
 								IUserProvider userProvider,
 								ILogger logger) {
 
@@ -22,9 +24,11 @@ namespace NForum.Core.Services {
 			this.topicRepo = topicRepo;
 			this.logger = logger;
 			this.userProvider = userProvider;
+			this.permService = permService;
 		}
 
 		public IEnumerable<FollowForum> GetFollowers(Forum forum) {
+			//User user = this.userProvider.CurrentUser
 			// TODO: Access?? Or not!
 			return this.forumRepo.ByForum(forum);
 		}
@@ -42,6 +46,7 @@ namespace NForum.Core.Services {
 			if (user == null) {
 				throw new NoAuthenticatedUserFoundException();
 			}
+			// TODO: Permissions??
 			if (this.forumRepo.ByUserAndForum(forum, user) == null) {
 				this.forumRepo.Create(new FollowForum {
 					ForumId = forum.Id,

@@ -10,17 +10,14 @@ using NForum.Core.Services;
 using NForum.Persistence.EntityFramework;
 using NForum.Persistence.EntityFramework.Repositories;
 using NForum.Tests.CommonMocks;
-using StackExchange.Profiling;
-using StackExchange.Profiling.EntityFramework6;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using IUserProvider = NForum.Core.Abstractions.Providers.IUserProvider;
 
 namespace NForum.Tests.BasicStructure {
 
 	[TestClass]
-	public class ForumServiceTests {
+	public class TopicServiceTests {
 		private static UnitOfWork uow;
 
 		[ClassInitialize]
@@ -35,9 +32,11 @@ namespace NForum.Tests.BasicStructure {
 			uow = null;
 		}
 
-		private void GetForumService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService) {
+		private void GetTopicService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService, out ITopicService topicService) {
 			ICategoryRepository cateRepo = new CategoryRepository(uow);
 			IForumRepository forumRepo = new ForumRepository(uow);
+			ITopicRepository topicRepo = new TopicRepository(uow);
+			IForumConfigurationRepository configRepo = new ForumConfigurationRepository(uow);
 
 			IState request = new DummyRequest();
 
@@ -58,63 +57,66 @@ namespace NForum.Tests.BasicStructure {
 			IEventPublisher eventPublisher = new EventPublisher(subscribers, logger, request);
 			IUserProvider userProvider = new DummyUserProvider(user);
 			IPermissionService permService = new PermissionService();
+			IForumConfigurationService confService = new ForumConfigurationService(configRepo);
 
 			categoryService = new CategoryService(userProvider, cateRepo, eventPublisher, logger, permService);
 			forumService = new ForumService(userProvider, cateRepo, forumRepo, eventPublisher, logger, permService);
+			topicService = new TopicService(userProvider, forumRepo, topicRepo, eventPublisher, logger, permService, confService);
 		}
 
 		[TestMethod]
-		public void CreatingForum() {
+		public void CreatingTopic() {
 			uow.BeginTransaction();
+			ITopicService topicService;
 			IForumService forumService;
 			ICategoryService categoryService;
-			this.GetForumService(uow, out categoryService, out forumService);
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService);
 
-			Category category = categoryService.Create("With child forum", "meh", 100);
+			Category category = categoryService.Create("For first topic", "meh", 100);
+			Forum forum = forumService.Create(category, "For first topic", "muh", 100);
 
-			String name = "First one?";
-			String description = "bla bla";
-			Int32 sortOrder = 50;
-			Forum forum = forumService.Create(category, name, description, sortOrder);
+			String subject = "First topic, evah!";
+			String body = "A long topic body? Not really..";
+
+			Topic topic = topicService.Create(forum, subject, body, TopicType.Regular);
 
 			uow.Commit();
 
-			forum = forumService.Read(forum.Id);
+			topic = topicService.Read(topic.Id);
 
-			Assert.AreEqual(name, forum.Name);
-			Assert.AreEqual(description, forum.Description);
-			Assert.AreEqual(sortOrder, forum.SortOrder);
-			Assert.AreEqual(category.Id, forum.CategoryId);
+			Assert.AreEqual(subject, topic.Subject);
+			Assert.AreEqual(body, topic.Message);
+			Assert.AreEqual(TopicType.Regular, topic.Type);
 		}
 
 		[TestMethod]
-		public void UpdatingForum() {
+		public void UpdatingTopic() {
 			uow.BeginTransaction();
+			ITopicService topicService;
 			IForumService forumService;
 			ICategoryService categoryService;
-			this.GetForumService(uow, out categoryService, out forumService);
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService);
 
-			Category category = categoryService.Create("For forum update test", "meh", 100);
+			Category category = categoryService.Create("For second topic", "meh", 100);
+			Forum forum = forumService.Create(category, "For second topic", "muh", 100);
 
-			String name = "First one?";
-			String description = "bla bla";
-			Int32 sortOrder = 50;
-			Forum forum = forumService.Create(category, name, description, sortOrder);
+			String subject = "Second topic, evah!";
+			String body = "A long topic body? Not really..";
+
+			Topic topic = topicService.Create(forum, subject, body, TopicType.Regular);
 
 			uow.Commit();
 
-			String updatedName = "Actually the second";
-			String updatedDescription = "The second!";
-			Int32 updatedSortOrder = 20;
+			String updatedSubject = "Updated topic, second one";
+			String updatedBody = "So too long, let's shorten";
 
-			forum.Name = updatedName;
-			forum.Description = updatedDescription;
-			forum.SortOrder = updatedSortOrder;
-			forum = forumService.Update(forum);
+			topic.Subject = updatedSubject;
+			topic.Message = updatedBody;
+			topic = topicService.Update(topic);
 
-			Assert.AreEqual(updatedName, forum.Name);
-			Assert.AreEqual(updatedDescription, forum.Description);
-			Assert.AreEqual(updatedSortOrder, forum.SortOrder);
+			Assert.AreEqual(updatedSubject, topic.Subject);
+			Assert.AreEqual(updatedBody, topic.Message);
+			Assert.AreEqual(TopicType.Regular, topic.Type);
 		}
 	}
 }

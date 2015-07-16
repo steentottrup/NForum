@@ -29,6 +29,7 @@ namespace NForum.Persistence.EntityFramework {
 		public IDbSet<TopicVersion> TopicVersions { get; set; }
 		public IDbSet<User> Users { get; set; }
 
+		public UnitOfWork(DbConnection connection) : base(connection, true) { }
 		public UnitOfWork() : this("DefaultConnection") { }
 		public UnitOfWork(String nameOrConnectionString)
 			: base(nameOrConnectionString) {
