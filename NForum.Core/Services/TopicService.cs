@@ -188,7 +188,7 @@ namespace NForum.Core.Services {
 
 			// Author with "update" access or moderator?
 			AccessFlag flag = this.permService.GetAccessFlag(this.userProvider.CurrentUser, oldTopic.Forum);
-			if ((flag & AccessFlag.Priority) != AccessFlag.Update) {
+			if ((flag & AccessFlag.Update) != AccessFlag.Update) {
 				this.logger.WriteFormat("User does not have permissions to update a topic, id: {1}, subject: {0}", topic.Subject, topic.Id);
 				throw new PermissionException("topic, update");
 			}

@@ -44,22 +44,6 @@
     <Reference Include="NMemory">
       <HintPath>..\packages\NMemory.1.0.1\lib\net45\NMemory.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.core">
-      <HintPath>..\..\..\CodePlex\mvcforum2\packages\NUnitTestAdapter.1.0\lib\nunit.core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>..\..\..\CodePlex\mvcforum2\packages\NUnitTestAdapter.1.0\lib\nunit.core.interfaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="nunit.util">
-      <HintPath>..\..\..\CodePlex\mvcforum2\packages\NUnitTestAdapter.1.0\lib\nunit.util.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NUnit.VisualStudio.TestAdapter">
-      <HintPath>..\..\..\CodePlex\mvcforum2\packages\NUnitTestAdapter.1.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />

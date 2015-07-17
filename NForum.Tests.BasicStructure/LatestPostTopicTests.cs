@@ -6,19 +6,30 @@
 //using NForum.Core.Abstractions.Providers;
 //using NForum.Core.Abstractions.Services;
 //using NForum.Core.Events;
-//using NForum.Core.EventSubscribers;
 //using NForum.Core.Services;
 //using NForum.Persistence.EntityFramework;
 //using NForum.Persistence.EntityFramework.Repositories;
 //using NForum.Tests.CommonMocks;
-//using System;
 //using System.Collections.Generic;
-//using System.Threading;
+//using System.Data.Common;
 
 //namespace NForum.Tests.BasicStructure {
 
 //	[TestClass]
 //	public class LatestPostTopicTests {
+//		private static UnitOfWork uow;
+
+//		[ClassInitialize]
+//		public static void SetUp(TestContext context) {
+//			DbConnection connection = Effort.DbConnectionFactory.CreateTransient();
+//			uow = new UnitOfWork(connection);
+//		}
+
+//		[ClassCleanup]
+//		public static void TearDown() {
+//			uow.Dispose();
+//			uow = null;
+//		}
 
 //		private void GetTopicService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService, out ITopicService topicService, out IPostService postService) {
 //			ICategoryRepository cateRepo = new CategoryRepository(uow);
@@ -59,28 +70,26 @@
 
 //		[TestMethod]
 //		public void LatestTopics() {
-//			using (UnitOfWork uow = new UnitOfWork()) {
-//				ICategoryService categoryService;
-//				IForumService forumService;
-//				ITopicService topicService;
-//				IPostService postService;
-//				this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
+//			ICategoryService categoryService;
+//			IForumService forumService;
+//			ITopicService topicService;
+//			IPostService postService;
+//			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
 
-//				Category category = categoryService.Create("Latest test category", "meh", 100);
-//				Forum forum = forumService.Create(category, "Latest test forum", "meh", 101);
+//			Category category = categoryService.Create("Latest test category", "meh", 100);
+//			Forum forum = forumService.Create(category, "Latest test forum", "meh", 101);
 
-//				Topic first = topicService.Create(forum, "The first one", "bla bla bla");
-//				Assert.AreEqual(first.Id, forum.LatestTopicId, "first post latest");
+//			Topic first = topicService.Create(forum, "The first one", "bla bla bla");
+//			Assert.AreEqual(first.Id, forum.LatestTopicId, "first post latest");
 
-//				Topic second = topicService.Create(forum, "The second one", "bla bla bla");
-//				Assert.AreEqual(second.Id, forum.LatestTopicId, "second post latest");
+//			Topic second = topicService.Create(forum, "The second one", "bla bla bla");
+//			Assert.AreEqual(second.Id, forum.LatestTopicId, "second post latest");
 
-//				topicService.Update(second, TopicState.Quarantined);
-//				Assert.AreEqual(first.Id, forum.LatestTopicId, "first post latest again");
+//			topicService.Update(second, TopicState.Quarantined);
+//			Assert.AreEqual(first.Id, forum.LatestTopicId, "first post latest again");
 
-//				topicService.Update(second, TopicState.None);
-//				Assert.AreEqual(second.Id, forum.LatestTopicId, "second post latest again");
-//			}
+//			topicService.Update(second, TopicState.None);
+//			Assert.AreEqual(second.Id, forum.LatestTopicId, "second post latest again");
 //		}
 
 //		[TestMethod]

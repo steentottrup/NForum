@@ -118,5 +118,25 @@ namespace NForum.Tests.BasicStructure {
 			Assert.AreEqual(updatedBody, topic.Message);
 			Assert.AreEqual(TopicType.Regular, topic.Type);
 		}
+
+		[TestMethod]
+		public void UpdatingTopicType() {
+			uow.BeginTransaction();
+			ITopicService topicService;
+			IForumService forumService;
+			ICategoryService categoryService;
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService);
+
+			Category category = categoryService.Create("For second topic", "meh", 100);
+			Forum forum = forumService.Create(category, "For second topic", "muh", 100);
+			Topic topic = topicService.Create(forum, "A regular topic", "blabla bla", TopicType.Regular);
+
+			uow.Commit();
+
+			topic.Type = TopicType.Sticky;
+			topic = topicService.Update(topic);
+
+			Assert.AreEqual(TopicType.Sticky, topic.Type);
+		}
 	}
 }

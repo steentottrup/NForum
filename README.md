@@ -28,3 +28,7 @@ NForum is a no BS forum engine implementation, including the basic features need
 ## Roadmap
 
 * Run on ASP.NET 5 and ASP.NET 5 Core
+
+## AppVeyor Build Status
+
+[![Build status](https://ci.appveyor.com/api/projects/status/r8t8tqqidk7bnf3q/branch/master?svg=true)](https://ci.appveyor.com/project/steentottrup97321/nforum/branch/master)

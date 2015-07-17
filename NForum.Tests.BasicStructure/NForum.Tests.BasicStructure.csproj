@@ -57,9 +57,6 @@
     <Reference Include="NMemory">
       <HintPath>..\packages\NMemory.1.0.1\lib\net45\NMemory.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\..\CodePlex\mvcforum2\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
