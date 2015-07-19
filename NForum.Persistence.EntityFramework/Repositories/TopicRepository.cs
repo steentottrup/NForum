@@ -46,5 +46,14 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 		public Topic BySubject(String subject) {
 			return this.set.FirstOrDefault(t => t.Subject == subject);
 		}
+
+		public Topic GetLatest(IEnumerable<Forum> forums) {
+			Int32[] ids = forums.Select(f => f.Id).ToArray();
+			return this.set
+				.Where(t => ids.Contains(t.ForumId))
+				.Where(t => t.State != TopicState.Deleted && t.State != TopicState.Quarantined)
+				.OrderByDescending(t => t.Created)
+				.FirstOrDefault();
+		}
 	}
 }

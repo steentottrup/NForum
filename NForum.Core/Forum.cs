@@ -14,11 +14,11 @@ namespace NForum.Core {
 		/// </summary>
 		public Int32 Id { get; set; }
 		/// <summary>
-		/// The id of the category
+		/// The id of the parent category.
 		/// </summary>
 		public Int32 CategoryId { get; set; }
 		/// <summary>
-		/// The id of the parent forum, if this forum has a parent forum
+		/// The id of the parent forum, if this forum has a parent forum.
 		/// </summary>
 		public Int32? ParentForumId { get; set; }
 		//public Int32? LatestTopicId { get; set; }

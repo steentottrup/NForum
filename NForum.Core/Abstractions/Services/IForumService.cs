@@ -17,5 +17,8 @@ namespace NForum.Core.Abstractions.Services {
 		Forum Update(Forum forum);
 
 		void Delete(Forum forum);
+
+		Topic GetLatestTopic(Forum forum, Boolean includeSubForums);
+		Post GetLatestPost(Forum forum, Boolean includeSubForums);
 	}
 }

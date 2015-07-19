@@ -13,6 +13,8 @@ namespace NForum.Core.Services {
 	public class ForumService : IForumService {
 		protected readonly ICategoryRepository categoryRepo;
 		protected readonly IForumRepository forumRepo;
+		protected readonly ITopicRepository topicRepo;
+		protected readonly IPostRepository postRepo;
 		protected readonly IUserProvider userProvider;
 		protected readonly ILogger logger;
 		protected readonly IEventPublisher eventPublisher;
@@ -21,6 +23,8 @@ namespace NForum.Core.Services {
 		public ForumService(IUserProvider userProvider,
 							ICategoryRepository categoryRepo,
 							IForumRepository forumRepo,
+							ITopicRepository topicRepo,
+							IPostRepository postRepo,
 							IEventPublisher eventPublisher,
 							ILogger logger,
 							IPermissionService permService) {
@@ -31,6 +35,8 @@ namespace NForum.Core.Services {
 			this.logger = logger;
 			this.eventPublisher = eventPublisher;
 			this.permService = permService;
+			this.topicRepo = topicRepo;
+			this.postRepo = postRepo;
 		}
 
 		/// <summary>
@@ -272,6 +278,42 @@ namespace NForum.Core.Services {
 				Forum = forum
 			});
 			this.logger.WriteFormat("Delete events in ForumService fired, Id: {0}", forum.Id);
+		}
+
+		public Topic GetLatestTopic(Forum forum, Boolean includeSubForums) {
+			if (forum == null) {
+				throw new ArgumentNullException("forum");
+			}
+			User user = this.userProvider.CurrentUser;
+			IEnumerable<Forum> forums = new List<Forum> { forum };
+			if (includeSubForums) {
+				forums = forums.Union(this.forumRepo.Descendants(forum));
+			}
+
+			forums = this.permService.GetAccessible(user, forums);
+			if (forums.Any()) {
+				return this.topicRepo.GetLatest(forums);
+			}
+
+			return null;
+		}
+
+		public Post GetLatestPost(Forum forum, Boolean includeSubForums) {
+			if (forum == null) {
+				throw new ArgumentNullException("forum");
+			}
+			User user = this.userProvider.CurrentUser;
+			IEnumerable<Forum> forums = new List<Forum> { forum };
+			if (includeSubForums) {
+				forums = forums.Union(this.forumRepo.Descendants(forum));
+			}
+
+			forums = this.permService.GetAccessible(user, forums);
+			if (forums.Any()) {
+				return this.postRepo.GetLatest(forums);
+			}
+
+			return null;
 		}
 	}
 }

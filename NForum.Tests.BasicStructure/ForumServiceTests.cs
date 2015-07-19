@@ -1,17 +1,15 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NForum.Core;
 using NForum.Core.Abstractions;
 using NForum.Core.Abstractions.Data;
 using NForum.Core.Abstractions.Events;
-using NForum.Core.Abstractions.Providers;
 using NForum.Core.Abstractions.Services;
 using NForum.Core.Events;
 using NForum.Core.Services;
 using NForum.Persistence.EntityFramework;
 using NForum.Persistence.EntityFramework.Repositories;
 using NForum.Tests.CommonMocks;
-using StackExchange.Profiling;
-using StackExchange.Profiling.EntityFramework6;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -38,6 +36,8 @@ namespace NForum.Tests.BasicStructure {
 		private void GetForumService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService) {
 			ICategoryRepository cateRepo = new CategoryRepository(uow);
 			IForumRepository forumRepo = new ForumRepository(uow);
+			ITopicRepository topicRepo = new TopicRepository(uow);
+			IPostRepository postRepo = new PostRepository(uow);
 
 			IState request = new DummyRequest();
 
@@ -60,7 +60,7 @@ namespace NForum.Tests.BasicStructure {
 			IPermissionService permService = new PermissionService();
 
 			categoryService = new CategoryService(userProvider, cateRepo, eventPublisher, logger, permService);
-			forumService = new ForumService(userProvider, cateRepo, forumRepo, eventPublisher, logger, permService);
+			forumService = new ForumService(userProvider, cateRepo, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService);
 		}
 
 		[TestMethod]
@@ -81,10 +81,10 @@ namespace NForum.Tests.BasicStructure {
 
 			forum = forumService.Read(forum.Id);
 
-			Assert.AreEqual(name, forum.Name);
-			Assert.AreEqual(description, forum.Description);
-			Assert.AreEqual(sortOrder, forum.SortOrder);
-			Assert.AreEqual(category.Id, forum.CategoryId);
+			forum.Name.Should().Be(name);
+			forum.Description.Should().Be(description);
+			forum.SortOrder.Should().Be(sortOrder);
+			forum.CategoryId.Should().Be(category.Id);
 		}
 
 		[TestMethod]
@@ -112,9 +112,9 @@ namespace NForum.Tests.BasicStructure {
 			forum.SortOrder = updatedSortOrder;
 			forum = forumService.Update(forum);
 
-			Assert.AreEqual(updatedName, forum.Name);
-			Assert.AreEqual(updatedDescription, forum.Description);
-			Assert.AreEqual(updatedSortOrder, forum.SortOrder);
+			forum.Name.Should().Be(updatedName);
+			forum.Description.Should().Be(updatedDescription);
+			forum.SortOrder.Should().Be(updatedSortOrder);
 		}
 	}
 }

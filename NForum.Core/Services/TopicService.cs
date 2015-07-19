@@ -13,6 +13,7 @@ namespace NForum.Core.Services {
 		protected readonly IUserProvider userProvider;
 		protected readonly ITopicRepository topicRepo;
 		protected readonly IForumRepository forumRepo;
+		protected readonly IPostRepository postRepo;
 		protected readonly ILogger logger;
 		protected readonly IEventPublisher eventPublisher;
 		protected readonly IForumConfigurationService confService;
@@ -21,6 +22,7 @@ namespace NForum.Core.Services {
 		public TopicService(IUserProvider userProvider,
 							IForumRepository forumRepo,
 							ITopicRepository topicRepo,
+							IPostRepository postRepo,
 							IEventPublisher eventPublisher,
 							ILogger logger,
 							IPermissionService permService,
@@ -33,6 +35,7 @@ namespace NForum.Core.Services {
 			this.logger = logger;
 			this.eventPublisher = eventPublisher;
 			this.permService = permService;
+			this.postRepo = postRepo;
 		}
 
 		/// <summary>
@@ -284,6 +287,17 @@ namespace NForum.Core.Services {
 				Topic = topic
 			});
 			this.logger.WriteFormat("Delete events in TopicService fired, Id: {0}", topic.Id);
+		}
+
+		public Post GetLatestPost(Topic topic) {
+			if (topic == null) {
+				throw new ArgumentNullException("topic");
+			}
+			User user = this.userProvider.CurrentUser;
+			if (this.permService.HasAccess(user, topic.Forum)) {
+				return this.postRepo.GetLatest(topic);
+			}
+			return null;
 		}
 	}
 }

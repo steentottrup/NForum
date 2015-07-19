@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NForum.Core;
 using NForum.Core.Abstractions;
 using NForum.Core.Abstractions.Data;
@@ -36,6 +37,7 @@ namespace NForum.Tests.BasicStructure {
 			ICategoryRepository cateRepo = new CategoryRepository(uow);
 			IForumRepository forumRepo = new ForumRepository(uow);
 			ITopicRepository topicRepo = new TopicRepository(uow);
+			IPostRepository postRepo = new PostRepository(uow);
 			IForumConfigurationRepository configRepo = new ForumConfigurationRepository(uow);
 
 			IState request = new DummyRequest();
@@ -60,8 +62,8 @@ namespace NForum.Tests.BasicStructure {
 			IForumConfigurationService confService = new ForumConfigurationService(configRepo);
 
 			categoryService = new CategoryService(userProvider, cateRepo, eventPublisher, logger, permService);
-			forumService = new ForumService(userProvider, cateRepo, forumRepo, eventPublisher, logger, permService);
-			topicService = new TopicService(userProvider, forumRepo, topicRepo, eventPublisher, logger, permService, confService);
+			forumService = new ForumService(userProvider, cateRepo, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService);
+			topicService = new TopicService(userProvider, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService, confService);
 		}
 
 		[TestMethod]
@@ -84,9 +86,9 @@ namespace NForum.Tests.BasicStructure {
 
 			topic = topicService.Read(topic.Id);
 
-			Assert.AreEqual(subject, topic.Subject);
-			Assert.AreEqual(body, topic.Message);
-			Assert.AreEqual(TopicType.Regular, topic.Type);
+			topic.Subject.Should().Be(subject);
+			topic.Message.Should().Be(body);
+			topic.Type.Should().Be(TopicType.Regular);
 		}
 
 		[TestMethod]
@@ -114,9 +116,9 @@ namespace NForum.Tests.BasicStructure {
 			topic.Message = updatedBody;
 			topic = topicService.Update(topic);
 
-			Assert.AreEqual(updatedSubject, topic.Subject);
-			Assert.AreEqual(updatedBody, topic.Message);
-			Assert.AreEqual(TopicType.Regular, topic.Type);
+			topic.Subject.Should().Be(updatedSubject);
+			topic.Message.Should().Be(updatedBody);
+			topic.Type.Should().Be(TopicType.Regular);
 		}
 
 		[TestMethod]
@@ -136,7 +138,7 @@ namespace NForum.Tests.BasicStructure {
 			topic.Type = TopicType.Sticky;
 			topic = topicService.Update(topic);
 
-			Assert.AreEqual(TopicType.Sticky, topic.Type);
+			topic.Type.Should().Be(TopicType.Sticky);
 		}
 	}
 }

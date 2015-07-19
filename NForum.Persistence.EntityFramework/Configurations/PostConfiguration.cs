@@ -11,6 +11,7 @@ namespace NForum.Persistence.EntityFramework.Configurations {
 		public PostConfiguration() {
 			this.ToTable(DatabaseConfiguration.Instance.GetTableName(typeof(Post)));
 			this.HasKey(p => p.Id);
+			this.Property(f => f.ForumId).IsRequired();
 			this.Property(f => f.TopicId).IsRequired();
 			this.Property(f => f.AuthorId).IsRequired();
 			this.Property(f => f.EditorId).IsRequired();
@@ -24,10 +25,17 @@ namespace NForum.Persistence.EntityFramework.Configurations {
 			this.HasRequired(x => x.Author);
 			this.HasRequired(x => x.Editor);
 			this.HasRequired(x => x.Topic);
+			this.HasRequired(x => x.Forum);
 			this.HasOptional(x => x.ParentPost);
 
+			// Index for fetching the latest post in a forum!
+			String indexName = "ForumId_Created_State";
+			this.Property(a => a.ForumId).HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute(indexName, 1)));
+			this.Property(a => a.Created).HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute(indexName, 2)));
+			this.Property(a => a.State).HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute(indexName, 3)));
+
 			// Index for fetching the latest post on topic!
-			String indexName = "TopicId_Created_State";
+			indexName = "TopicId_Created_State";
 			this.Property(a => a.TopicId).HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute(indexName, 1)));
 			this.Property(a => a.Created).HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute(indexName, 2)));
 			this.Property(a => a.State).HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute(indexName, 3)));

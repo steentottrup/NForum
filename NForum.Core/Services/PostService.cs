@@ -94,9 +94,6 @@ namespace NForum.Core.Services {
 				throw new PermissionException("post, create");
 			}
 
-
-
-
 			Post p = new Post {
 				Author = this.userProvider.CurrentUser,
 				AuthorId = this.userProvider.CurrentUser.Id,
@@ -106,6 +103,8 @@ namespace NForum.Core.Services {
 				EditorId = this.userProvider.CurrentUser.Id,
 				Topic = topic,
 				TopicId = topic.Id,
+				Forum = topic.Forum,
+				ForumId = topic.ForumId,
 				Message = message,
 				State = PostState.None,
 				Subject = subject

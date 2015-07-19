@@ -4,6 +4,7 @@ using System.Xml.Linq;
 namespace NForum.Core {
 
 	public abstract class BasePost {
+		public Int32 ForumId { get; set; }
 		public Int32 TopicId { get; set; }
 		public Int32 AuthorId { get; set; }
 		public Int32 EditorId { get; set; }

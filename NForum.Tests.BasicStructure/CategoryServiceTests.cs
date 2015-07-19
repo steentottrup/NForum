@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NForum.Core;
 using NForum.Core.Abstractions;
 using NForum.Core.Abstractions.Data;
@@ -73,9 +74,9 @@ namespace NForum.Tests.BasicStructure {
 
 			category = categoryService.Read(category.Id);
 
-			Assert.AreEqual(name, category.Name);
-			Assert.AreEqual(description, category.Description);
-			Assert.AreEqual(sortOrder, category.SortOrder);
+			category.Name.Should().Be(name);
+			category.Description.Should().Be(description);
+			category.SortOrder.Should().Be(sortOrder);
 		}
 
 		[TestMethod]
@@ -96,9 +97,9 @@ namespace NForum.Tests.BasicStructure {
 			category.SortOrder = updatedSortOrder;
 			category = categoryService.Update(category);
 
-			Assert.AreEqual(updatedName, category.Name);
-			Assert.AreEqual(updatedDescription, category.Description);
-			Assert.AreEqual(updatedSortOrder, category.SortOrder);
+			category.Name.Should().Be(updatedName);
+			category.Description.Should().Be(updatedDescription);
+			category.SortOrder.Should().Be(updatedSortOrder);
 		}
 	}
 }

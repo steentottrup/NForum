@@ -7,5 +7,6 @@ namespace NForum.Core.Abstractions.Data {
 		IEnumerable<Topic> Read(Forum forum, Int32 perPage, Int32 pageIndex);
 		IEnumerable<Topic> Read(Forum forum, Int32 perPage, Int32 pageIndex, Boolean includeQuarantined, Boolean includeDeleted);
 		Topic BySubject(String subject);
+		Topic GetLatest(IEnumerable<Forum> forums);
 	}
 }

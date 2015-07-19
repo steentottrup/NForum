@@ -52,5 +52,19 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 			}
 			return this.GetExpandedForum().FirstOrDefault(f => f.Id == forum.ParentForumId);
 		}
+
+		public IEnumerable<Forum> Children(Forum forum) {
+			return this.uow.Set<Forum>().Where(f => f.ParentForumId == forum.Id).ToList();
+		}
+
+		public IEnumerable<Forum> Descendants(Forum forum) {
+			IEnumerable<Forum> output = new List<Forum>();
+			IEnumerable<Forum> children = this.uow.Set<Forum>().Where(f => f.ParentForumId == forum.Id).ToList();
+			foreach (Forum child in children) {
+				output = output.Union(this.Descendants(child));
+			}
+
+			return output;
+		}
 	}
 }

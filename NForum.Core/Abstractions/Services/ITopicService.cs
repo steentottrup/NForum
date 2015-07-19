@@ -16,5 +16,7 @@ namespace NForum.Core.Abstractions.Services {
 		Topic Update(Topic topic, TopicState newState);
 
 		void Delete(Topic topic);
+
+		Post GetLatestPost(Topic topic);
 	}
 }

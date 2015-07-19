@@ -1,180 +1,286 @@
-﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using NForum.Core;
-//using NForum.Core.Abstractions;
-//using NForum.Core.Abstractions.Data;
-//using NForum.Core.Abstractions.Events;
-//using NForum.Core.Abstractions.Providers;
-//using NForum.Core.Abstractions.Services;
-//using NForum.Core.Events;
-//using NForum.Core.Services;
-//using NForum.Persistence.EntityFramework;
-//using NForum.Persistence.EntityFramework.Repositories;
-//using NForum.Tests.CommonMocks;
-//using System.Collections.Generic;
-//using System.Data.Common;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NForum.Core;
+using NForum.Core.Abstractions;
+using NForum.Core.Abstractions.Data;
+using NForum.Core.Abstractions.Events;
+using NForum.Core.Abstractions.Providers;
+using NForum.Core.Abstractions.Services;
+using NForum.Core.Events;
+using NForum.Core.Services;
+using NForum.Persistence.EntityFramework;
+using NForum.Persistence.EntityFramework.Repositories;
+using NForum.Tests.CommonMocks;
+using System.Collections.Generic;
+using System.Data.Common;
 
-//namespace NForum.Tests.BasicStructure {
+namespace NForum.Tests.BasicStructure {
 
-//	[TestClass]
-//	public class LatestPostTopicTests {
-//		private static UnitOfWork uow;
+	[TestClass]
+	public class LatestPostTopicTests {
+		private static UnitOfWork uow;
 
-//		[ClassInitialize]
-//		public static void SetUp(TestContext context) {
-//			DbConnection connection = Effort.DbConnectionFactory.CreateTransient();
-//			uow = new UnitOfWork(connection);
-//		}
+		[ClassInitialize]
+		public static void SetUp(TestContext context) {
+			DbConnection connection = Effort.DbConnectionFactory.CreateTransient();
+			uow = new UnitOfWork(connection);
+		}
 
-//		[ClassCleanup]
-//		public static void TearDown() {
-//			uow.Dispose();
-//			uow = null;
-//		}
+		[ClassCleanup]
+		public static void TearDown() {
+			uow.Dispose();
+			uow = null;
+		}
 
-//		private void GetTopicService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService, out ITopicService topicService, out IPostService postService) {
-//			ICategoryRepository cateRepo = new CategoryRepository(uow);
-//			IForumRepository forumRepo = new ForumRepository(uow);
-//			ITopicRepository topicRepo = new TopicRepository(uow);
-//			IPostRepository postRepo = new PostRepository(uow);
-//			IForumConfigurationRepository confRepo = new ForumConfigurationRepository(uow);
+		private void GetTopicService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService, out ITopicService topicService, out IPostService postService) {
+			ICategoryRepository cateRepo = new CategoryRepository(uow);
+			IForumRepository forumRepo = new ForumRepository(uow);
+			ITopicRepository topicRepo = new TopicRepository(uow);
+			IPostRepository postRepo = new PostRepository(uow);
+			IForumConfigurationRepository confRepo = new ForumConfigurationRepository(uow);
 
-//			IState request = new DummyRequest();
+			IState request = new DummyRequest();
 
-//			ILogger logger = new ConsoleLogger();
+			ILogger logger = new ConsoleLogger();
 
-//			IUserRepository userRepo = new UserRepository(uow);
-//			User user = userRepo.Create(new User {
-//				Name = "D. Ummy",
-//				ProviderId = "12345678",
-//				FullName = "Mr. Doh Ummy",
-//				EmailAddress = "d@umm.y",
-//				Culture = "th-TH",
-//				TimeZone = "GMT Standard Time"
-//			});
+			IUserRepository userRepo = new UserRepository(uow);
+			User user = userRepo.Create(new User {
+				Name = "D. Ummy",
+				ProviderId = "12345678",
+				FullName = "Mr. Doh Ummy",
+				EmailAddress = "d@umm.y",
+				Culture = "th-TH",
+				TimeZone = "GMT Standard Time"
+			});
 
-//			List<IEventSubscriber> subscribers = new List<IEventSubscriber>();
-//			// TODO:
-//			//subscribers.Add(new ForumLatestEventSubscriber(forumRepo, topicRepo, postRepo, logger));
+			List<IEventSubscriber> subscribers = new List<IEventSubscriber>();
 
-//			IEventPublisher eventPublisher = new EventPublisher(subscribers, logger, request);
-//			IUserProvider userProvider = new DummyUserProvider(user);
-//			IPermissionService permService = new PermissionService();
+			IEventPublisher eventPublisher = new EventPublisher(subscribers, logger, request);
+			IUserProvider userProvider = new DummyUserProvider(user);
+			IPermissionService permService = new PermissionService();
 
-//			IForumConfigurationService confService = new ForumConfigurationService(confRepo);
+			IForumConfigurationService confService = new ForumConfigurationService(confRepo);
 
-//			categoryService = new CategoryService(userProvider, cateRepo, eventPublisher, logger, permService);
-//			forumService = new ForumService(userProvider, cateRepo, forumRepo, eventPublisher, logger, permService);
-//			topicService = new TopicService(userProvider, forumRepo, topicRepo, eventPublisher, logger, permService, confService);
-//			postService = new PostService(userProvider, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService, confService);
-//		}
+			categoryService = new CategoryService(userProvider, cateRepo, eventPublisher, logger, permService);
+			forumService = new ForumService(userProvider, cateRepo, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService);
+			topicService = new TopicService(userProvider, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService, confService);
+			postService = new PostService(userProvider, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService, confService);
+		}
 
-//		[TestMethod]
-//		public void LatestTopics() {
-//			ICategoryService categoryService;
-//			IForumService forumService;
-//			ITopicService topicService;
-//			IPostService postService;
-//			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
+		/// <summary>
+		/// Create a topic in a forum, check it's returned as the latest topic on the forum!
+		/// </summary>
+		[TestMethod]
+		public void LatestTopic1() {
+			ICategoryService categoryService;
+			IForumService forumService;
+			ITopicService topicService;
+			IPostService postService;
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
 
-//			Category category = categoryService.Create("Latest test category", "meh", 100);
-//			Forum forum = forumService.Create(category, "Latest test forum", "meh", 101);
+			Category category = categoryService.Create("Latest test category", "meh", 100);
+			Forum forum = forumService.Create(category, "Latest test forum", "meh", 101);
 
-//			Topic first = topicService.Create(forum, "The first one", "bla bla bla");
-//			Assert.AreEqual(first.Id, forum.LatestTopicId, "first post latest");
+			Topic first = topicService.Create(forum, "The first one", "bla bla bla");
+			Topic latest = forumService.GetLatestTopic(forum, true);
 
-//			Topic second = topicService.Create(forum, "The second one", "bla bla bla");
-//			Assert.AreEqual(second.Id, forum.LatestTopicId, "second post latest");
+			latest.Should().NotBeNull("a topic has been created");
+			latest.Id.Should().Be(first.Id, "is the first topic");
+		}
 
-//			topicService.Update(second, TopicState.Quarantined);
-//			Assert.AreEqual(first.Id, forum.LatestTopicId, "first post latest again");
+		/// <summary>
+		/// Create 2 topics and make sure the last created, will be returned as the latest
+		/// </summary>
+		[TestMethod]
+		public void LatestTopic2() {
+			ICategoryService categoryService;
+			IForumService forumService;
+			ITopicService topicService;
+			IPostService postService;
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
 
-//			topicService.Update(second, TopicState.None);
-//			Assert.AreEqual(second.Id, forum.LatestTopicId, "second post latest again");
-//		}
+			Category category = categoryService.Create("Latest test category", "meh", 100);
+			Forum forum = forumService.Create(category, "Latest test forum", "meh", 101);
 
-//		[TestMethod]
-//		public void LatestPosts() {
-//			using (UnitOfWork uow = new UnitOfWork()) {
-//				ICategoryService categoryService;
-//				IForumService forumService;
-//				ITopicService topicService;
-//				IPostService postService;
-//				this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
+			Topic first = topicService.Create(forum, "The first one", "bla bla bla");
 
-//				Category category = categoryService.Create("Latest test category part 2", "meh", 100);
-//				Forum forum = forumService.Create(category, "Latest test forum part 2", "meh", 101);
+			Topic second = topicService.Create(forum, "The second one", "bla bla bla");
+			Topic latest = forumService.GetLatestTopic(forum, true);
 
-//				Topic first = topicService.Create(forum, "The first one part 2", "bla bla bla");
-//				Assert.AreEqual(first.Id, forum.LatestTopicId, "first topic is latest on forum");
-//				Assert.AreEqual(null, first.LatestPost, "no latest post on topic");
-//				Assert.AreEqual(null, forum.LatestPost, "no latest post on forum");
+			latest.Should().NotBeNull("2 topics has been created");
+			latest.Id.Should().Be(second.Id, "the second topic should be the latest");
+		}
 
-//				Topic second = topicService.Create(forum, "The second one part 2", "bla bla bla");
-//				Assert.AreEqual(second.Id, forum.LatestTopicId);
-//				Assert.AreEqual(null, second.LatestPost);
-//				Assert.AreEqual(null, forum.LatestPost);
+		/// <summary>
+		/// Create 2 topics and make sure the first one is the latest if the second is marked as not visible (quarantined).
+		/// </summary>
+		[TestMethod]
+		public void LatestTopic3() {
+			ICategoryService categoryService;
+			IForumService forumService;
+			ITopicService topicService;
+			IPostService postService;
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
 
-//				Post newPost1 = postService.Create(first, "no 1", "bla bla");
-//				Assert.AreEqual(null, forum.LatestTopic);
-//				Assert.AreEqual(newPost1.Id, first.LatestPostId);
-//				Assert.AreEqual(newPost1.Id, forum.LatestPostId);
+			Category category = categoryService.Create("Latest test category", "meh", 100);
+			Forum forum = forumService.Create(category, "Latest test forum", "meh", 101);
 
-//				Post newPost2 = postService.Create(second, "no 2", "bla bla");
-//				Assert.AreEqual(null, forum.LatestTopic);
-//				Assert.AreEqual(newPost2.Id, second.LatestPostId);
-//				Assert.AreEqual(newPost2.Id, forum.LatestPostId);
+			Topic first = topicService.Create(forum, "The first one", "bla bla bla");
+			Topic second = topicService.Create(forum, "The second one", "bla bla bla");
+			Topic latest = forumService.GetLatestTopic(forum, true);
 
-//				Post newPost3 = postService.Create(second, "no 3", "bla bla");
-//				Assert.AreEqual(null, forum.LatestTopic);
-//				Assert.AreEqual(newPost3.Id, second.LatestPostId);
-//				Assert.AreEqual(newPost3.Id, forum.LatestPostId);
+			latest.Should().NotBeNull("2 topics are visible");
+			latest.Id.Should().Be(second.Id, "the second topic is visible");
 
-//				postService.Update(newPost1, PostState.Quarantined);
-//				Assert.AreEqual(null, forum.LatestTopic);
-//				Assert.AreEqual(newPost3.Id, second.LatestPostId);
-//				Assert.AreEqual(newPost3.Id, forum.LatestPostId);
+			topicService.Update(second, TopicState.Quarantined);
+			latest = forumService.GetLatestTopic(forum, true);
 
-//				postService.Update(newPost3, PostState.Quarantined);
-//				Assert.AreEqual(null, forum.LatestTopic);
-//				Assert.AreEqual(newPost2.Id, second.LatestPostId);
-//				Assert.AreEqual(newPost2.Id, forum.LatestPostId);
-//			}
-//		}
+			latest.Should().NotBeNull("1 topic is still visible");
+			latest.Id.Should().Be(first.Id, "the second topic is no longer visible");
+		}
 
-//		[TestMethod]
-//		public void ParentForumLatestTopic() {
-//			using (UnitOfWork uow = new UnitOfWork()) {
-//				ICategoryService categoryService;
-//				IForumService forumService;
-//				ITopicService topicService;
-//				IPostService postService;
-//				this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
+		/// <summary>
+		/// Create 2 topics and make sure the second one is the latest after making it invisible and visible again
+		/// </summary>
+		[TestMethod]
+		public void LatestTopic4() {
+			ICategoryService categoryService;
+			IForumService forumService;
+			ITopicService topicService;
+			IPostService postService;
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
 
-//				Category category = categoryService.Create("Latest test category child forum version", "meh", 100);
-//				Forum forum1 = forumService.Create(category, "Latest test forum child forum version", "meh", 101);
-//				Forum forumChild = forumService.Create(forum1, "Latest test forum child forum version - child", "meh", 101);
+			Category category = categoryService.Create("Latest test category", "meh", 100);
+			Forum forum = forumService.Create(category, "Latest test forum", "meh", 101);
 
-//				// latest on both
-//				Topic first = topicService.Create(forumChild, "The first one child forum version", "bla bla bla");
-//				Thread.Sleep(10);
-//				Assert.AreEqual(first.Id, forumChild.LatestTopicId, "first topic is latest on forum");
-//				Assert.AreEqual(first.Id, forum1.LatestTopicId, "first topic is latest on forum");
+			Topic first = topicService.Create(forum, "The first one", "bla bla bla");
+			Topic second = topicService.Create(forum, "The second one", "bla bla bla");
+			Topic latest = forumService.GetLatestTopic(forum, true);
 
-//				// only latest on forum1
-//				Topic second = topicService.Create(forum1, "The second one child forum version", "bla bla bla");
-//				Thread.Sleep(10);
-//				Assert.AreEqual(second.Id, forum1.LatestTopicId, "second topic is latest on forum");
-//				Assert.AreEqual(first.Id, forumChild.LatestTopicId, "first topic is latest on forum");
+			topicService.Update(second, TopicState.Quarantined);
+			latest = forumService.GetLatestTopic(forum, true);
 
-//				// latest on both
-//				Topic third = topicService.Create(forumChild, "The third one child forum version", "bla bla bla");
-//				Assert.AreEqual(third.Id, forumChild.LatestTopicId, "thirdtopic is latest on forum");
-//				Assert.AreEqual(third.Id, forum1.LatestTopicId, "third topic is latest on forum");
+			latest.Should().NotBeNull("1 topic is still visible");
+			latest.Id.Should().Be(first.Id, "the second topic is no longer visible");
 
-//				topicService.Update(third, TopicState.Quarantined);
-//				Assert.AreEqual(second.Id, forum1.LatestTopicId, "second topic is latest on forum");
-//				Assert.AreEqual(first.Id, forumChild.LatestTopicId, "first topic is latest on forum");
-//			}
-//		}
-//	}
-//}
+			topicService.Update(second, TopicState.None);
+			latest = forumService.GetLatestTopic(forum, true);
+
+			latest.Should().NotBeNull("both topics are visible");
+			latest.Id.Should().Be(second.Id, "the second topic is visible");
+		}
+
+		[TestMethod]
+		public void LatestPosts() {
+			ICategoryService categoryService;
+			IForumService forumService;
+			ITopicService topicService;
+			IPostService postService;
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
+
+			Category category = categoryService.Create("Latest test category part 2", "meh", 100);
+			Forum forum = forumService.Create(category, "Latest test forum part 2", "meh", 101);
+
+			Topic first = topicService.Create(forum, "The first one part 2", "bla bla bla");
+			Topic latestTopic = forumService.GetLatestTopic(forum, true);
+			Assert.IsNotNull(latestTopic, "Found a latest topic");
+			Assert.AreEqual(first.Id, latestTopic.Id, "first topic is latest on forum");
+			Post latestPost = topicService.GetLatestPost(first);
+			Assert.IsNull(latestPost, "no latest post on topic");
+			latestPost = forumService.GetLatestPost(forum, true);
+			Assert.IsNull(latestPost, "no latest post on forum");
+
+			Topic second = topicService.Create(forum, "The second one part 2", "bla bla bla");
+			latestTopic = forumService.GetLatestTopic(forum, true);
+			Assert.IsNotNull(latestTopic, "Found a latest topic");
+			Assert.AreEqual(second.Id, latestTopic.Id);
+			latestPost = topicService.GetLatestPost(first);
+			Assert.IsNull(latestPost, "no latest post on topic");
+			latestPost = forumService.GetLatestPost(forum, true);
+			Assert.IsNull(latestPost, "no latest post on forum");
+
+			Post newPost1 = postService.Create(first, "no 1", "bla bla");
+			latestTopic = forumService.GetLatestTopic(forum, true);
+			latestPost = topicService.GetLatestPost(first);
+			Post latestPost2 = forumService.GetLatestPost(forum, true);
+
+			Assert.IsNotNull(latestTopic, "Found a latest topic");
+			Assert.IsNotNull(latestPost, "Found a latest post");
+			Assert.IsNotNull(latestPost2, "Found a latest post");
+			Assert.AreEqual(newPost1.Id, latestPost.Id);
+			Assert.IsTrue(latestPost.Created > latestTopic.Created);
+
+			Post newPost2 = postService.Create(second, "no 2", "bla bla");
+			latestTopic = forumService.GetLatestTopic(forum, true);
+			latestPost = topicService.GetLatestPost(first);
+			latestPost2 = forumService.GetLatestPost(forum, true);
+
+			Assert.IsNotNull(latestTopic, "Found a latest topic");
+			Assert.IsNotNull(latestPost, "Found a latest post");
+			Assert.IsNotNull(latestPost2, "Found a latest post");
+			Assert.AreEqual(newPost2.Id, latestPost.Id);
+			Assert.IsTrue(latestPost.Created > latestTopic.Created);
+
+			Post newPost3 = postService.Create(second, "no 3", "bla bla");
+			latestPost = topicService.GetLatestPost(first);
+			latestPost2 = forumService.GetLatestPost(forum, true);
+
+			Assert.IsNotNull(latestPost, "Found a latest post");
+			Assert.IsNotNull(latestPost2, "Found a latest post");
+			Assert.AreEqual(newPost3.Id, latestPost.Id);
+			Assert.AreEqual(latestPost2.Id, latestPost.Id);
+
+			postService.Update(newPost1, PostState.Quarantined);
+			latestPost = topicService.GetLatestPost(first);
+			latestPost2 = forumService.GetLatestPost(forum, true);
+
+			Assert.IsNotNull(latestPost, "Found a latest post");
+			Assert.IsNotNull(latestPost2, "Found a latest post");
+			Assert.AreEqual(newPost3.Id, latestPost.Id);
+
+			postService.Update(newPost3, PostState.Quarantined);
+			latestPost = topicService.GetLatestPost(first);
+			latestPost2 = forumService.GetLatestPost(forum, true);
+
+			Assert.IsNotNull(latestPost, "Found a latest post");
+			Assert.IsNotNull(latestPost2, "Found a latest post");
+			Assert.AreEqual(newPost2.Id, latestPost.Id);
+		}
+
+		//		[TestMethod]
+		//		public void ParentForumLatestTopic() {
+		//			using (UnitOfWork uow = new UnitOfWork()) {
+		//				ICategoryService categoryService;
+		//				IForumService forumService;
+		//				ITopicService topicService;
+		//				IPostService postService;
+		//				this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
+
+		//				Category category = categoryService.Create("Latest test category child forum version", "meh", 100);
+		//				Forum forum1 = forumService.Create(category, "Latest test forum child forum version", "meh", 101);
+		//				Forum forumChild = forumService.Create(forum1, "Latest test forum child forum version - child", "meh", 101);
+
+		//				// latest on both
+		//				Topic first = topicService.Create(forumChild, "The first one child forum version", "bla bla bla");
+		//				Thread.Sleep(10);
+		//				Assert.AreEqual(first.Id, forumChild.LatestTopicId, "first topic is latest on forum");
+		//				Assert.AreEqual(first.Id, forum1.LatestTopicId, "first topic is latest on forum");
+
+		//				// only latest on forum1
+		//				Topic second = topicService.Create(forum1, "The second one child forum version", "bla bla bla");
+		//				Thread.Sleep(10);
+		//				Assert.AreEqual(second.Id, forum1.LatestTopicId, "second topic is latest on forum");
+		//				Assert.AreEqual(first.Id, forumChild.LatestTopicId, "first topic is latest on forum");
+
+		//				// latest on both
+		//				Topic third = topicService.Create(forumChild, "The third one child forum version", "bla bla bla");
+		//				Assert.AreEqual(third.Id, forumChild.LatestTopicId, "thirdtopic is latest on forum");
+		//				Assert.AreEqual(third.Id, forum1.LatestTopicId, "third topic is latest on forum");
+
+		//				topicService.Update(third, TopicState.Quarantined);
+		//				Assert.AreEqual(second.Id, forum1.LatestTopicId, "second topic is latest on forum");
+		//				Assert.AreEqual(first.Id, forumChild.LatestTopicId, "first topic is latest on forum");
+		//			}
+		//		}
+	}
+}
