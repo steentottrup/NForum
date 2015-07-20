@@ -218,6 +218,58 @@ namespace NForum.Tests.BasicStructure {
 		}
 
 		[TestMethod]
+		public void LatestPost3() {
+			ICategoryService categoryService;
+			IForumService forumService;
+			ITopicService topicService;
+			IPostService postService;
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
+
+			Category category = categoryService.Create("Latest test category part 2", "meh", 100);
+			Forum forum = forumService.Create(category, "Latest test forum part 2", "meh", 101);
+
+			Topic first = topicService.Create(forum, "The first one part 2", "bla bla bla");
+
+			Post firstPost = postService.Create(first, "My first post", "The body!");
+			// TODO: Hm...
+			Post secondPost = postService.Create(first, "My second post", "The body!");
+
+			secondPost = postService.Update(secondPost, PostState.Quarantined);
+			
+			Post latestPost = topicService.GetLatestPost(first);
+
+			latestPost.Should().NotBeNull("becase 2 posts was created on the topic, one visible");
+			latestPost.Id.Should().Be(firstPost.Id, "the last post created is no longer visible");
+		}
+
+		[TestMethod]
+		public void LatestPost4() {
+			ICategoryService categoryService;
+			IForumService forumService;
+			ITopicService topicService;
+			IPostService postService;
+			this.GetTopicService(uow, out categoryService, out forumService, out topicService, out postService);
+
+			Category category = categoryService.Create("Latest test category part 2", "meh", 100);
+			Forum forum = forumService.Create(category, "Latest test forum part 2", "meh", 101);
+
+			Topic first = topicService.Create(forum, "The first one part 2", "bla bla bla");
+
+			Post firstPost = postService.Create(first, "My first post", "The body!");
+			// TODO: Hm...
+			Post secondPost = postService.Create(first, "My second post", "The body!");
+
+			secondPost = postService.Update(secondPost, PostState.Quarantined);
+
+			secondPost = postService.Update(secondPost, PostState.None);
+
+			Post latestPost = topicService.GetLatestPost(first);
+
+			latestPost.Should().NotBeNull("becase 2 posts was created on the topic, one visible");
+			latestPost.Id.Should().Be(secondPost.Id, "the last post created is again visible");
+		}
+
+		[TestMethod]
 		public void LatestPosts() {
 			return;
 
