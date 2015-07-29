@@ -7,6 +7,9 @@ using System.Xml.Linq;
 namespace NForum.Core {
 
 	public static class CustomPropertyHolderExtensions {
+		private const String propertyNodeName = "CustomProperty";
+		private const String propertyName = "Name";
+		private const String propertyType = "Type";
 
 		private static void LoadProperties(ICustomPropertyHolder holder) {
 			if (holder.CustomData == null) {
@@ -17,11 +20,6 @@ namespace NForum.Core {
 					holder.CustomData = new XDocument(new XElement("CustomProperties"));
 				}
 			}
-		}
-
-		public static Dictionary<String, String> GetCustomProperties(this ICustomPropertyHolder holder) {
-			LoadProperties(holder);
-			return holder.CustomData.Root.Elements("CustomProperty").ToDictionary(e => e.Attribute("Name").Value, e => e.Value, StringComparer.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -62,7 +60,6 @@ namespace NForum.Core {
 		public static Boolean TryGetCustomPropertyDateTime(this ICustomPropertyHolder holder, String key, out DateTime value) {
 			String v = holder.GetCustomPropertyString(key);
 
-			DateTime output;
 			if (DateTime.TryParse(v, out value)) {
 				value = new DateTime(value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, value.Millisecond, DateTimeKind.Utc);
 				return true;
@@ -98,8 +95,8 @@ namespace NForum.Core {
 
 		public static String GetCustomPropertyString(this ICustomPropertyHolder holder, String key) {
 			LoadProperties(holder);
-			if (holder.CustomData.Elements("CustomProperty").Any()) {
-				XElement property = holder.CustomData.Root.Elements("CustomProperty").Where(p => p.Attribute("Name") != null && p.Attribute("Name").Value == key).FirstOrDefault();
+			if (holder.CustomData.Elements(propertyNodeName).Any()) {
+				XElement property = holder.CustomData.Root.Elements(propertyNodeName).Where(p => p.Attribute(propertyName) != null && p.Attribute(propertyName).Value == key).FirstOrDefault();
 				if (property != null) {
 					return property.Value;
 				}
@@ -109,31 +106,36 @@ namespace NForum.Core {
 
 		public static Boolean CustomPropertyExists(this ICustomPropertyHolder holder, String key) {
 			LoadProperties(holder);
-			return holder.CustomData.Root.Elements("CustomProperty").Any() &&
-					holder.CustomData.Root.Elements("CustomProperty").Any(p => p.Attribute("Name") != null && p.Attribute("Name").Value == key);
+			return holder.CustomData.Root.Elements(propertyNodeName).Any() &&
+					holder.CustomData.Root.Elements(propertyNodeName).Any(p => p.Attribute(propertyName) != null && p.Attribute(propertyName).Value == key);
 		}
 
 		public static void SetCustomProperty(this ICustomPropertyHolder holder, String key, Boolean value) {
-			holder.SetCustomProperty(key, value.ToString());
+			holder.SetCustomProperty(key, value.ToString(), "bool");
 		}
 
 		public static void SetCustomProperty(this ICustomPropertyHolder holder, String key, DateTime value) {
-			holder.SetCustomProperty(key, value.ToUniversalTime().ToString("yyyyMMdd hh:mm:ss"));
+			holder.SetCustomProperty(key, value.ToUniversalTime().ToString("yyyyMMdd hh:mm:ss"), "datetime");
 		}
 
 		public static void SetCustomProperty(this ICustomPropertyHolder holder, String key, Int32 value) {
-			holder.SetCustomProperty(key, value.ToString());
+			holder.SetCustomProperty(key, value.ToString(), "int");
 		}
 
 		public static void SetCustomProperty(this ICustomPropertyHolder holder, String key, String value) {
+			holder.SetCustomProperty(key, value.ToString(), "string");
+		}
+
+		private static void SetCustomProperty(this ICustomPropertyHolder holder, String key, String value, String type) {
 			LoadProperties(holder);
-			if (holder.CustomData.Root.Elements("CustomProperty").Any()) {
-				XElement property = holder.CustomData.Root.Elements("CustomProperty").Where(p => p.Attribute("Name") != null && p.Attribute("Name").Value == key).FirstOrDefault();
+			if (holder.CustomData.Root.Elements(propertyNodeName).Any()) {
+				XElement property = holder.CustomData.Root.Elements(propertyNodeName).Where(p => p.Attribute(propertyName) != null && p.Attribute(propertyName).Value == key).FirstOrDefault();
 				if (property == null) {
-					holder.CustomData.Root.Add(new XElement("CustomProperty", new XAttribute("Name", key), new XCData(value)));
+					holder.CustomData.Root.Add(new XElement(propertyNodeName, new XAttribute(propertyName, key), new XAttribute(propertyType, type), new XCData(value)));
 				}
 				else {
 					property.Value = value;
+					property.Attribute(propertyType).Value = type;
 				}
 
 				holder.CustomProperties = holder.CustomData.ToString();
@@ -142,8 +144,8 @@ namespace NForum.Core {
 
 		public static void RemoveProperty(this ICustomPropertyHolder holder, String key) {
 			LoadProperties(holder);
-			if (holder.CustomData.Root.Elements("CustomProperty").Any()) {
-				XElement property = holder.CustomData.Root.Elements("CustomProperty").Where(p => p.Attribute("Name") != null && p.Attribute("Name").Value == key).FirstOrDefault();
+			if (holder.CustomData.Root.Elements(propertyNodeName).Any()) {
+				XElement property = holder.CustomData.Root.Elements(propertyNodeName).Where(p => p.Attribute(propertyName) != null && p.Attribute(propertyName).Value == key).FirstOrDefault();
 				if (property != null) {
 					property.Remove();
 				}
@@ -152,9 +154,32 @@ namespace NForum.Core {
 			}
 		}
 
-		public static Dictionary<String, Object> CustomPropertiesToDictionary(this ICustomPropertyHolder holder) {
-			// TODO:
-			return new Dictionary<string, object>();
+		public static Dictionary<String, Object> GetCustomProperties(this ICustomPropertyHolder holder) {
+			Dictionary<String, Object> output = new Dictionary<String, Object>();
+			LoadProperties(holder);
+			foreach (XElement property in holder.CustomData.Root.Elements(propertyNodeName)) {
+				String key = property.Attribute(propertyName).Value;
+				String type = property.Attribute(propertyType).Value;
+				switch (type) {
+					case "int":
+						output.Add(key, holder.GetCustomPropertyInt32(key));
+						break;
+					case "bool":
+						output.Add(key, holder.GetCustomPropertyBoolean(key));
+						break;
+					case "string":
+						output.Add(key, holder.GetCustomPropertyString(key));
+						break;
+					case "datetime":
+						output.Add(key, holder.GetCustomPropertyDateTime(key));
+						break;
+					default:
+						// TODO:
+						throw new ApplicationException(String.Format("Unknown property type '{0}'", type));
+				}
+			}
+
+			return output;
 		}
 	}
 }
