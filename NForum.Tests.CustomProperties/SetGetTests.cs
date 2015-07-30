@@ -19,7 +19,6 @@ namespace NForum.Tests.CustomProperties {
 
 	[TestClass]
 	public class SetGetTests {
-
 		private static UnitOfWork uow;
 
 		[ClassInitialize]
