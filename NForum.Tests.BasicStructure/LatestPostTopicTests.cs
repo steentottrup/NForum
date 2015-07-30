@@ -272,7 +272,7 @@ namespace NForum.Tests.BasicStructure {
 
 			Post latestPost = topicService.GetLatestPost(first);
 
-			latestPost.Should().NotBeNull("becase 2 posts was created on the topic, both visible");
+			latestPost.Should().NotBeNull("because 2 posts was created on the topic, both visible");
 			latestPost.Id.Should().Be(secondPost.Id, "the last post created is again visible");
 		}
 

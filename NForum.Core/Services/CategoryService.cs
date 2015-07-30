@@ -36,9 +36,10 @@ namespace NForum.Core.Services {
 		/// <param name="name">The name of the category.</param>
 		/// <param name="description">The description of the category.</param>
 		/// <param name="sortOrder">The sort order/placement of the category.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The newly created category.</returns>
 		/// <exception cref="System.ArgumentNullException">If the provided name is null/empty.</exception>
-		public Category Create(String name, String description, Int32 sortOrder) {
+		public Category Create(String name, String description, Int32 sortOrder, IDictionary<String, Object> customProperties) {
 			if (String.IsNullOrWhiteSpace(name)) {
 				throw new ArgumentNullException("name");
 			}
@@ -53,6 +54,7 @@ namespace NForum.Core.Services {
 				SortOrder = sortOrder,
 				Description = description
 			};
+			c.SetCustomProperties(customProperties);
 
 			this.categoryRepo.Create(c);
 			this.logger.WriteFormat("Category created in CategoryService, Id: {0}", c.Id);
@@ -97,7 +99,7 @@ namespace NForum.Core.Services {
 				}
 			}
 
-			return category;
+			return category.Clone() as Category;
 		}
 
 		/// <summary>

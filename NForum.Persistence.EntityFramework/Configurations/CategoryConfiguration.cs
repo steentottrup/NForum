@@ -15,7 +15,7 @@ namespace NForum.Persistence.EntityFramework.Configurations {
 			this.Property(c => c.CustomProperties).HasMaxLength(Int32.MaxValue);
 			this.Ignore(b => b.CustomData);
 			// A category can have many forums
-			this.HasMany(c => c.Forums).WithRequired(f => f.Category);
+			//this.HasMany(c => c.Forums).WithRequired(f => f.Category);
 		}
 	}
 }

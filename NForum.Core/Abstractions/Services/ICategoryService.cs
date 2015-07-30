@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NForum.Core.Abstractions.Services {
 
 	public interface ICategoryService {
-		Category Create(String name, String description, Int32 sortOrder);
+		Category Create(String name, String description, Int32 sortOrder, IDictionary<String, Object> customProperties = null);
 
 		Category Read(Int32 id);
 		Category Read(String name);

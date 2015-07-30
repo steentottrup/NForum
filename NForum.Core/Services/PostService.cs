@@ -44,10 +44,11 @@ namespace NForum.Core.Services {
 		/// <param name="topic">The topic to create the new post in.</param>
 		/// <param name="subject">The subject of the new post.</param>
 		/// <param name="message">The message of the new post.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The new post.</returns>
 		/// <exception cref="System.ArgumentNullException">Topic, subject and message are all required (not null) arguments.</exception>
-		public Post Create(Topic topic, String subject, String message) {
-			return this.Create(topic, null, subject, message);
+		public Post Create(Topic topic, String subject, String message, IDictionary<String, Object> customProperties = null) {
+			return this.Create(topic, null, subject, message, customProperties);
 		}
 
 		/// <summary>
@@ -56,15 +57,16 @@ namespace NForum.Core.Services {
 		/// <param name="post">The post to create the new post in reply to.</param>
 		/// <param name="subject">The subject of the new post.</param>
 		/// <param name="message">The message of the new post.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The new post.</returns>
 		/// <exception cref="System.ArgumentNullException">Post, subject and message are all required (not null) arguments.</exception>
-		public Post Create(Post post, String subject, String message) {
+		public Post Create(Post post, String subject, String message, IDictionary<String, Object> customProperties = null) {
 			// Let's get the topic from the data-storage!
 			Topic parentTopic = this.topicRepo.Read(post.TopicId);
-			return this.Create(parentTopic, post, subject, message);
+			return this.Create(parentTopic, post, subject, message, customProperties);
 		}
 
-		protected Post Create(Topic topic, Post post, String subject, String message) {
+		protected Post Create(Topic topic, Post post, String subject, String message, IDictionary<String, Object> customProperties) {
 			if (topic == null) {
 				throw new ArgumentNullException("topic");
 			}
@@ -109,7 +111,7 @@ namespace NForum.Core.Services {
 				State = PostState.None,
 				Subject = subject
 			};
-			// TODO: Custom properties?
+			p.SetCustomProperties(customProperties);
 
 			// Was a parent post given?
 			if (post != null) {
@@ -268,7 +270,7 @@ namespace NForum.Core.Services {
 		/// </summary>
 		/// <param name="post">The post to delete.</param>
 		public void Delete(Post post) {
-			if (post== null) {
+			if (post == null) {
 				throw new ArgumentNullException("post");
 			}
 			this.logger.WriteFormat("Delete called on PostService, Id: {0}", post.Id);

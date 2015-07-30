@@ -45,9 +45,10 @@ namespace NForum.Core.Services {
 		/// <param name="category">The parent category of the forum.</param>
 		/// <param name="name">The name of the forum.</param>
 		/// <param name="sortOrder">The sort order/placement of the forum.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The newly created forum.</returns>
-		public Forum Create(Category category, String name, Int32 sortOrder) {
-			return this.Create(category, name, String.Empty, sortOrder);
+		public Forum Create(Category category, String name, Int32 sortOrder, IDictionary<String, Object> customProperties = null) {
+			return this.Create(category, name, String.Empty, sortOrder, customProperties);
 		}
 
 		/// <summary>
@@ -57,9 +58,10 @@ namespace NForum.Core.Services {
 		/// <param name="name">The name of the forum.</param>
 		/// <param name="description">The description of the forum.</param>
 		/// <param name="sortOrder">The sort order/placement of the forum.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The newly created forum.</returns>
-		public Forum Create(Category category, String name, String description, Int32 sortOrder) {
-			return this.Create(category, null, name, description, sortOrder);
+		public Forum Create(Category category, String name, String description, Int32 sortOrder, IDictionary<String, Object> customProperties = null) {
+			return this.Create(category, null, name, description, sortOrder, customProperties);
 		}
 
 		/// <summary>
@@ -70,9 +72,10 @@ namespace NForum.Core.Services {
 		/// <param name="name">The name of the forum.</param>
 		/// <param name="description">The description of the forum.</param>
 		/// <param name="sortOrder">The sort order/placement of the forum.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The newly created forum.</returns>
 		/// <exception cref="System.ArgumentNullException">If the provided category is null.</exception>
-		public Forum Create(Category category, Forum parentForum, String name, String description, Int32 sortOrder) {
+		public Forum Create(Category category, Forum parentForum, String name, String description, Int32 sortOrder, IDictionary<String, Object> customProperties = null) {
 			if (category == null) {
 				throw new ArgumentNullException("category");
 			}
@@ -93,6 +96,8 @@ namespace NForum.Core.Services {
 				Description = description,
 				CategoryId = category.Id
 			};
+			f.SetCustomProperties(customProperties);
+
 			if (parentForum != null) {
 				parentForum = this.forumRepo.Read(parentForum.Id);
 				if (parentForum == null) {
@@ -100,7 +105,6 @@ namespace NForum.Core.Services {
 				}
 				f.ParentForumId = parentForum.Id;
 			}
-			// TODO: Custom properties?
 
 			this.forumRepo.Create(f);
 			this.logger.WriteFormat("Forum created in ForumService, Id: {0}", f.Id);
@@ -118,9 +122,10 @@ namespace NForum.Core.Services {
 		/// <param name="parentForum">The parent forum of the forum.</param>
 		/// <param name="name">The name of the forum.</param>
 		/// <param name="sortOrder">The sort order/placement of the forum.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The newly created forum.</returns>
-		public Forum Create(Forum parentForum, String name, Int32 sortOrder) {
-			return this.Create(parentForum, name, String.Empty, sortOrder);
+		public Forum Create(Forum parentForum, String name, Int32 sortOrder, IDictionary<String, Object> customProperties = null) {
+			return this.Create(parentForum, name, String.Empty, sortOrder, customProperties);
 		}
 
 		/// <summary>
@@ -130,13 +135,14 @@ namespace NForum.Core.Services {
 		/// <param name="name">The name of the forum.</param>
 		/// <param name="description">The description of the forum.</param>
 		/// <param name="sortOrder">The sort order/placement of the forum.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The newly created forum.</returns>
 		/// <exception cref="System.ArgumentNullException">If the provided parent forum is null.</exception>
-		public Forum Create(Forum parentForum, String name, String description, Int32 sortOrder) {
+		public Forum Create(Forum parentForum, String name, String description, Int32 sortOrder, IDictionary<String, Object> customProperties = null) {
 			if (parentForum == null) {
 				throw new ArgumentNullException("parentForum");
 			}
-			return this.Create(this.categoryRepo.Read(parentForum.CategoryId), parentForum, name, description, sortOrder);
+			return this.Create(this.categoryRepo.Read(parentForum.CategoryId), parentForum, name, description, sortOrder, customProperties);
 		}
 
 		/// <summary>

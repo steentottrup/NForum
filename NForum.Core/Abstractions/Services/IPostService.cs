@@ -13,16 +13,18 @@ namespace NForum.Core.Abstractions.Services {
 		/// <param name="topic">The topic to create the new post in.</param>
 		/// <param name="subject">The subject of the new post.</param>
 		/// <param name="message">The message of the new post.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The new post.</returns>
-		Post Create(Topic topic, String subject, String message);
+		Post Create(Topic topic, String subject, String message, IDictionary<String, Object> customProperties = null);
 		/// <summary>
 		/// Method for creating a new post as a reply to an existing post.
 		/// </summary>
 		/// <param name="post">The post to create the new post in reply to.</param>
 		/// <param name="subject">The subject of the new post.</param>
 		/// <param name="message">The message of the new post.</param>
+		/// <param name="customProperties"></param>
 		/// <returns>The new post.</returns>
-		Post Create(Post post, String subject, String message);
+		Post Create(Post post, String subject, String message, IDictionary<String, Object> customProperties = null);
 
 		/// <summary>
 		/// Method for reading a post.

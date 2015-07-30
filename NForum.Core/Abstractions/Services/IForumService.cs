@@ -4,10 +4,10 @@ using System.Collections.Generic;
 namespace NForum.Core.Abstractions.Services {
 
 	public interface IForumService {
-		Forum Create(Category category, String name, Int32 sortOrder);
-		Forum Create(Category category, String name, String description, Int32 sortOrder);
-		Forum Create(Forum parentForum, String name, Int32 sortOrder);
-		Forum Create(Forum parentForum, String name, String description, Int32 sortOrder);
+		Forum Create(Category category, String name, Int32 sortOrder, IDictionary<String, Object> customProperties = null);
+		Forum Create(Category category, String name, String description, Int32 sortOrder, IDictionary<String, Object> customProperties = null);
+		Forum Create(Forum parentForum, String name, Int32 sortOrder, IDictionary<String, Object> customProperties = null);
+		Forum Create(Forum parentForum, String name, String description, Int32 sortOrder, IDictionary<String, Object> customProperties = null);
 
 		Forum Read(Int32 id);
 		Forum Read(String name);

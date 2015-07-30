@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace NForum.Core.Abstractions.Services {
 
 	public interface ITopicService {
-		Topic Create(Forum forum, String subject, String message);
-		Topic Create(Forum forum, String subject, String message, TopicType type);
+		Topic Create(Forum forum, String subject, String message, IDictionary<String, Object> customProperties = null);
+		Topic Create(Forum forum, String subject, String message, TopicType type, IDictionary<String, Object> customProperties = null);
 
 		Topic Read(Int32 id);
 		Topic Read(String name);

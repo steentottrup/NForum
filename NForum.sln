@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NForum.Core", "NForum.Core\NForum.Core.csproj", "{41F6ACD5-5146-44BC-81AD-A9E95F206223}"
 EndProject
@@ -39,6 +39,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NForum.Api.Web", "NForum.Api.Web\NForum.Api.Web.csproj", "{A4FA601B-E538-4B9D-9F7D-819FBD85FA23}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NForum.Demo.WebApi", "NForum.Demo.WebApi\NForum.Demo.WebApi.csproj", "{95345145-B2F0-4991-9C5E-F3558628A82D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NForum.Tests.CustomProperties", "NForum.Tests.CustomProperties\NForum.Tests.CustomProperties.csproj", "{2C157C2F-53E7-4881-9E4A-1CA592064599}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +82,10 @@ Global
 		{95345145-B2F0-4991-9C5E-F3558628A82D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95345145-B2F0-4991-9C5E-F3558628A82D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95345145-B2F0-4991-9C5E-F3558628A82D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C157C2F-53E7-4881-9E4A-1CA592064599}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C157C2F-53E7-4881-9E4A-1CA592064599}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C157C2F-53E7-4881-9E4A-1CA592064599}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C157C2F-53E7-4881-9E4A-1CA592064599}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,5 +98,6 @@ Global
 		{5593DC8A-F5BE-473E-BC3E-0C7FB91A6A04} = {042DDD64-A647-4693-BB31-8A0907ED8378}
 		{A4FA601B-E538-4B9D-9F7D-819FBD85FA23} = {10FFB43C-4645-4795-8747-99C5D0C49449}
 		{95345145-B2F0-4991-9C5E-F3558628A82D} = {10FFB43C-4645-4795-8747-99C5D0C49449}
+		{2C157C2F-53E7-4881-9E4A-1CA592064599} = {042DDD64-A647-4693-BB31-8A0907ED8378}
 	EndGlobalSection
 EndGlobal
