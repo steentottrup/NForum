@@ -44,9 +44,10 @@ namespace NForum.Core.Services {
 		/// <param name="forum">The parent forum of the topic.</param>
 		/// <param name="subject">The subject of the topic.</param>
 		/// <param name="message">The content/message of the topic.</param>
+		/// <param name="customPropties"></param>
 		/// <returns>The newly created topic.</returns>
-		public Topic Create(Forum forum, String subject, String message) {
-			return this.Create(forum, subject, message, TopicType.Regular);
+		public Topic Create(Forum forum, String subject, String message, IDictionary<String, Object> customPropties = null) {
+			return this.Create(forum, subject, message, TopicType.Regular, customPropties);
 		}
 
 		/// <summary>
@@ -56,8 +57,9 @@ namespace NForum.Core.Services {
 		/// <param name="subject">The subject of the topic.</param>
 		/// <param name="message">The content/message of the topic.</param>
 		/// <param name="type">The type of the topic </param>
+		/// <param name="customPropties"></param>
 		/// <returns>The newly created topic.</returns>
-		public Topic Create(Forum forum, String subject, String message, TopicType type) {
+		public Topic Create(Forum forum, String subject, String message, TopicType type, IDictionary<String, Object> customPropties = null) {
 			if (forum == null) {
 				throw new ArgumentNullException("forum");
 			}
@@ -97,7 +99,7 @@ namespace NForum.Core.Services {
 				Subject = subject,
 				Type = type
 			};
-			// TODO: Custom properties?
+			t.SetCustomProperties(customPropties);
 
 			this.topicRepo.Create(t);
 			this.logger.WriteFormat("Topic created in TopicService, Id: {0}", t.Id);
