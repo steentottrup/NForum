@@ -62,7 +62,7 @@ namespace NForum.Core.Services {
 		/// <exception cref="System.ArgumentNullException">Post, subject and message are all required (not null) arguments.</exception>
 		public Post Create(Post post, String subject, String message, IDictionary<String, Object> customProperties = null) {
 			// Let's get the topic from the data-storage!
-			Topic parentTopic = this.topicRepo.Read(post.TopicId);
+			Topic parentTopic = this.topicRepo.Read(t => t.Id == post.TopicId);
 			return this.Create(parentTopic, post, subject, message, customProperties);
 		}
 
@@ -77,13 +77,13 @@ namespace NForum.Core.Services {
 				throw new ArgumentNullException("message");
 			}
 			// Let's get the topic from the data-storage!
-			topic = this.topicRepo.Read(topic.Id);
+			topic = this.topicRepo.Read(t => t.Id == topic.Id);
 			if (topic == null) {
 				throw new ArgumentException("topic does not exist");
 			}
 			if (post != null) {
 				// Let's get the topic from the data-storage!
-				post = this.postRepo.Read(post.Id);
+				post = this.postRepo.Read(po => po.Id == post.Id);
 				if (post == null) {
 					throw new ArgumentException("post does not exist");
 				}
@@ -137,7 +137,7 @@ namespace NForum.Core.Services {
 		/// <returns>The post with the given id, or null.</returns>
 		public Post Read(Int32 id) {
 			this.logger.WriteFormat("Read called on PostService, Id: {0}", id);
-			Post post = this.postRepo.Read(id);
+			Post post = this.postRepo.Read(p => p.Id == id);
 			if (!this.permService.HasAccess(this.userProvider.CurrentUser, post.Topic.Forum, (Int64)AccessFlag.Read)) {
 				this.logger.WriteFormat("User does not have permissions to read the post, id: {0}", post.Id);
 				throw new PermissionException("topic, read");
@@ -168,7 +168,7 @@ namespace NForum.Core.Services {
 			if (topic == null) {
 				throw new ArgumentNullException("topic");
 			}
-			Forum forum = this.forumRepo.Read(topic.ForumId);
+			Forum forum = this.forumRepo.Read(f => f.Id == topic.ForumId);
 			// We need to know how many posts to show per page, let's get the board!
 			Int32 postsPerPage = this.confService.Read().PostsPerPage();
 			// Let the repo get the posts, and return them!

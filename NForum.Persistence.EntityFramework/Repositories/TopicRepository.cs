@@ -23,7 +23,7 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 			if (forum == null) {
 				throw new ArgumentNullException("forum");
 			}
-			IQueryable<Topic> topics = this.set;
+			IQueryable<Topic> topics = this.Set;
 			if (!includeDeleted) {
 				topics = topics.Where(p => p.State != TopicState.Deleted);
 			}
@@ -44,12 +44,12 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 		}
 
 		public Topic BySubject(String subject) {
-			return this.set.FirstOrDefault(t => t.Subject == subject);
+			return this.Set.FirstOrDefault(t => t.Subject == subject);
 		}
 
 		public Topic GetLatest(IEnumerable<Forum> forums) {
 			Int32[] ids = forums.Select(f => f.Id).ToArray();
-			return this.set
+			return this.Set
 				.Where(t => ids.Contains(t.ForumId))
 				.Where(t => t.State != TopicState.Deleted && t.State != TopicState.Quarantined)
 				.OrderByDescending(t => t.Created)

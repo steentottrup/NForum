@@ -33,7 +33,7 @@ namespace NForum.Tests.CustomProperties {
 			uow = null;
 		}
 
-		private void GetTopicService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService, out ITopicService topicService) {
+		private void GetPostService(UnitOfWork uow, out ICategoryService categoryService, out IForumService forumService, out ITopicService topicService, out IPostService postService) {
 			ICategoryRepository cateRepo = new CategoryRepository(uow);
 			IForumRepository forumRepo = new ForumRepository(uow);
 			ITopicRepository topicRepo = new TopicRepository(uow);
@@ -64,6 +64,7 @@ namespace NForum.Tests.CustomProperties {
 			categoryService = new CategoryService(userProvider, cateRepo, eventPublisher, logger, permService);
 			forumService = new ForumService(userProvider, cateRepo, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService);
 			topicService = new TopicService(userProvider, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService, confService);
+			postService = new PostService(userProvider, forumRepo, topicRepo, postRepo, eventPublisher, logger, permService, confService);
 		}
 
 		[TestMethod]
@@ -71,7 +72,8 @@ namespace NForum.Tests.CustomProperties {
 			ICategoryService categoryService;
 			IForumService forumService;
 			ITopicService topicService;
-			this.GetTopicService(uow, out categoryService, out forumService, out topicService);
+			IPostService postService;
+			this.GetPostService(uow, out categoryService, out forumService, out topicService, out postService);
 
 			String name = "category tested";
 			String description = "the very first category";
@@ -89,11 +91,33 @@ namespace NForum.Tests.CustomProperties {
 		}
 
 		[TestMethod]
+		public void ForumProperties() {
+			ICategoryService categoryService;
+			IForumService forumService;
+			ITopicService topicService;
+			IPostService postService;
+			this.GetPostService(uow, out categoryService, out forumService, out topicService, out postService);
+
+			Category category = categoryService.Create("category", "meh", 1);
+
+			IDictionary<String, Object> props = new Dictionary<String, Object>();
+			String boolKey = "myBoolean";
+			Boolean boolValue = true;
+			props.Add(boolKey, boolValue);
+
+			Forum forum = forumService.Create(category, "forum for test", 1, props);
+			forum = forumService.Read(forum.Id);
+
+			forum.GetCustomPropertyBoolean(boolKey).Should().Be(boolValue);
+		}
+
+		[TestMethod]
 		public void TopicProperties() {
 			ICategoryService categoryService;
 			IForumService forumService;
 			ITopicService topicService;
-			this.GetTopicService(uow, out categoryService, out forumService, out topicService);
+			IPostService postService;
+			this.GetPostService(uow, out categoryService, out forumService, out topicService, out postService);
 
 			Category category = categoryService.Create("category", "desc", 1);
 
@@ -114,23 +138,31 @@ namespace NForum.Tests.CustomProperties {
 		}
 
 		[TestMethod]
-		public void ForumProperties() {
+		public void PostProperties() {
 			ICategoryService categoryService;
 			IForumService forumService;
 			ITopicService topicService;
-			this.GetTopicService(uow, out categoryService, out forumService, out topicService);
+			IPostService postService;
+			this.GetPostService(uow, out categoryService, out forumService, out topicService, out postService);
 
 			Category category = categoryService.Create("category", "desc", 1);
+
+			Forum forum = forumService.Create(category, "forum", 1);
+
+			Topic topic = topicService.Create(forum, "subject", "message", TopicType.Regular);
 
 			IDictionary<String, Object> props = new Dictionary<String, Object>();
 			String boolKey = "myBoolean";
 			Boolean boolValue = true;
 			props.Add(boolKey, boolValue);
 
-			Forum forum = forumService.Create(category, "forum", 1, props);
-			forum = forumService.Read(forum.Id);
+			Post post = postService.Create(topic, "subject", "message", props);
 
-			forum.GetCustomPropertyBoolean(boolKey).Should().Be(boolValue);
+			post = postService.Read(post.Id);
+
+			post.GetCustomPropertyBoolean(boolKey).Should().Be(boolValue);
 		}
+
+		// TODO: User, ForumConfiguration, AddonConfiguraion(s)
 	}
 }

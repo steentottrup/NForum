@@ -65,28 +65,28 @@ namespace NForum.Core.EventSubscribers {
 		}
 
 		public void Handle(PostCreated payload, IState request) {
-			Post post = this.postRepo.Read(payload.Post.Id);
+			Post post = this.postRepo.Read(p => p.Id == payload.Post.Id);
 			if (post.IsVisible()) {
 				this.InformTopicFollowers(post.Topic, post);
 			}
 		}
 
 		public void Handle(TopicCreated payload, IState request) {
-			Topic topic = this.topicRepo.Read(payload.Topic.Id);
+			Topic topic = this.topicRepo.Read(t => t.Id == payload.Topic.Id);
 			if (topic.IsVisible()) {
 				this.InformForumFollowers(topic.Forum, topic);
 			}
 		}
 
 		public void Handle(TopicStateUpdated payload, IState request) {
-			Topic topic = this.topicRepo.Read(payload.UpdatedTopic.Id);
+			Topic topic = this.topicRepo.Read(t => t.Id == payload.UpdatedTopic.Id);
 			if (topic.GonePublic(payload.OriginalTopic)) {
 				this.InformForumFollowers(topic.Forum, topic);
 			}
 		}
 
 		public void Handle(PostStateUpdated payload, IState request) {
-			Post post = this.postRepo.Read(payload.UpdatedPost.Id);
+			Post post = this.postRepo.Read(p => p.Id == payload.UpdatedPost.Id);
 			if (post.GonePublic(payload.OriginalPost)) {
 				this.InformTopicFollowers(post.Topic, post);
 			}

@@ -14,18 +14,18 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 		}
 
 		public TopicTracker ByUserAndTopic(User user, Topic topic) {
-			return this.set
+			return this.Set
 					.FirstOrDefault(ft => ft.UserId == user.Id && ft.TopicId == topic.Id);
 		}
 
 		public IEnumerable<TopicTracker> ByUser(User user) {
-			return this.set
+			return this.Set
 					.Where(ft => ft.UserId == user.Id)
 					.ToList();
 		}
 
 		public IEnumerable<TopicTracker> ByUserAndForum(User user, Forum forum) {
-			return this.set
+			return this.Set
 					.Include(tt => tt.Topic)
 					.Where(tt => tt.UserId == user.Id && tt.Topic.ForumId == forum.Id)
 					.ToList();

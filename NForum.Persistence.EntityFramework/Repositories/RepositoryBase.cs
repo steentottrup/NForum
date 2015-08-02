@@ -2,17 +2,25 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace NForum.Persistence.EntityFramework.Repositories {
 
 	public abstract class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class {
 		protected IDbSet<TEntity> set;
-		protected DbContext context;
+		protected UnitOfWork context;
 
-		protected RepositoryBase(DbContext context) {
+		protected RepositoryBase(UnitOfWork context) {
 			this.context = context;
 			this.set = this.context.Set<TEntity>();
+		}
+
+		protected IQueryable<TEntity> Set {
+			get {
+				return this.set.AsNoTracking<TEntity>();
+			}
 		}
 
 		public virtual TEntity Create(TEntity newEntity) {
@@ -21,27 +29,27 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 			return entity;
 		}
 
-		public virtual TEntity Read(Int32 id) {
-			return this.set.Find(id);
+		public virtual TEntity Read(Expression<Func<TEntity, Boolean>> expression) {
+			return this.set.SingleOrDefault(expression);
+
+			return this.set.AsNoTracking<TEntity>().SingleOrDefault(expression);
 		}
 
 		public IEnumerable<TEntity> ReadAll() {
-			return this.set;
+			return this.Set;
 		}
 
 		public virtual TEntity Update(TEntity entity) {
-			// TODO: ???
+			//this.set.Attach(entity);
 			this.context.SaveChanges();
 			return entity;
 		}
-
 		public virtual void Delete(TEntity entity) {
 			this.set.Remove(entity);
 			this.context.SaveChanges();
 		}
-
-		public virtual void Delete(Int32 id) {
-			this.Delete(this.set.Find(id));
-		}
+		//public virtual void Delete(Int32 id) {
+		//	this.Delete(this.Read(id));
+		//}
 	}
 }

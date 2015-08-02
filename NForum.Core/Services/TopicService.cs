@@ -69,7 +69,7 @@ namespace NForum.Core.Services {
 			if (String.IsNullOrWhiteSpace(message)) {
 				throw new ArgumentNullException("message");
 			}
-			forum = this.forumRepo.Read(forum.Id);
+			forum = this.forumRepo.Read(f => f.Id == forum.Id);
 			if (forum == null) {
 				throw new ArgumentException("forum does not exist");
 			}
@@ -118,7 +118,7 @@ namespace NForum.Core.Services {
 		/// <returns></returns>
 		public Topic Read(Int32 id) {
 			this.logger.WriteFormat("Read called on TopicService, Id: {0}", id);
-			Topic topic = this.topicRepo.Read(id);
+			Topic topic = this.topicRepo.Read(t=>t.Id == id);
 			if (!this.permService.HasAccess(this.userProvider.CurrentUser, topic.Forum, (Int64)AccessFlag.Read)) {
 				this.logger.WriteFormat("User does not have permissions to read the topic, id: {0}", topic.Id);
 				throw new PermissionException("topic, read");

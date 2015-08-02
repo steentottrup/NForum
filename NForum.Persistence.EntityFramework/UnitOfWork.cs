@@ -40,6 +40,12 @@ namespace NForum.Persistence.EntityFramework {
 			}
 		}
 
+		internal IObjectContextAdapter ObjectContext {
+			get {
+				return ((IObjectContextAdapter)this).ObjectContext;
+			}
+		}
+
 		private void ObjectContext_SavingChanges(Object sender, EventArgs e) {
 			IEnumerable<DbEntityEntry> changed = this.ChangeTracker.Entries().Where(en => en.State != EntityState.Unchanged);
 			foreach (DbEntityEntry entry in changed) {

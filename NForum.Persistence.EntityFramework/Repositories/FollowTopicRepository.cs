@@ -14,13 +14,13 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 		}
 
 		public IEnumerable<FollowTopic> ByTopic(Topic topic) {
-			return this.set.Include(ft => ft.User)
+			return this.Set.Include(ft => ft.User)
 						.Where(ft => ft.TopicId == topic.Id)
 						.ToList();
 		}
 
 		public FollowTopic ByUserAndTopic(Topic topic, User user) {
-			return this.set.FirstOrDefault(ft => ft.TopicId == topic.Id && ft.UserId == user.Id);
+			return this.Set.FirstOrDefault(ft => ft.TopicId == topic.Id && ft.UserId == user.Id);
 		}
 	}
 }

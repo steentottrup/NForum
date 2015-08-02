@@ -79,7 +79,7 @@ namespace NForum.Core.Services {
 			if (category == null) {
 				throw new ArgumentNullException("category");
 			}
-			category = this.categoryRepo.Read(category.Id);
+			category = this.categoryRepo.Read(c => c.Id == category.Id);
 			if (category == null) {
 				throw new ArgumentException("category does not exist");
 			}
@@ -99,7 +99,7 @@ namespace NForum.Core.Services {
 			f.SetCustomProperties(customProperties);
 
 			if (parentForum != null) {
-				parentForum = this.forumRepo.Read(parentForum.Id);
+				parentForum = this.forumRepo.Read(fo => fo.Id == parentForum.Id);
 				if (parentForum == null) {
 					throw new ArgumentException("parentForum does not exist");
 				}
@@ -142,7 +142,7 @@ namespace NForum.Core.Services {
 			if (parentForum == null) {
 				throw new ArgumentNullException("parentForum");
 			}
-			return this.Create(this.categoryRepo.Read(parentForum.CategoryId), parentForum, name, description, sortOrder, customProperties);
+			return this.Create(this.categoryRepo.Read(c => c.Id == parentForum.CategoryId), parentForum, name, description, sortOrder, customProperties);
 		}
 
 		/// <summary>
@@ -152,7 +152,7 @@ namespace NForum.Core.Services {
 		/// <returns></returns>
 		public Forum Read(Int32 id) {
 			this.logger.WriteFormat("Read called on ForumService, Id: {0}", id);
-			Forum forum = this.forumRepo.Read(id);
+			Forum forum = this.forumRepo.Read(f=>f.Id == id);
 			if (forum != null) {
 				if (!this.permService.HasAccess(this.userProvider.CurrentUser, forum, CRUD.Read)) {
 					this.logger.WriteFormat("User does not have permissions to read the forum, id: {0}", forum.Id);
@@ -190,7 +190,7 @@ namespace NForum.Core.Services {
 			if (category == null) {
 				throw new ArgumentNullException("category");
 			}
-			category = this.categoryRepo.Read(category.Id);
+			category = this.categoryRepo.Read(c=>c.Id ==category.Id);
 			if (category == null) {
 				throw new ArgumentException("category does not exist");
 			}

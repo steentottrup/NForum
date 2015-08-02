@@ -14,13 +14,13 @@ namespace NForum.Persistence.EntityFramework.Repositories {
 		}
 
 		public IEnumerable<FollowForum> ByForum(Forum forum) {
-			return this.set.Include(ff => ff.User)
+			return this.Set.Include(ff => ff.User)
 						.Where(ff => ff.ForumId == forum.Id)
 						.ToList();
 		}
 
 		public FollowForum ByUserAndForum(Forum forum, User user) {
-			return this.set.FirstOrDefault(ff => ff.ForumId == forum.Id && ff.UserId == user.Id);
+			return this.Set.FirstOrDefault(ff => ff.ForumId == forum.Id && ff.UserId == user.Id);
 		}
 	}
 }

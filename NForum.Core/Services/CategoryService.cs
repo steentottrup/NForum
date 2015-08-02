@@ -73,7 +73,7 @@ namespace NForum.Core.Services {
 		/// <returns></returns>
 		public Category Read(Int32 id) {
 			this.logger.WriteFormat("Read called on CategoryService, Id: {0}", id);
-			Category category = this.categoryRepo.Read(id);
+			Category category = this.categoryRepo.Read(c => c.Id == id);
 			if (category != null) {
 				if (!this.permService.HasAccess(this.userProvider.CurrentUser, category, CRUD.Read)) {
 					this.logger.WriteFormat("User does not have permissions to read the category, id: {0}", category.Id);
