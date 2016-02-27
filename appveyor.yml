@@ -1,0 +1,27 @@
+version: 0.1.0.{build}
+configuration: Release
+branches:
+  only:
+    - master
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
+cache: packages -> **\packages.config
+nuget:
+  account_feed: true
+  project_feed: true
+before_build:
+  - nuget restore
+build:
+  project: src\nforum.sln
+  publish_nuget: true
+after_build:
+- ps: '#appveyor PushArtifact MongoDB.DocumentLocking.$env:APPVEYOR_BUILD_VERSION.nupkg'
+test:
+  assemblies:
+    - '**\*.tests.dll'
+artifacts:
+- path: '*.nupkg'
