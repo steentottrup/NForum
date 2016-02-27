@@ -1,0 +1,39 @@
+﻿@model NForum.Core.Forum
+@{
+	ViewBag.Title = "Index";
+
+	List<NForum.Core.Forum> bread = new List<NForum.Core.Forum>();
+	NForum.Core.Forum fm = Model;
+	bread.Add(fm);
+	while (fm.ParentForum != null) {
+		bread.Add(fm.ParentForum);
+		fm = fm.ParentForum;
+	}
+
+	bread.Reverse();
+}
+
+<h2>Index</h2>
+<a href="/">Forum</a>
+<a href="/category/index/@Model.Category.Id">@Model.Category.Name</a>
+@foreach (NForum.Core.Forum f in bread) {
+	<a href="/forum/index/@f.Id">@f.Name</a>
+}
+<ul>
+	<li>
+		@Model.Name
+		<ul>
+			@foreach (var forum in Model.SubForums) {
+				<li>
+					<a href="/forum/index/@forum.Id">@forum.Name</a>
+					<ul>
+						@foreach (var child in forum.SubForums) {
+							<li><a href="/forum/index/@child.Id">@child.Name</a></li>
+						}
+
+					</ul>
+				</li>
+			}
+		</ul>
+	</li>
+</ul>

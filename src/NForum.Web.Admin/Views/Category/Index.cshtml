@@ -1,0 +1,26 @@
+﻿@model NForum.Core.Category
+@{
+	ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<a href="/">Forum</a>
+<a href="/category/index/@Model.Id">@Model.Name</a>
+<ul>
+	<li>
+		@Model.Name
+		<ul>
+			@foreach (var forum in Model.Forums) {
+				<li>
+					@forum.Name
+					<ul>
+						@foreach (var child in forum.SubForums) {
+							<li>@child.Name</li>
+						}
+
+					</ul>
+				</li>
+			}
+		</ul>
+	</li>
+</ul>
