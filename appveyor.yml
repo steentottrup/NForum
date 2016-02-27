@@ -14,7 +14,7 @@ nuget:
   account_feed: true
   project_feed: true
 before_build:
-  - nuget restore
+  - nuget restore src\nforum.sln
 build:
   project: src\nforum.sln
   publish_nuget: true
