@@ -31,7 +31,10 @@ We're still a very young project, and are not ready for an alpha release just ye
 
 ## Roadmap
 
-* Run on ASP.NET 5 and ASP.NET 5 Core
+* Run on ASP.NET Core 1.0
+* Test the forum with an alternate (document?) data store
+* Support cloud/web farm/multi instance hosting
+* Optimized for cloud hosting, providers for (Redis?) cache, blob storage, queues for async work, etc.
 
 ## AppVeyor Build Status
 
