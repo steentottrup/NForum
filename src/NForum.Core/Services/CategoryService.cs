@@ -89,7 +89,7 @@ namespace NForum.Core.Services {
 
 			IAuthenticatedUser currentUser = this.userProvider.CurrentUser;
 			// TODO: Permissions!!
-			return this.dataStore.FindAll();
+			return this.dataStore.FindAllCategories();
 		}
 
 		public Category FindById(String categoryId) {

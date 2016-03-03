@@ -2,7 +2,7 @@
 using System;
 using System.Net;
 
-namespace NForum.Tests.BaseTests {
+namespace NForum.Tests.Common {
 	public class FakeUser : IAuthenticatedUser {
 
 		public String EmailAddress {

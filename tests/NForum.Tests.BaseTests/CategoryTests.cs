@@ -7,25 +7,28 @@ using NForum.Core.Abstractions.Providers;
 using NForum.Core.Abstractions.Events;
 using NForum.Core;
 using FluentAssertions;
+using NForum.Database.EntityFramework.Repositories;
+using System.Data.Common;
+using NForum.Database.EntityFramework;
+using NForum.Tests.Common;
 
 namespace NForum.Tests.BaseTests {
+
 	[TestClass]
-
 	public class CategoryTests {
+		private static NForumDbContext dbContext;
 
-		private ICategoryService GetCategoryService() {
-			// TODO: Change this!
-			IDataStore dataStore = new FakeDataStore();
-			IPermissionService permissionService = new PermissionService();
-			ILoggingService loggingService = new LoggingService(new FakeLogger(), new FakeLogger());
-			IUserProvider userProvider = new FakeUserProvider();
-			IEventPublisher eventPublisher = new FakeEventPublisher();
-			return new CategoryService(dataStore, permissionService, loggingService, userProvider, eventPublisher);
+		[ClassInitialize]
+		public static void SetUp(TestContext context) {
+			Initializer.Initialize();
 		}
+
+		[ClassCleanup]
+		public static void TearDown() { }
 
 		[TestMethod]
 		public void CreateNewCategory() {
-			ICategoryService catService = this.GetCategoryService();
+			ICategoryService catService = Initializer.CategoryService;
 
 			String name = "Category name";
 			Int32 sortOrder = 1;
@@ -40,7 +43,7 @@ namespace NForum.Tests.BaseTests {
 
 		[TestMethod]
 		public void CreateNewCategoryWithException() {
-			ICategoryService catService = this.GetCategoryService();
+			ICategoryService catService = Initializer.CategoryService;
 
 			String name = String.Empty;
 			Int32 sortOrder = 1;

@@ -10,8 +10,7 @@ namespace NForum.Core.Abstractions.Data {
 		Category FindCategoryById(String categoryId);
 		Boolean DeleteCategory(String categoryId);
 		/* CRUD for forums */
-		Forum CreateForum(String categoryId, String name, Int32 sortOrder, String description);
-		Forum CreateSubForum(String parentForumId, String name, Int32 sortOrder, String description);
+		Forum CreateForum(String categoryId, String parentForumId, String name, Int32 sortOrder, String description);
 		Forum UpdateForum(String forumId, String name, Int32 sortOrder, String description);
 		Forum FindForumById(String forumId);
 		Boolean DeleteForum(String forumId);
@@ -25,6 +24,7 @@ namespace NForum.Core.Abstractions.Data {
 		IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize);
 
 		/* Methods for API/Admin */
-		IEnumerable<Category> FindAll(/* Permissions */);
+		IEnumerable<Category> FindAllCategories(/* Permissions */);
+		IEnumerable<Forum> FindAllForums(/* Permissions */);
 	}
 }

@@ -2,7 +2,7 @@
 using System;
 using NForum.Core.Abstractions;
 
-namespace NForum.Tests.BaseTests {
+namespace NForum.Tests.Common {
 
 	public class FakeUserProvider : IUserProvider {
 		public IAuthenticatedUser CurrentUser {

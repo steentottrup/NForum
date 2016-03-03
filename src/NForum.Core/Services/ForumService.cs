@@ -25,24 +25,78 @@ namespace NForum.Core.Services {
 			// TODO: Log all contructor param types!
 		}
 
-		public Forum Create(IAuthenticatedUser currentUser, String categoryId, String name, Int32 sortOrder, String description) {
-			throw new NotImplementedException();
+		public Forum Create(String categoryId, String name, Int32 sortOrder, String description) {
+			return this.CreateForum(categoryId, String.Empty, name, sortOrder, description);
 		}
 
-		public Forum CreateSubForum(IAuthenticatedUser currentUser, String forumId, String name, Int32 sortOrder, String description) {
-			throw new NotImplementedException();
+		public Forum CreateSubForum(String forumId, String name, Int32 sortOrder, String description) {
+			Forum forum = this.FindById(forumId);
+			return this.CreateForum(forum.CategoryId, forumId, name, sortOrder, description);
 		}
 
-		public Boolean Delete(IAuthenticatedUser currentUser, String forumId) {
-			throw new NotImplementedException();
+		private Forum CreateForum(String categoryId, String parentForumId, String name, Int32 sortOrder, String description) {
+			if (String.IsNullOrWhiteSpace(categoryId)) {
+				throw new ArgumentNullException(nameof(categoryId));
+			}
+			if (String.IsNullOrWhiteSpace(name)) {
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			this.loggingService.Application.DebugWriteFormat("Create called on ForumService, CategoryId: {0}, Name: {1}, Description: {2}, Sort Order: {3}", categoryId, name, description, sortOrder);
+
+			IAuthenticatedUser currentUser = this.userProvider.CurrentUser;
+			if (currentUser == null /*|| !currentUser.CanCreate(this.permissionService) TODO */) {
+				this.loggingService.Application.DebugWriteFormat("User does not have permissions to create a new forum, name: {0}", name);
+				throw new PermissionException("create forum", currentUser);
+			}
+
+			Forum output = this.dataStore.CreateForum(categoryId, parentForumId, name, sortOrder, description);
+			this.loggingService.Application.DebugWriteFormat("Forum created in ForumService, Id: {0}", output.Id);
+
+			//ForumCreated afterEvent = new ForumCreated {
+			//	Name = output.Name,
+			//	CategoryId = output.Id,
+			//	Author = this.userProvider.CurrentUser
+			//};
+			//this.eventPublisher.Publish<ForumCreated>(afterEvent);
+
+			return output;
 		}
 
-		public IEnumerable<Forum> FindAll(IAuthenticatedUser currentUser) {
-			throw new NotImplementedException();
+		public Boolean Delete(String forumId) {
+			if (String.IsNullOrWhiteSpace(forumId)) {
+				throw new ArgumentNullException(nameof(forumId));
+			}
+
+			this.loggingService.Application.DebugWriteFormat("Delete called on ForumService, Id: {0}", forumId);
+
+			IAuthenticatedUser currentUser = this.userProvider.CurrentUser;
+			if (currentUser == null /*|| !currentUser.acc(this.permissionService) TODO */) {
+				this.loggingService.Application.DebugWriteFormat("User does not have permissions to delete a forum, id: {0}", forumId);
+				throw new PermissionException("delete forum", currentUser);
+			}
+
+			return this.dataStore.DeleteCategory(forumId);
 		}
 
-		public Forum FindById(IAuthenticatedUser currentUser, String forumId) {
-			throw new NotImplementedException();
+		public IEnumerable<Forum> FindAll() {
+			this.loggingService.Application.DebugWrite("FindAll called on ForumService");
+
+			IAuthenticatedUser currentUser = this.userProvider.CurrentUser;
+			// TODO: Permissions!!
+			return this.dataStore.FindAllForums();
+		}
+
+		public Forum FindById(String forumId) {
+			if (String.IsNullOrWhiteSpace(forumId)) {
+				throw new ArgumentNullException(nameof(forumId));
+			}
+
+			this.loggingService.Application.DebugWriteFormat("FindById called on ForumService, Id: {0}", forumId);
+
+			IAuthenticatedUser currentUser = this.userProvider.CurrentUser;
+			// TODO: Permissions!!
+			return this.dataStore.FindForumById(forumId);
 		}
 
 		public Forum FindForumPlus2Levels(String forumId) {
@@ -52,8 +106,33 @@ namespace NForum.Core.Services {
 			return this.dataStore.FindForumPlus2Levels(forumId);
 		}
 
-		public Forum Update(IAuthenticatedUser currentUser, String forumId, String name, Int32 sortOrder, String description) {
-			throw new NotImplementedException();
+		public Forum Update(String forumId, String name, Int32 sortOrder, String description) {
+			if (String.IsNullOrWhiteSpace(forumId)) {
+				throw new ArgumentNullException(nameof(forumId));
+			}
+			if (String.IsNullOrWhiteSpace(name)) {
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			this.loggingService.Application.DebugWriteFormat("Update called on ForumService, Id: {0}, Name: {1}, Description: {2}, Sort Order: {3}", forumId, name, description, sortOrder);
+
+			IAuthenticatedUser currentUser = this.userProvider.CurrentUser;
+			if (currentUser == null /*|| !currentUser.CanUpdateCategory(this.permissionService) TODO */) {
+				this.loggingService.Application.DebugWriteFormat("User does not have permissions to update a forum, Id: {0}", forumId);
+				throw new PermissionException("create forum", currentUser);
+			}
+
+			Forum output = this.dataStore.UpdateForum(forumId, name, sortOrder, description);
+			this.loggingService.Application.DebugWriteFormat("Forum updated in ForumService, Id: {0}", output.Id);
+
+			//ForumUpdated afterEvent = new ForumUpdated {
+			//	Name = output.Name,
+			//	CategoryId = output.Id,
+			//	Author = this.userProvider.CurrentUser
+			//};
+			//this.eventPublisher.Publish<ForumUpdated>(afterEvent);
+
+			return output;
 		}
 	}
 }

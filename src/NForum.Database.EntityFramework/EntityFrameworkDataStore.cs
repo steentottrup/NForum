@@ -34,7 +34,7 @@ namespace NForum.Database.EntityFramework {
 			return model.ToModel();
 		}
 
-		public Forum CreateForum(String categoryId, String name, Int32 sortOrder, String description) {
+		public Forum CreateForum(String categoryId, String forumId, String name, Int32 sortOrder, String description) {
 			Guid id;
 			if (!Guid.TryParse(categoryId, out id)) {
 				throw new ArgumentException(nameof(categoryId));
@@ -44,12 +44,22 @@ namespace NForum.Database.EntityFramework {
 				throw new ArgumentNullException(nameof(name));
 			}
 
+			Dbos.Forum parentForum = null;
+			if (!String.IsNullOrWhiteSpace(forumId)) {
+				Guid parentForumId;
+				if (!Guid.TryParse(forumId, out parentForumId)) {
+					throw new ArgumentException(nameof(forumId));
+				}
+
+				parentForum = this.forumRepository.FindById(parentForumId);
+			}
+
 			Dbos.Category parent = this.categoryRepository.FindById(id);
 			if (parent == null) {
 				throw new ArgumentException(nameof(categoryId));
 			}
 
-			return this.CreateForum(parent, null, name, sortOrder, description);
+			return this.CreateForum(parent, parentForum, name, sortOrder, description);
 		}
 
 		private Forum CreateForum(Dbos.Category category, Dbos.Forum parentForum, String name, Int32 sortOrder, String description) {
@@ -67,24 +77,6 @@ namespace NForum.Database.EntityFramework {
 
 			Dbos.Forum model = this.forumRepository.Create(newForum);
 			return model.ToModel();
-		}
-
-		public Forum CreateSubForum(String parentForumId, String name, Int32 sortOrder, String description) {
-			Guid id;
-			if (!Guid.TryParse(parentForumId, out id)) {
-				throw new ArgumentException(nameof(parentForumId));
-			}
-
-			if (String.IsNullOrWhiteSpace(name)) {
-				throw new ArgumentNullException(nameof(name));
-			}
-
-			Dbos.Forum parent = this.forumRepository.FindById(id);
-			if (parent == null) {
-				throw new ArgumentException(nameof(parentForumId));
-			}
-
-			return this.CreateForum(parent.Category, parent, name, sortOrder, description);
 		}
 
 		public Boolean DeleteCategory(String categoryId) {
@@ -274,7 +266,7 @@ namespace NForum.Database.EntityFramework {
 			return output;
 		}
 
-		public IEnumerable<Category> FindAll() {
+		public IEnumerable<Category> FindAllCategories() {
 			return this.categoryRepository.FindAll()
 				.ToList()
 				.Select(c => c.ToModel())
@@ -366,6 +358,13 @@ namespace NForum.Database.EntityFramework {
 			newTopic = this.topicRepository.Create(newTopic);
 
 			return newTopic.ToModel();
+		}
+
+		public IEnumerable<Forum> FindAllForums() {
+			return this.forumRepository.FindAll()
+				.ToList()
+				.Select(c => c.ToModel())
+				.OrderBy(c => c.SortOrder);
 		}
 	}
 }

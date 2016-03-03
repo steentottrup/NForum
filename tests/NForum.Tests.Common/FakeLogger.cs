@@ -3,7 +3,7 @@ using NForum.Core.Logging;
 using System;
 using System.Text;
 
-namespace NForum.Tests.BaseTests {
+namespace NForum.Tests.Common {
 
 	public class FakeLogger : LoggingBase, IApplicationLogger, ICoreLogger {
 		private readonly StringBuilder debugLog = new StringBuilder();
