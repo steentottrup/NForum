@@ -30,6 +30,10 @@ namespace NForum.Tests.BaseTests {
 			throw new NotImplementedException();
 		}
 
+		public Topic CreateTopic(string forumId, string subject, string text, TopicType type) {
+			throw new NotImplementedException();
+		}
+
 		public Boolean DeleteCategory(String categoryId) {
 			Category cat = this.FindCategoryById(categoryId);
 			if (cat != null) {
@@ -44,6 +48,10 @@ namespace NForum.Tests.BaseTests {
 		}
 
 		public IEnumerable<Category> FindAll() {
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<Topic> FindByForum(string forumId, int pageIndex, int pageSize) {
 			throw new NotImplementedException();
 		}
 

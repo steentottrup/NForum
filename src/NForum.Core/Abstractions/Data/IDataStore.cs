@@ -15,10 +15,14 @@ namespace NForum.Core.Abstractions.Data {
 		Forum UpdateForum(String forumId, String name, Int32 sortOrder, String description);
 		Forum FindForumById(String forumId);
 		Boolean DeleteForum(String forumId);
+		/* CRUD for topics */
+		Topic CreateTopic(String forumId, String subject, String text, TopicType type);
+
 		/* Methods for UI */
 		IEnumerable<Category> FindCategoriesPlus2Levels(/* Permissions/user */);
 		Forum FindForumPlus2Levels(/* Permissions/user */String forumId);
 		Category FindCategoryPlus2Levels(/* Permissions/user */String categoryId);
+		IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize);
 
 		/* Methods for API/Admin */
 		IEnumerable<Category> FindAll(/* Permissions */);

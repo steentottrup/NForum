@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NForum.Database.EntityFramework.Dbos {
 
@@ -13,5 +14,10 @@ namespace NForum.Database.EntityFramework.Dbos {
 
 		public Guid ForumId { get; set; }
 		public virtual Forum Forum { get; set; }
+
+		public Guid? LatestReplyId { get; set; }
+		public virtual Reply LatestReply { get; set; } 
+
+		public virtual ICollection<Reply> Replies { get; set; }
 	}
 }

@@ -15,6 +15,7 @@ namespace NForum.Database.EntityFramework.Dbos.Configurations {
 			this.Property(c => c.CustomData).HasMaxLength(Int32.MaxValue);
 			this.Property(c => c.MessageId).IsRequired();
 			this.Property(c => c.ForumId).IsRequired();
+			this.Property(c => c.LatestReplyId).IsOptional();
 		}
 	}
 }

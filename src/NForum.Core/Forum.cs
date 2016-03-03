@@ -9,6 +9,7 @@ namespace NForum.Core {
 		public String Id { get; set; }
 		public String Name { get; set; }
 		public Int32 SortOrder { get; set; }
+		public String Description { get; set; }
 
 		public String CustomData { get; set; }
 		public JObject CustomProperties { get; set; }

@@ -11,11 +11,14 @@ namespace NForum.Database.EntityFramework {
 	public class EntityFrameworkDataStore : IDataStore {
 		protected readonly IRepository<Dbos.Category> categoryRepository;
 		protected readonly IRepository<Dbos.Forum> forumRepository;
+		protected readonly IRepository<Dbos.Topic> topicRepository;
 
 		public EntityFrameworkDataStore(IRepository<Dbos.Category> categoryRepository,
-										IRepository<Dbos.Forum> forumRepository) {
+										IRepository<Dbos.Forum> forumRepository,
+										IRepository<Dbos.Topic> topicRepository) {
 			this.categoryRepository = categoryRepository;
 			this.forumRepository = forumRepository;
+			this.topicRepository = topicRepository;
 		}
 
 		public Category CreateCategory(String name, Int32 sortOrder, String description) {
@@ -276,6 +279,93 @@ namespace NForum.Database.EntityFramework {
 				.ToList()
 				.Select(c => c.ToModel())
 				.OrderBy(c => c.SortOrder);
+		}
+
+		public IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize) {
+			Guid id;
+			if (!Guid.TryParse(forumId, out id)) {
+				throw new ArgumentException(nameof(forumId));
+			}
+
+			IEnumerable<Dbos.Topic> anns = this.topicRepository.FindAll()
+				.Include(t => t.Message)
+				.Include(t => t.Replies)
+				.Where(t => t.ForumId == id)
+				.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
+				.Where(t => t.Type == TopicType.Announcement)
+				.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
+				.ToList();
+
+			IEnumerable<Topic> announcements = anns
+				.Select(t => t.ToModel());
+
+			Int32 announcementCount = announcements.Count();
+			Int32 maxStickiesPerPage = pageSize - announcementCount;
+
+			IEnumerable<Topic> stickies = this.topicRepository.FindAll()
+				.Include(t => t.Message)
+				.Include(t => t.Replies)
+				.Where(t => t.ForumId == id)
+				.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
+				.Where(t => t.Type == TopicType.Sticky)
+				.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
+				.Skip(pageIndex * maxStickiesPerPage)
+				.Take(maxStickiesPerPage)
+				.ToList()
+				.Select(t => t.ToModel());
+
+			Int32 stickiesCount = stickies.Count();
+			Int32 maxRegular = pageSize - announcementCount - stickiesCount;
+
+			return announcements.Union(stickies.Union(
+				this.topicRepository.FindAll()
+					.Include(t => t.LatestReply)
+					.Include(t => t.LatestReply.Message)
+					.Include(t => t.Message)
+					.Include(t => t.Replies)
+					.Where(t => t.ForumId == id)
+					.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
+					.Where(t => t.Type == TopicType.Regular)
+					.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
+					.Skip(pageIndex * pageSize)
+					.Take(maxRegular + 1)
+					.ToList()
+					.Select(t => t.ToModel())
+			));
+		}
+
+		public Topic CreateTopic(String forumId, String subject, String text, TopicType type) {
+			Guid id;
+			if (!Guid.TryParse(forumId, out id)) {
+				throw new ArgumentException(nameof(forumId));
+			}
+
+			if (String.IsNullOrWhiteSpace(subject)) {
+				throw new ArgumentNullException(nameof(subject));
+			}
+
+			Dbos.Forum parent = this.forumRepository.FindById(id);
+			if (parent == null) {
+				throw new ArgumentException(nameof(forumId));
+			}
+
+			Dbos.Topic newTopic = new Dbos.Topic {
+				ForumId = id,
+				State = TopicState.None,
+				Type = type
+			};
+			newTopic.Message = new Dbos.Message {
+				Created = DateTime.UtcNow,
+				ModeratorChanged = false,
+				State = Dbos.MessageState.None,
+				Subject = subject,
+				Text = text,
+				Updated = DateTime.UtcNow
+			};
+
+			newTopic = this.topicRepository.Create(newTopic);
+
+			return newTopic.ToModel();
 		}
 	}
 }

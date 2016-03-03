@@ -10,6 +10,7 @@ namespace NForum.Database.EntityFramework {
 				Id = forum.Id.ToString(),
 				CategoryId = forum.CategoryId.ToString(),
 				CustomData = forum.CustomData,
+				Description = forum.Description,
 				Name = forum.Name,
 				SortOrder = forum.SortOrder,
 				ParentForumId = forum.ParentForumId.ToString()

@@ -75,6 +75,9 @@ namespace NForum.Web {
 
 			/* SERVICES */
 			kernel
+				.Bind<ITopicService>()
+				.To<TopicService>();
+			kernel
 				.Bind<IForumService>()
 				.To<ForumService>();
 			kernel

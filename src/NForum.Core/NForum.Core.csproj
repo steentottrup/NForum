@@ -59,12 +59,15 @@
     <Compile Include="Abstractions\Services\IForumService.cs" />
     <Compile Include="Abstractions\Services\ILoggingService.cs" />
     <Compile Include="Abstractions\Services\IPermissionService.cs" />
+    <Compile Include="Abstractions\Services\ITopicService.cs" />
     <Compile Include="AccessFlag.cs" />
     <Compile Include="Category.cs" />
     <Compile Include="CRUD.cs" />
     <Compile Include="CustomPropertyHolder.cs" />
     <Compile Include="Events\AfterCreateCategory.cs" />
     <Compile Include="Events\BeforeCreateCategory.cs" />
+    <Compile Include="Events\CategoryCreated.cs" />
+    <Compile Include="Events\CategoryUpdated.cs" />
     <Compile Include="Events\EventPublisher.cs" />
     <Compile Include="Extensions\IAuthenticatedUserExtensions.cs" />
     <Compile Include="Extensions\ICustomPropertyHolderExtensions.cs" />
@@ -80,6 +83,7 @@
     <Compile Include="Services\ForumService.cs" />
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\PermissionService.cs" />
+    <Compile Include="Services\TopicService.cs" />
     <Compile Include="Topic.cs" />
     <Compile Include="TopicState.cs" />
     <Compile Include="TopicType.cs" />

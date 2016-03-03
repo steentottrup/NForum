@@ -1,7 +1,7 @@
-﻿using System;
+﻿//using System;
 
-namespace NForum.Core.Events {
+//namespace NForum.Core.Events {
 
-	public class BeforeCreateCategory {
-	}
-}
+//	public class BeforeCreateCategory {
+//	}
+//}

@@ -25,11 +25,11 @@ namespace NForum.Core.Services {
 			// TODO: Log all contructor param types!
 		}
 
-		public Forum Create(IAuthenticatedUser currentUser, String name, Int32 sortOrder, String description, String categoryId) {
+		public Forum Create(IAuthenticatedUser currentUser, String categoryId, String name, Int32 sortOrder, String description) {
 			throw new NotImplementedException();
 		}
 
-		public Forum CreateSubForum(IAuthenticatedUser currentUser, String name, Int32 sortOrder, String description, String forumId) {
+		public Forum CreateSubForum(IAuthenticatedUser currentUser, String forumId, String name, Int32 sortOrder, String description) {
 			throw new NotImplementedException();
 		}
 
