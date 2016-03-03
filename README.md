@@ -27,7 +27,7 @@ We're still a very young project, and are not ready for an alpha release just ye
 * Forum/Topic tracker to keep track of unread/read forums and topics
 * Topic types are: Regular, sticky and announcement
 * Topic state includes: Deleted, moved, quarantined and locked
-* Post state includes: Deleted and quarantined
+* Reply state includes: Deleted and quarantined
 
 ## Roadmap
 
