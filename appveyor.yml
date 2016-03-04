@@ -18,8 +18,6 @@ before_build:
 build:
   project: src\nforum.sln
   publish_nuget: true
-after_build:
-- ps: '#appveyor PushArtifact MongoDB.DocumentLocking.$env:APPVEYOR_BUILD_VERSION.nupkg'
 test:
   assemblies:
     - '**\NForum.tests.*.dll'

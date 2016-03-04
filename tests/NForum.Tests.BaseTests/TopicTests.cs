@@ -14,7 +14,6 @@ namespace NForum.Tests.BaseTests {
 
 	[TestClass]
 	public class TopicTests {
-		private static NForumDbContext dbContext;
 
 		[ClassInitialize]
 		public static void SetUp(TestContext context) {
