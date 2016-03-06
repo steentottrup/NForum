@@ -283,6 +283,7 @@ namespace NForum.Database.EntityFramework {
 				.Include(t => t.Message)
 				.Include(t => t.Replies)
 				.Where(t => t.ForumId == id)
+				// Not really likely that any of these exists, but...
 				.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
 				.Where(t => t.Type == TopicType.Announcement)
 				.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
@@ -290,41 +291,76 @@ namespace NForum.Database.EntityFramework {
 
 			IEnumerable<Topic> announcements = anns
 				.Select(t => t.ToModel());
+			IEnumerable<Topic> stickies = new List<Topic>();
+			IEnumerable<Topic> regulars = new List<Topic>();
 
 			Int32 announcementCount = announcements.Count();
-			Int32 maxStickiesPerPage = pageSize - announcementCount;
+			// The actual amount of topics per page that we need to fetch, the rest is "hard-coded" as announcements.
+			Int32 maxOtherTypesPerPage = pageSize - announcementCount;
 
-			IEnumerable<Topic> stickies = this.topicRepository.FindAll()
-				.Include(t => t.Message)
-				.Include(t => t.Replies)
-				.Where(t => t.ForumId == id)
-				.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
-				.Where(t => t.Type == TopicType.Sticky)
-				.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
-				.Skip(pageIndex * maxStickiesPerPage)
-				.Take(maxStickiesPerPage)
-				.ToList()
-				.Select(t => t.ToModel());
-
-			Int32 stickiesCount = stickies.Count();
-			Int32 maxRegular = pageSize - announcementCount - stickiesCount;
-
-			return announcements.Union(stickies.Union(
-				this.topicRepository.FindAll()
-					.Include(t => t.LatestReply)
-					.Include(t => t.LatestReply.Message)
+			// Do we have room for anything but the announcements?
+			if (maxOtherTypesPerPage > 0) {
+				// Yeah, let's fetch first stickies, then regular topics!
+				IEnumerable<Dbos.Topic> tempStickies = this.topicRepository.FindAll()
 					.Include(t => t.Message)
 					.Include(t => t.Replies)
 					.Where(t => t.ForumId == id)
 					.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
-					.Where(t => t.Type == TopicType.Regular)
+					.Where(t => t.Type == TopicType.Sticky);
+
+				Int32 totalStickies = tempStickies.Count();
+
+				stickies = tempStickies
 					.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
-					.Skip(pageIndex * pageSize)
-					.Take(maxRegular + 1)
+					.Skip(maxOtherTypesPerPage * pageIndex)
+					.Take(maxOtherTypesPerPage)
 					.ToList()
-					.Select(t => t.ToModel())
-			));
+					.Select(t => t.ToModel());
+
+				// Do we have room for anything but the announcements and stickies?
+				if (stickies.Count() < maxOtherTypesPerPage) {
+					// Yeah, let's fetch some regular topics then!
+					Int32 skip = 0;
+					if (stickies.Count() == 0) {
+						skip = (pageIndex * maxOtherTypesPerPage) - totalStickies;
+					}
+					Int32 take = maxOtherTypesPerPage - stickies.Count();
+					regulars = this.topicRepository.FindAll()
+						.Include(t => t.LatestReply)
+						.Include(t => t.LatestReply.Message)
+						.Include(t => t.Message)
+						.Include(t => t.Replies)
+						.Where(t => t.ForumId == id)
+						.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
+						.Where(t => t.Type == TopicType.Regular)
+						.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
+						.Skip(skip)
+						.Take(take)
+						.ToList()
+						.Select(t => t.ToModel());
+				}
+			}
+
+			return announcements.Union(
+					stickies.Union(
+							regulars
+						)
+				);
 		}
+
+		//private IEnumerable<Topic> FetchTopicType(Guid id, TopicType type, Int32 take, Int32 skip) {
+		//	return this.topicRepository.FindAll()
+		//		.Include(t => t.Message)
+		//		.Include(t => t.Replies)
+		//		.Where(t => t.ForumId == id)
+		//		.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
+		//		.Where(t => t.Type == type)
+		//		.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
+		//		.Skip(skip)
+		//		.Take(take)
+		//		.ToList()
+		//		.Select(t => t.ToModel());
+		//}
 
 		public Topic CreateTopic(String forumId, String subject, String text, TopicType type) {
 			Guid id;

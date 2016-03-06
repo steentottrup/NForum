@@ -6,6 +6,8 @@ namespace NForum.Core {
 		public String Id { get; set; }
 		public String Subject { get; set; }
 		public String Text { get; set; }
+		public TopicType Type { get; set; }
+		public TopicState State { get; set; }
 		public DateTime Created { get; set; }
 		public DateTime Updated { get; set; }
 

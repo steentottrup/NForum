@@ -11,7 +11,9 @@ namespace NForum.Database.EntityFramework {
 				Subject = topic.Message.Subject,
 				Text = topic.Message.Text,
 				Created = topic.Message.Created,
-				Updated = topic.Message.Updated
+				Updated = topic.Message.Updated,
+				State = topic.State,
+				Type = topic.Type
 			};
 		}
 	}
