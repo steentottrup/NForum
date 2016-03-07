@@ -9,8 +9,5 @@ namespace NForum.Core.Abstractions.Services {
 		IEnumerable<Category> FindAll();
 		Category Update(String categoryId, String name, Int32 sortOrder, String description);
 		Boolean Delete(String categoryId);
-
-		IEnumerable<Category> FindCategoriesPlus2Levels(/* Permissions/user */);
-		Category FindCategoryPlus2Levels(/* Permissions/user */String categoryId);
 	}
 }

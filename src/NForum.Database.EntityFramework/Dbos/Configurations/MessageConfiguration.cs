@@ -15,6 +15,8 @@ namespace NForum.Database.EntityFramework.Dbos.Configurations {
 			this.Property(c => c.State).IsRequired();
 			this.Property(c => c.Created).IsRequired();
 			this.Property(c => c.Updated).IsRequired();
+			this.Property(c => c.EditorId).IsRequired();
+			this.Property(c => c.AuthorId).IsRequired();
 		}
 	}
 }

@@ -1,11 +1,11 @@
-﻿using NForum.Core.Abstractions.Data;
-using NForum.Core.Abstractions.Services;
-using System;
-using NForum.Core.Abstractions;
-using System.Collections.Generic;
-using NForum.Core.Abstractions.Providers;
+﻿using NForum.Core.Abstractions;
+using NForum.Core.Abstractions.Data;
 using NForum.Core.Abstractions.Events;
+using NForum.Core.Abstractions.Providers;
+using NForum.Core.Abstractions.Services;
 using NForum.Core.Events;
+using System;
+using System.Collections.Generic;
 
 namespace NForum.Core.Services {
 
@@ -84,6 +84,10 @@ namespace NForum.Core.Services {
 			return this.dataStore.DeleteCategory(categoryId);
 		}
 
+		/// <summary>
+		/// Method for getting all categories the current user has read access to.
+		/// </summary>
+		/// <returns></returns>
 		public IEnumerable<Category> FindAll() {
 			this.loggingService.Application.DebugWrite("FindAll called on CategoryService");
 
@@ -92,6 +96,13 @@ namespace NForum.Core.Services {
 			return this.dataStore.FindAllCategories();
 		}
 
+		/// <summary>
+		/// Method for getting the category with the given Id.
+		/// </summary>
+		/// <param name="categoryId">Id of the wanted category.</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException">If the given categoryId is empty/null.</exception>
+		/// <exception cref="PermissionException">If the current user does not have read access to the requested category.</exception>
 		public Category FindById(String categoryId) {
 			if (String.IsNullOrWhiteSpace(categoryId)) {
 				throw new ArgumentNullException(nameof(categoryId));
@@ -141,19 +152,6 @@ namespace NForum.Core.Services {
 			this.eventPublisher.Publish<CategoryUpdated>(afterEvent);
 
 			return output;
-		}
-
-		public IEnumerable<Category> FindCategoriesPlus2Levels() {
-			// TODO: Permissions!!
-			return this.dataStore.FindCategoriesPlus2Levels();
-		}
-
-		public Category FindCategoryPlus2Levels(String categoryId) {
-			if (String.IsNullOrWhiteSpace(categoryId)) {
-				throw new ArgumentNullException(nameof(categoryId));
-			}
-			// TODO: Permissions!!
-			return this.dataStore.FindCategoryPlus2Levels(categoryId);
 		}
 	}
 }

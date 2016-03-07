@@ -50,7 +50,7 @@ namespace NForum.Core.Services {
 				// TODO: Permissions!
 			}
 
-			Topic output = this.dataStore.CreateTopic(forumId, subject, text, type.Value /* Author */);
+			Topic output = this.dataStore.CreateTopic(currentUser.Id, forumId, subject, text, type.Value);
 			this.loggingService.Application.DebugWriteFormat("Topic created in TopicService, Id: {0}", output.Id);
 
 			// TODO:
@@ -72,20 +72,6 @@ namespace NForum.Core.Services {
 
 		public IEnumerable<Topic> FindAll() {
 			throw new NotImplementedException();
-		}
-
-		public IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize) {
-			if (String.IsNullOrWhiteSpace(forumId)) {
-				throw new ArgumentNullException(nameof(forumId));
-			}
-			if (pageIndex < 0) {
-				pageIndex = 0;
-			}
-			if (pageSize <= 0) {
-				// TODO: Get from config!
-				pageSize = 20;
-			}
-			return this.dataStore.FindByForum(forumId, pageIndex, pageSize);
 		}
 
 		public Topic FindById(String topicId) {

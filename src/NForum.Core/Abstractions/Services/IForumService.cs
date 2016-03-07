@@ -10,7 +10,5 @@ namespace NForum.Core.Abstractions.Services {
 		IEnumerable<Forum> FindAll();
 		Forum Update(String forumId, String name, Int32 sortOrder, String description);
 		Boolean Delete(String forumId);
-
-		Forum FindForumPlus2Levels(/* Permissions/user */String forumId);
 	}
 }

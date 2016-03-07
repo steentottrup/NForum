@@ -12,6 +12,7 @@ namespace NForum.Database.EntityFramework {
 		public IDbSet<Dbos.Message> Messages { get; set; }
 		public IDbSet<Dbos.Attachment> Attachments { get; set; }
 		public IDbSet<Dbos.Reply> Replies { get; set; }
+		public IDbSet<Dbos.ForumUser> ForumUsers { get; set; }
 
 		public NForumDbContext(DbConnection connection) : base(connection, true) { }
 		public NForumDbContext() : this("DefaultConnection") { }

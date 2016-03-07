@@ -55,10 +55,12 @@
     <Compile Include="Dbos\Configurations\AttachmentConfiguration.cs" />
     <Compile Include="Dbos\Configurations\CategoryConfiguration.cs" />
     <Compile Include="Dbos\Configurations\ForumConfiguration.cs" />
+    <Compile Include="Dbos\Configurations\ForumUserConfiguration.cs" />
     <Compile Include="Dbos\Configurations\MessageConfiguration.cs" />
     <Compile Include="Dbos\Configurations\ReplyConfiguration.cs" />
     <Compile Include="Dbos\Configurations\TopicConfiguration.cs" />
     <Compile Include="Dbos\Forum.cs" />
+    <Compile Include="Dbos\ForumUser.cs" />
     <Compile Include="Dbos\Message.cs" />
     <Compile Include="Dbos\MessageState.cs" />
     <Compile Include="Dbos\Reply.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="EntityFrameworkDataStore.cs" />
     <Compile Include="Extensions\CategoryExtensions.cs" />
     <Compile Include="Extensions\ForumExtensions.cs" />
+    <Compile Include="Extensions\ReplyExtensions.cs" />
     <Compile Include="Extensions\TopicExtensions.cs" />
     <Compile Include="NForumDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

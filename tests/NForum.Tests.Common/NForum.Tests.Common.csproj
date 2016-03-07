@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FakeSettings.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="FakeEventPublisher.cs" />
     <Compile Include="FakeLogger.cs" />

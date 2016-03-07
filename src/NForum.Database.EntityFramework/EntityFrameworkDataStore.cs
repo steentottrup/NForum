@@ -12,13 +12,16 @@ namespace NForum.Database.EntityFramework {
 		protected readonly IRepository<Dbos.Category> categoryRepository;
 		protected readonly IRepository<Dbos.Forum> forumRepository;
 		protected readonly IRepository<Dbos.Topic> topicRepository;
+		protected readonly IRepository<Dbos.Reply> replyRepository;
 
 		public EntityFrameworkDataStore(IRepository<Dbos.Category> categoryRepository,
 										IRepository<Dbos.Forum> forumRepository,
-										IRepository<Dbos.Topic> topicRepository) {
+										IRepository<Dbos.Topic> topicRepository,
+										IRepository<Dbos.Reply> replyRepository) {
 			this.categoryRepository = categoryRepository;
 			this.forumRepository = forumRepository;
 			this.topicRepository = topicRepository;
+			this.replyRepository = replyRepository;
 		}
 
 		public Category CreateCategory(String name, Int32 sortOrder, String description) {
@@ -273,7 +276,7 @@ namespace NForum.Database.EntityFramework {
 				.OrderBy(c => c.SortOrder);
 		}
 
-		public IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize) {
+		public IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize, Boolean includeExtra) {
 			Guid id;
 			if (!Guid.TryParse(forumId, out id)) {
 				throw new ArgumentException(nameof(forumId));
@@ -300,7 +303,7 @@ namespace NForum.Database.EntityFramework {
 
 			// Do we have room for anything but the announcements?
 			if (maxOtherTypesPerPage > 0) {
-				// Yeah, let's fetch first stickies, then regular topics!
+				// Yeah, let's fetch stickies first, then regular topics!
 				IEnumerable<Dbos.Topic> tempStickies = this.topicRepository.FindAll()
 					.Include(t => t.Message)
 					.Include(t => t.Replies)
@@ -313,7 +316,7 @@ namespace NForum.Database.EntityFramework {
 				stickies = tempStickies
 					.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
 					.Skip(maxOtherTypesPerPage * pageIndex)
-					.Take(maxOtherTypesPerPage)
+					.Take(maxOtherTypesPerPage + (includeExtra ? 1 : 0))
 					.ToList()
 					.Select(t => t.ToModel());
 
@@ -321,21 +324,26 @@ namespace NForum.Database.EntityFramework {
 				if (stickies.Count() < maxOtherTypesPerPage) {
 					// Yeah, let's fetch some regular topics then!
 					Int32 skip = 0;
+					// Are we getting any stickies, or are we past those?
 					if (stickies.Count() == 0) {
+						// We're past, so only regulars! Let's figure out how many we need to skip!
 						skip = (pageIndex * maxOtherTypesPerPage) - totalStickies;
 					}
+					// And how many are we taking?
 					Int32 take = maxOtherTypesPerPage - stickies.Count();
+					// Do it!
 					regulars = this.topicRepository.FindAll()
 						.Include(t => t.LatestReply)
 						.Include(t => t.LatestReply.Message)
 						.Include(t => t.Message)
+						// TODO: Really? That's potentially A LOT of data!
 						.Include(t => t.Replies)
 						.Where(t => t.ForumId == id)
 						.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
 						.Where(t => t.Type == TopicType.Regular)
 						.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
 						.Skip(skip)
-						.Take(take)
+						.Take(take + (includeExtra ? 1 : 0))
 						.ToList()
 						.Select(t => t.ToModel());
 				}
@@ -348,24 +356,14 @@ namespace NForum.Database.EntityFramework {
 				);
 		}
 
-		//private IEnumerable<Topic> FetchTopicType(Guid id, TopicType type, Int32 take, Int32 skip) {
-		//	return this.topicRepository.FindAll()
-		//		.Include(t => t.Message)
-		//		.Include(t => t.Replies)
-		//		.Where(t => t.ForumId == id)
-		//		.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
-		//		.Where(t => t.Type == type)
-		//		.OrderByDescending(t => t.LatestReplyId.HasValue == true ? t.LatestReply.Message.Created : t.Message.Created)
-		//		.Skip(skip)
-		//		.Take(take)
-		//		.ToList()
-		//		.Select(t => t.ToModel());
-		//}
-
-		public Topic CreateTopic(String forumId, String subject, String text, TopicType type) {
+		public Topic CreateTopic(String userId, String forumId, String subject, String text, TopicType type) {
 			Guid id;
 			if (!Guid.TryParse(forumId, out id)) {
 				throw new ArgumentException(nameof(forumId));
+			}
+			Guid uId;
+			if (!Guid.TryParse(userId, out uId)) {
+				throw new ArgumentException(nameof(userId));
 			}
 
 			if (String.IsNullOrWhiteSpace(subject)) {
@@ -384,11 +382,12 @@ namespace NForum.Database.EntityFramework {
 			};
 			newTopic.Message = new Dbos.Message {
 				Created = DateTime.UtcNow,
-				ModeratorChanged = false,
 				State = Dbos.MessageState.None,
 				Subject = subject,
 				Text = text,
-				Updated = DateTime.UtcNow
+				Updated = DateTime.UtcNow,
+				AuthorId = uId,
+				EditorId = uId,
 			};
 
 			newTopic = this.topicRepository.Create(newTopic);
@@ -401,6 +400,138 @@ namespace NForum.Database.EntityFramework {
 				.ToList()
 				.Select(c => c.ToModel())
 				.OrderBy(c => c.SortOrder);
+		}
+
+		public Int32 GetNumberOfForumPages(String forumId, Int32 pageSize) {
+			Guid id;
+			if (!Guid.TryParse(forumId, out id)) {
+				throw new ArgumentException(nameof(forumId));
+			}
+
+			Int32 announcementCount = this.topicRepository.FindAll()
+				.Where(t => t.ForumId == id)
+				// Not really likely that any of these exists, but...
+				.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
+				.Where(t => t.Type == TopicType.Announcement)
+				.Count();
+
+			Int32 otherCount = this.topicRepository.FindAll()
+				.Where(t => t.ForumId == id)
+				// Not really likely that any of these exists, but...
+				.Where(t => t.State == TopicState.Locked || t.State == TopicState.Moved || t.State == TopicState.None)
+				.Where(t => t.Type != TopicType.Announcement)
+				.Count();
+
+			// The actual amount of topics per page, the rest is "hard-coded" as announcements.
+			Int32 maxOtherTypesPerPage = pageSize - announcementCount;
+
+			Int32 pages = 1;
+			if (maxOtherTypesPerPage > 0 && otherCount > 0) {
+				pages = otherCount / maxOtherTypesPerPage;
+				if (otherCount % maxOtherTypesPerPage != 0) {
+					pages++;
+				}
+			}
+
+			return pages;
+		}
+
+		public Int32 GetNumberOfTopicPages(String topicId, Int32 pageSize, Boolean includeDeleted) {
+			Guid id;
+			if (!Guid.TryParse(topicId, out id)) {
+				throw new ArgumentException(nameof(topicId));
+			}
+			var query = this.replyRepository.FindAll()
+				.Where(r => r.TopicId == id);
+			if (includeDeleted) {
+				query = query.Where(r => r.State == ReplyState.Deleted || r.State == ReplyState.None);
+			}
+			else {
+				query = query.Where(r => r.State == ReplyState.None);
+			}
+
+			// Plus one for the topic!!
+			Int32 count = query.Count() + 1;
+
+			Int32 pages = count / pageSize;
+			if (count % pageSize != 0) {
+				pages++;
+			}
+
+			return pages;
+		}
+
+		public IEnumerable<Reply> FindByTopic(String topicId, Int32 pageIndex, Int32 pageSize, Boolean includeDeleted) {
+			Guid id;
+			if (!Guid.TryParse(topicId, out id)) {
+				throw new ArgumentException(nameof(topicId));
+			}
+
+			Dbos.Topic topic = this.topicRepository.FindById(id);
+
+			Int32 skip = 0;
+			Int32 take = pageSize;
+			// Not on the first page?
+			if (pageIndex == 0) {
+				skip = pageIndex * pageSize;
+			}
+
+			IEnumerable<Reply> replies = this.replyRepository.FindAll()
+				.Include(r => r.Message)
+				.Where(r => r.TopicId == id)
+				.Where(r => (r.State == ReplyState.None || (r.State == ReplyState.Deleted && includeDeleted)))
+				.OrderBy(r => r.Message.Created)
+				.Skip(skip)
+				.Take(take)
+				.ToList()
+				.Select(r => r.ToModel());
+
+			return replies;
+		}
+
+		public Topic UpdateTopic(String userId, String topicId, String subject, String text, TopicType type) {
+			Guid id;
+			if (!Guid.TryParse(topicId, out id)) {
+				throw new ArgumentException(nameof(topicId));
+			}
+			Guid uId;
+			if (!Guid.TryParse(userId, out uId)) {
+				throw new ArgumentException(nameof(userId));
+			}
+			if (String.IsNullOrWhiteSpace(subject)) {
+				throw new ArgumentNullException(nameof(subject));
+			}
+			Dbos.Topic topic = this.topicRepository.FindById(id);
+
+			topic.Message.Subject = subject;
+			topic.Message.Text = text;
+			topic.Type = type;
+			topic.Message.Updated = DateTime.UtcNow;
+			topic.Message.EditorId = uId;
+			topic.Message.Updated = DateTime.UtcNow;
+
+			topic = this.topicRepository.Update(topic);
+			return topic.ToModel();
+		}
+
+		public Topic FindTopicById(String topicId) {
+			Guid id;
+			if (!Guid.TryParse(topicId, out id)) {
+				throw new ArgumentException(nameof(topicId));
+			}
+			Dbos.Topic topic = this.topicRepository.FindById(id);
+			return topic.ToModel();
+		}
+
+		public Boolean DeleteTopic(String topicId) {
+			// TODO: All replies? All attachments etc??
+			Guid id;
+			if (!Guid.TryParse(topicId, out id)) {
+				throw new ArgumentException(nameof(topicId));
+			}
+			this.topicRepository.DeleteById(id);
+			// TODO: ?!?!
+			return true;
 		}
 	}
 }

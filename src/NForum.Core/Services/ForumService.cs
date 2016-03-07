@@ -1,10 +1,10 @@
-﻿using NForum.Core.Abstractions.Services;
-using System;
-using NForum.Core.Abstractions;
-using System.Collections.Generic;
+﻿using NForum.Core.Abstractions;
 using NForum.Core.Abstractions.Data;
 using NForum.Core.Abstractions.Events;
 using NForum.Core.Abstractions.Providers;
+using NForum.Core.Abstractions.Services;
+using System;
+using System.Collections.Generic;
 
 namespace NForum.Core.Services {
 
@@ -25,10 +25,30 @@ namespace NForum.Core.Services {
 			// TODO: Log all contructor param types!
 		}
 
+		/// <summary>
+		/// Use this method to create a new <see cref="Forum"/> below an existing <see cref="Category"/>.
+		/// </summary>
+		/// <param name="categoryId">The Id of the parent category.</param>
+		/// <param name="name">The name.</param>
+		/// <param name="sortOrder">The sort order.</param>
+		/// <param name="description">The description.</param>
+		/// <returns>The created forum.</returns>
+		/// <exception cref="ArgumentNullException">If the name parameter or null/empty string.</exception>
+		/// <exception cref="PermissionException">If the current user does not have the required permissions.</exception>
 		public Forum Create(String categoryId, String name, Int32 sortOrder, String description) {
 			return this.CreateForum(categoryId, String.Empty, name, sortOrder, description);
 		}
 
+		/// <summary>
+		/// Use this method to create a new <see cref="Forum"/> below an existing <see cref="Forum"/>.
+		/// </summary>
+		/// <param name="forumId">The Id of the parent forum.</param>
+		/// <param name="name">The name.</param>
+		/// <param name="sortOrder">The sort order.</param>
+		/// <param name="description">The description.</param>
+		/// <returns>The created forum.</returns>
+		/// <exception cref="ArgumentNullException">If the name parameter or null/empty string.</exception>
+		/// <exception cref="PermissionException">If the current user does not have the required permissions.</exception>
 		public Forum CreateSubForum(String forumId, String name, Int32 sortOrder, String description) {
 			Forum forum = this.FindById(forumId);
 			return this.CreateForum(forum.CategoryId, forumId, name, sortOrder, description);
@@ -63,6 +83,13 @@ namespace NForum.Core.Services {
 			return output;
 		}
 
+		/// <summary>
+		/// Method for deleting an existing <see cref="Forum"/>.
+		/// </summary>
+		/// <param name="forumId">Id of the forum.</param>
+		/// <returns>True if the forum was deleted, false otherwise.</returns>
+		/// <exception cref="ArgumentNullException">If the forumId parameter is null/empty.</exception>
+		/// <exception cref="PermissionException">If the current user does not have the required permissions.</exception>
 		public Boolean Delete(String forumId) {
 			if (String.IsNullOrWhiteSpace(forumId)) {
 				throw new ArgumentNullException(nameof(forumId));
@@ -97,13 +124,6 @@ namespace NForum.Core.Services {
 			IAuthenticatedUser currentUser = this.userProvider.CurrentUser;
 			// TODO: Permissions!!
 			return this.dataStore.FindForumById(forumId);
-		}
-
-		public Forum FindForumPlus2Levels(String forumId) {
-			if (String.IsNullOrWhiteSpace(forumId)) {
-				throw new ArgumentNullException(nameof(forumId));
-			}
-			return this.dataStore.FindForumPlus2Levels(forumId);
 		}
 
 		public Forum Update(String forumId, String name, Int32 sortOrder, String description) {

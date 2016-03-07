@@ -49,9 +49,12 @@
     <Compile Include="Abstractions\Events\IEventSubscriber.cs" />
     <Compile Include="Abstractions\IApplicationContext.cs" />
     <Compile Include="Abstractions\IAuthenticatedUser.cs" />
+    <Compile Include="Abstractions\IAuthoredContent.cs" />
+    <Compile Include="Abstractions\IContentCarrier.cs" />
     <Compile Include="Abstractions\ICoreLogger.cs" />
     <Compile Include="Abstractions\ICustomPropertyHolder.cs" />
     <Compile Include="Abstractions\ILogger.cs" />
+    <Compile Include="Abstractions\ISettings.cs" />
     <Compile Include="Abstractions\IState.cs" />
     <Compile Include="Abstractions\Providers\IUserProvider.cs" />
     <Compile Include="Abstractions\IApplicationLogger.cs" />
@@ -59,7 +62,9 @@
     <Compile Include="Abstractions\Services\IForumService.cs" />
     <Compile Include="Abstractions\Services\ILoggingService.cs" />
     <Compile Include="Abstractions\Services\IPermissionService.cs" />
+    <Compile Include="Abstractions\Services\IReplyService.cs" />
     <Compile Include="Abstractions\Services\ITopicService.cs" />
+    <Compile Include="Abstractions\Services\IUIService.cs" />
     <Compile Include="AccessFlag.cs" />
     <Compile Include="Category.cs" />
     <Compile Include="CRUD.cs" />
@@ -84,6 +89,7 @@
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\TopicService.cs" />
+    <Compile Include="Services\UIService.cs" />
     <Compile Include="Topic.cs" />
     <Compile Include="TopicState.cs" />
     <Compile Include="TopicType.cs" />

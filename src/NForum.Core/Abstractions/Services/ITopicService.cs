@@ -9,7 +9,5 @@ namespace NForum.Core.Abstractions.Services {
 		IEnumerable<Topic> FindAll();
 		Topic Update(String topicId, String subject, String text, TopicType? type = null);
 		Boolean Delete(String topicId);
-
-		IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize);
 	}
 }

@@ -89,6 +89,9 @@ namespace NForum.Web {
 			kernel
 				.Bind<ILoggingService>()
 				.To<LoggingService>();
+			kernel
+				.Bind<IUIService>()
+				.To<UIService>();
 
 			/* PROVIDERS and more! */
 			kernel

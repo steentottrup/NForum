@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
 
 namespace NForum.Database.EntityFramework.Dbos.Configurations {
@@ -16,6 +17,8 @@ namespace NForum.Database.EntityFramework.Dbos.Configurations {
 			this.Property(c => c.MessageId).IsRequired();
 			this.Property(c => c.ForumId).IsRequired();
 			this.Property(c => c.LatestReplyId).IsOptional();
+
+			// TODO: Indexes!!
 		}
 	}
 }
