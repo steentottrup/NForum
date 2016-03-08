@@ -78,6 +78,7 @@
     <Compile Include="Events\TopicDeleted.cs" />
     <Compile Include="Events\TopicUpdated.cs" />
     <Compile Include="Extensions\IAuthenticatedUserExtensions.cs" />
+    <Compile Include="Extensions\IAuthoredContentExtensions.cs" />
     <Compile Include="Extensions\ICustomPropertyHolderExtensions.cs" />
     <Compile Include="Forum.cs" />
     <Compile Include="Logging\LoggingBase.cs" />

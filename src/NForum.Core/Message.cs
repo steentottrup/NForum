@@ -1,7 +1,7 @@
-﻿using System;
+﻿//using System;
 
-namespace NForum.Core {
+//namespace NForum.Core {
 
-	public class Message {
-	}
-}
+//	public class Message {
+//	}
+//}

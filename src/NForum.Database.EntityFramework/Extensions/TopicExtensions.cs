@@ -10,7 +10,9 @@ namespace NForum.Database.EntityFramework {
 				Id = topic.Id.ToString(),
 				Subject = topic.Message.Subject,
 				Text = topic.Message.Text,
+				CreatorId = topic.Message.AuthorId.ToString(),
 				Created = topic.Message.Created,
+				EditorId = topic.Message.EditorId.ToString(),
 				Updated = topic.Message.Updated,
 				State = topic.State,
 				Type = topic.Type
