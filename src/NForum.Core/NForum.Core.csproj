@@ -74,6 +74,9 @@
     <Compile Include="Events\CategoryCreated.cs" />
     <Compile Include="Events\CategoryUpdated.cs" />
     <Compile Include="Events\EventPublisher.cs" />
+    <Compile Include="Events\TopicCreated.cs" />
+    <Compile Include="Events\TopicDeleted.cs" />
+    <Compile Include="Events\TopicUpdated.cs" />
     <Compile Include="Extensions\IAuthenticatedUserExtensions.cs" />
     <Compile Include="Extensions\ICustomPropertyHolderExtensions.cs" />
     <Compile Include="Forum.cs" />
