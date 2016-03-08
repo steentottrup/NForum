@@ -489,7 +489,7 @@ namespace NForum.Database.EntityFramework {
 			return replies;
 		}
 
-		public Topic UpdateTopic(String userId, String topicId, String subject, String text, TopicType type) {
+		public Topic UpdateTopic(String userId, String topicId, String subject, String text, TopicType type, TopicState state) {
 			Guid id;
 			if (!Guid.TryParse(topicId, out id)) {
 				throw new ArgumentException(nameof(topicId));
@@ -508,7 +508,7 @@ namespace NForum.Database.EntityFramework {
 			topic.Type = type;
 			topic.Message.Updated = DateTime.UtcNow;
 			topic.Message.EditorId = uId;
-			topic.Message.Updated = DateTime.UtcNow;
+			topic.State = state;
 
 			topic = this.topicRepository.Update(topic);
 			return topic.ToModel();

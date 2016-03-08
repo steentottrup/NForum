@@ -7,7 +7,7 @@ namespace NForum.Core.Abstractions.Services {
 		Topic Create(String forumId, String subject, String text, TopicType? type = null);
 		Topic FindById(String topicId);
 		IEnumerable<Topic> FindAll();
-		Topic Update(String topicId, String subject, String text, TopicType? type = null);
+		Topic Update(String topicId, String subject, String text, TopicType? type = null, TopicState? state = null);
 		Boolean Delete(String topicId);
 	}
 }

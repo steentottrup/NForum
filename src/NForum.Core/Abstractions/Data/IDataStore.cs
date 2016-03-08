@@ -16,7 +16,7 @@ namespace NForum.Core.Abstractions.Data {
 		Boolean DeleteForum(String forumId);
 		/* CRUD for topics */
 		Topic CreateTopic(String authorId, String forumId, String subject, String text, TopicType type);
-		Topic UpdateTopic(String authorId, String topicId, String subject, String text, TopicType type);
+		Topic UpdateTopic(String authorId, String topicId, String subject, String text, TopicType type, TopicState state);
 		Topic FindTopicById(String topicId);
 		Boolean DeleteTopic(String topicId);
 		/* CRUD for users */
