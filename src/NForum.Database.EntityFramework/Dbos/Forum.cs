@@ -17,5 +17,6 @@ namespace NForum.Database.EntityFramework.Dbos {
 		public virtual Forum ParentForum { get; set; }
 
 		public virtual ICollection<Forum> SubForums { get; set; }
+		public virtual ICollection<Topic> Topics{ get; set; }
 	}
 }

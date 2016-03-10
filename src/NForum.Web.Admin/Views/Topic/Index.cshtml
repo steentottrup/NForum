@@ -1,0 +1,32 @@
+﻿@model NForum.Web.ViewModels.Topic
+@{
+	ViewBag.Title = "Index";
+
+	List<NForum.Web.ViewModels.Forum> bread = new List<NForum.Web.ViewModels.Forum>();
+	NForum.Web.ViewModels.Forum fm = Model.Forum;
+	bread.Add(fm);
+	while (fm.ParentForum != null) {
+		bread.Add(fm.ParentForum);
+		fm = fm.ParentForum;
+	}
+
+	bread.Reverse();
+}
+
+<h2>Index</h2>
+<a href="/">Forum</a>
+<a href="/category/index/@Model.Forum.Category.Id">@Model.Forum.Category.Name</a>
+@foreach (NForum.Web.ViewModels.Forum f in bread) {
+	<a href="/forum/index/@f.Id">@f.Name</a>
+}
+<br />
+<h1>@Model.Subject</h1>
+<p>@Model.Text</p>
+<ul>
+	@foreach (NForum.Core.Reply r in Model.Replies) {
+		<li>
+			<h2>@r.Subject</h2>
+			<p>@r.Text</p>
+		</li>
+	}
+</ul>

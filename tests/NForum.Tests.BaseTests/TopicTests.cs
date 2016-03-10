@@ -73,7 +73,7 @@ namespace NForum.Tests.BaseTests {
 			String regularSubject = "I'm regular";
 			Topic regular = topicService.Create(forum.Id, regularSubject, "bla");
 
-			IEnumerable<Topic> topics = uiService.FindByForum(forum.Id, 0, 20);
+			IEnumerable<Topic> topics = uiService.FindTopicsByForum(forum.Id, 0, 20);
 			topics.Count().Should().Be(3, "3 topics were created");
 			topics.First().Type.Should().Be(TopicType.Announcement, "Announcements should always be first");
 			topics.Skip(1).First().Type.Should().Be(TopicType.Sticky, "Stickies should always be second");
@@ -132,7 +132,7 @@ namespace NForum.Tests.BaseTests {
 			Topic regular1 = topicService.Create(forum.Id, "regular", "bla");
 			Topic regular2 = topicService.Create(forum.Id, "regular", "bla");
 
-			IEnumerable<Topic> topics = uiService.FindByForum(forum.Id, 0, 5, true);
+			IEnumerable<Topic> topics = uiService.FindTopicsByForum(forum.Id, 0, 5, true);
 			topics.Count().Should().Be(6, "we should get the request +1 because more topics than will fit on one page");
 			topics.First().Type.Should().Be(TopicType.Announcement);
 			topics.Skip(1).First().Type.Should().Be(TopicType.Announcement);
@@ -142,7 +142,7 @@ namespace NForum.Tests.BaseTests {
 			topics.Skip(4).First().Type.Should().Be(TopicType.Sticky);
 			// We're not testing the last one, it should never be shown, it's just a "marker" to indicate that more exists (next page)
 
-			topics = uiService.FindByForum(forum.Id, 1, 5, true);
+			topics = uiService.FindTopicsByForum(forum.Id, 1, 5, true);
 			topics.Count().Should().Be(6, "we should get the 3 announcements and 1 sticky and 1 regular from the 2nd page (we have 8 in all, and 5 per page) and plus 1 to indicate \"more\" pages");
 			topics.First().Type.Should().Be(TopicType.Announcement);
 			topics.Skip(1).First().Type.Should().Be(TopicType.Announcement);
@@ -150,7 +150,7 @@ namespace NForum.Tests.BaseTests {
 			topics.Skip(3).First().Type.Should().Be(TopicType.Sticky);
 			topics.Skip(4).First().Type.Should().Be(TopicType.Regular);
 
-			topics = uiService.FindByForum(forum.Id, 2, 5, true);
+			topics = uiService.FindTopicsByForum(forum.Id, 2, 5, true);
 			topics.Count().Should().Be(4, "we should get the 3 announcements and 1 regular from the 3nd page (we have 8 in all, and 5 per page)");
 			topics.First().Type.Should().Be(TopicType.Announcement);
 			topics.Skip(1).First().Type.Should().Be(TopicType.Announcement);

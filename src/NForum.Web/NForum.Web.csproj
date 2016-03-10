@@ -116,9 +116,11 @@
     <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppStart\FilterConfig.cs" />
+    <Compile Include="Providers\AuthenticatedUser.cs" />
     <Compile Include="Providers\MvcUserProvider.cs" />
     <Compile Include="Results\ProperJsonResult.cs" />
     <Compile Include="ViewModels\Forum.cs" />
+    <Compile Include="ViewModels\Topic.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NForum.Core\NForum.Core.csproj">

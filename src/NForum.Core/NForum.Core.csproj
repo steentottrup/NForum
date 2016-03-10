@@ -60,6 +60,7 @@
     <Compile Include="Abstractions\IApplicationLogger.cs" />
     <Compile Include="Abstractions\Services\ICategoryService.cs" />
     <Compile Include="Abstractions\Services\IForumService.cs" />
+    <Compile Include="Abstractions\Services\IForumUserService.cs" />
     <Compile Include="Abstractions\Services\ILoggingService.cs" />
     <Compile Include="Abstractions\Services\IPermissionService.cs" />
     <Compile Include="Abstractions\Services\IReplyService.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Extensions\IAuthoredContentExtensions.cs" />
     <Compile Include="Extensions\ICustomPropertyHolderExtensions.cs" />
     <Compile Include="Forum.cs" />
+    <Compile Include="ForumUser.cs" />
     <Compile Include="Logging\LoggingBase.cs" />
     <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="Message.cs" />
@@ -90,10 +92,12 @@
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\Exceptions.cs" />
     <Compile Include="Services\ForumService.cs" />
+    <Compile Include="Services\ForumUserService.cs" />
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\TopicService.cs" />
     <Compile Include="Services\UIService.cs" />
+    <Compile Include="Settings\ConfigSettings.cs" />
     <Compile Include="Topic.cs" />
     <Compile Include="TopicState.cs" />
     <Compile Include="TopicType.cs" />

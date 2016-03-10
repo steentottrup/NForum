@@ -43,7 +43,7 @@ namespace NForum.Core.Services {
 			return this.dataStore.FindForumPlus2Levels(forumId);
 		}
 
-		public IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize, Boolean includeExtra = false) {
+		public IEnumerable<Topic> FindTopicsByForum(String forumId, Int32 pageIndex, Int32 pageSize, Boolean includeExtra = false) {
 			if (String.IsNullOrWhiteSpace(forumId)) {
 				throw new ArgumentNullException(nameof(forumId));
 			}
@@ -79,7 +79,7 @@ namespace NForum.Core.Services {
 			return this.dataStore.GetNumberOfTopicPages(topicId, pageSize, includeDeleted);
 		}
 
-		public IEnumerable<Reply> FindByTopic(String topicId, Int32 pageIndex, Int32 pageSize, Boolean includeDeleted = false) {
+		public Topic FindTopicById(String topicId, Int32 pageIndex, Int32 pageSize, Boolean includeDeleted = false) {
 			if (String.IsNullOrWhiteSpace(topicId)) {
 				throw new ArgumentNullException(nameof(topicId));
 			}
@@ -90,7 +90,10 @@ namespace NForum.Core.Services {
 				pageSize = this.settings.RepliesPerPage;
 			}
 			// TODO: Permissions!!
-			return this.dataStore.FindByTopic(topicId, pageIndex, pageSize, includeDeleted);
+			Topic output = this.dataStore.FindTopicById(topicId);
+			output.Replies = this.dataStore.FindByTopic(topicId, pageIndex, pageSize, includeDeleted);
+
+			return output;
 		}
 	}
 }

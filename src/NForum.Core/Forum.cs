@@ -32,5 +32,7 @@ namespace NForum.Core {
 		/// </summary>
 		/// <remarks>This property will always be empty unless the object is fetched from a "structure" method</remarks>
 		public IEnumerable<Forum> SubForums { get; set; }
+
+		public IEnumerable<Topic> Topics { get; set; }
 	}
 }

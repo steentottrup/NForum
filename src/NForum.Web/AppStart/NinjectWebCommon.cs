@@ -16,6 +16,7 @@ using NForum.Core.Events;
 using NForum.Core.Abstractions;
 using NForum.Core.Logging;
 using NForum.Database.EntityFramework.Repositories;
+using NForum.Core.Settings;
 
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(NForum.Web.NinjectWebCommon), "Start")]
 [assembly: WebActivatorEx.ApplicationShutdownMethodAttribute(typeof(NForum.Web.NinjectWebCommon), "Stop")]
@@ -92,6 +93,9 @@ namespace NForum.Web {
 			kernel
 				.Bind<IUIService>()
 				.To<UIService>();
+			kernel
+				.Bind<IForumUserService>()
+				.To<ForumUserService>();
 
 			/* PROVIDERS and more! */
 			kernel
@@ -109,6 +113,9 @@ namespace NForum.Web {
 			kernel
 				.Bind<IApplicationLogger>()
 				.To<NullLogger>();
+			kernel
+				.Bind<ISettings>()
+				.To<ConfigSettings>();
 		}
 	}
 }

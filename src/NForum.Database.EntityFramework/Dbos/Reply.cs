@@ -8,6 +8,7 @@ namespace NForum.Database.EntityFramework.Dbos {
 		public String CustomData { get; set; }
 
 		public Int32 Indent { get; set; }
+
 		public Guid? ParentReplyId { get; set; }
 		public virtual Reply ParentReply { get; set; }
 

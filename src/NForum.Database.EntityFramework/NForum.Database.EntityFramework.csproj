@@ -68,6 +68,7 @@
     <Compile Include="EntityFrameworkDataStore.cs" />
     <Compile Include="Extensions\CategoryExtensions.cs" />
     <Compile Include="Extensions\ForumExtensions.cs" />
+    <Compile Include="Extensions\ForumUserExtensions.cs" />
     <Compile Include="Extensions\ReplyExtensions.cs" />
     <Compile Include="Extensions\TopicExtensions.cs" />
     <Compile Include="NForumDbContext.cs" />

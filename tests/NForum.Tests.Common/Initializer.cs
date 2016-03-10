@@ -34,7 +34,8 @@ namespace NForum.Tests.Common {
 					new GenericRepository<NForum.Database.EntityFramework.Dbos.Category>(dbContext),
 					new GenericRepository<NForum.Database.EntityFramework.Dbos.Forum>(dbContext),
 					new GenericRepository<NForum.Database.EntityFramework.Dbos.Topic>(dbContext),
-					new GenericRepository<NForum.Database.EntityFramework.Dbos.Reply>(dbContext)
+					new GenericRepository<NForum.Database.EntityFramework.Dbos.Reply>(dbContext),
+					new GenericRepository<NForum.Database.EntityFramework.Dbos.ForumUser>(dbContext)
 				);
 
 			GenericRepository<NForum.Database.EntityFramework.Dbos.ForumUser> fuRepo = new GenericRepository<Database.EntityFramework.Dbos.ForumUser>(dbContext);

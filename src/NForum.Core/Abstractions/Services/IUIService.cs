@@ -7,9 +7,9 @@ namespace NForum.Core.Abstractions.Services {
 		IEnumerable<Category> FindCategoriesPlus2Levels();
 		Category FindCategoryPlus2Levels(String categoryId);
 		Forum FindForumPlus2Levels(String forumId);
-		IEnumerable<Topic> FindByForum(String forumId, Int32 pageIndex, Int32 pageSize, Boolean includeExtra = false);
+		IEnumerable<Topic> FindTopicsByForum(String forumId, Int32 pageIndex, Int32 pageSize, Boolean includeExtra = false);
 		Int32 GetNumberOfForumPages(String forumId, Int32 pageSize);
 		Int32 GetNumberOfTopicPages(String topicId, Int32 pageSize, Boolean includeDeleted);
-		IEnumerable<Reply> FindByTopic(String topicId, Int32 pageIndex, Int32 pageSize, Boolean includeDeleted = false);
+		Topic FindTopicById(String topicId, Int32 pageIndex, Int32 pageSize, Boolean includeDeleted = false);
 	}
 }

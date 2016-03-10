@@ -15,7 +15,8 @@ namespace NForum.Database.EntityFramework {
 				EditorId = topic.Message.EditorId.ToString(),
 				Updated = topic.Message.Updated,
 				State = topic.State,
-				Type = topic.Type
+				Type = topic.Type,
+				ForumId = topic.ForumId.ToString()
 			};
 		}
 	}

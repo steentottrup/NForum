@@ -18,7 +18,7 @@ namespace NForum.Web.Controllers {
 
 		public ActionResult Index(String id) {
 			Core.Forum forum = this.uiService.FindForumPlus2Levels(id);
-			IEnumerable<Core.Topic> topics = this.uiService.FindByForum(id, 0, 25);
+			IEnumerable<Core.Topic> topics = this.uiService.FindTopicsByForum(id, 0, 25);
 			return View(new ViewModels.Forum {
 				Category = forum.Category,
 				Id = forum.Id,

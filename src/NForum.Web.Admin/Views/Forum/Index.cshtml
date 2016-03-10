@@ -40,6 +40,6 @@
 </ul>
 <ul>
 	@foreach (var topic in Model.Topics) {
-		<li>@topic.Subject</li>
+		<li><a href="/topic/index/@topic.Id">@topic.Subject</a></li>
 			}
 </ul>

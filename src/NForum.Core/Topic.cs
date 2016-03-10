@@ -1,5 +1,6 @@
 ﻿using NForum.Core.Abstractions;
 using System;
+using System.Collections.Generic;
 
 namespace NForum.Core {
 
@@ -16,7 +17,11 @@ namespace NForum.Core {
 		public String CreatorId { get; set; }
 		public String EditorId { get; set; }
 
+		public String ForumId { get; set; }
+
 		public DateTime? LatestReplyDatestamp { get; set; }
 		public Reply LatestReply { get; set; }
+
+		public IEnumerable<Reply> Replies { get; set; }
 	}
 }

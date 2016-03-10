@@ -13,15 +13,18 @@ namespace NForum.Database.EntityFramework {
 		protected readonly IRepository<Dbos.Forum> forumRepository;
 		protected readonly IRepository<Dbos.Topic> topicRepository;
 		protected readonly IRepository<Dbos.Reply> replyRepository;
+		protected readonly IRepository<Dbos.ForumUser> forumUserRepository;
 
 		public EntityFrameworkDataStore(IRepository<Dbos.Category> categoryRepository,
 										IRepository<Dbos.Forum> forumRepository,
 										IRepository<Dbos.Topic> topicRepository,
-										IRepository<Dbos.Reply> replyRepository) {
+										IRepository<Dbos.Reply> replyRepository,
+										IRepository<Dbos.ForumUser> forumUserRepository) {
 			this.categoryRepository = categoryRepository;
 			this.forumRepository = forumRepository;
 			this.topicRepository = topicRepository;
 			this.replyRepository = replyRepository;
+			this.forumUserRepository = forumUserRepository;
 		}
 
 		public Category CreateCategory(String name, Int32 sortOrder, String description) {
@@ -67,14 +70,14 @@ namespace NForum.Database.EntityFramework {
 
 		private Forum CreateForum(Dbos.Category category, Dbos.Forum parentForum, String name, Int32 sortOrder, String description) {
 			Dbos.Forum newForum = new Dbos.Forum {
-				Category = category,
+				CategoryId = category.Id,
 				Name = name,
 				SortOrder = sortOrder,
 				Description = description,
 				Level = 0
 			};
 			if (parentForum != null) {
-				newForum.ParentForum = parentForum;
+				newForum.ParentForumId = parentForum.Id;
 				newForum.Level = parentForum.Level + 1;
 			}
 
@@ -376,7 +379,7 @@ namespace NForum.Database.EntityFramework {
 			}
 
 			Dbos.Topic newTopic = new Dbos.Topic {
-				ForumId = id,
+				ForumId = parent.Id,
 				State = TopicState.None,
 				Type = type
 			};
@@ -533,5 +536,31 @@ namespace NForum.Database.EntityFramework {
 			// TODO: ?!?!
 			return true;
 		}
+
+		public ForumUser CreateForumUser(String userName, String emailAddress, String fullname, String userId, String culture, String timezone) {
+			return this.forumUserRepository.Create(new Dbos.ForumUser {
+				Username = userName,
+				EmailAddress = emailAddress,
+				Fullname = fullname,
+				Culture = culture,
+				Timezone = timezone,
+				ExternalId = userId,
+				Deleted = false,
+				UseFullname = false
+			}).ToModel();
+		}
+
+		public ForumUser FindForumUserById(String forumUserId) {
+			Guid id;
+			if (!Guid.TryParse(forumUserId, out id)) {
+				throw new ArgumentException(nameof(forumUserId));
+			}
+			return this.forumUserRepository.FindById(id).ToModel();
+		}
+
+		public IEnumerable<ForumUser> FindAllForumUsers() {
+			return this.forumUserRepository.FindAll().ToList().Select(u => u.ToModel());
+		}
 	}
 }
+

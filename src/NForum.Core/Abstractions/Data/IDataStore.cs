@@ -20,6 +20,9 @@ namespace NForum.Core.Abstractions.Data {
 		Topic FindTopicById(String topicId);
 		Boolean DeleteTopic(String topicId);
 		/* CRUD for users */
+		ForumUser CreateForumUser(String userName, String emailAddress, String fullname, String userId, String culture, String timezone);
+		ForumUser FindForumUserById(String forumUserId);
+		IEnumerable<ForumUser> FindAllForumUsers();
 
 		/* Methods for UI */
 		IEnumerable<Category> FindCategoriesPlus2Levels(/* Permissions/user */);

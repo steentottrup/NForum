@@ -26,7 +26,7 @@ namespace NForum.Core.Services {
 		}
 
 		/// <summary>
-		/// Use this method to create a new <see cref="Forum"/> below an existing <see cref="Category"/>.
+		/// Use this method to create a new <see cref="Forum"/> below an existing <see cref="ForumUser"/>.
 		/// </summary>
 		/// <param name="categoryId">The Id of the parent category.</param>
 		/// <param name="name">The name.</param>
