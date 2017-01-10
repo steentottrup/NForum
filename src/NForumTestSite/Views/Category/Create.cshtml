@@ -1,0 +1,9 @@
+﻿@model NForumTestSite.Controllers.ViewModels.CreateCategoryModel
+@{
+}
+<form asp-controller="category" asp-action="create" method="post">
+	<input asp-for="Name" />
+	<input asp-for="SortOrder" />
+	<input asp-for="Description" />
+	<button type="submit">Create</button>
+</form>
