@@ -1,5 +1,6 @@
 ﻿using NForum.Core.Dtos;
 using System;
+using System.Linq;
 
 namespace NForum.Datastores.MongoDB.Dbos {
 
@@ -12,7 +13,8 @@ namespace NForum.Datastores.MongoDB.Dbos {
 				Name = forum.Name,
 				SortOrder = forum.SortOrder,
 				Category = new Dtos.Category { Id = forum.Category.Id.ToString(), Name = forum.Category.Name },
-				ParentForum = forum.ParentForum != null ? new Dtos.Forum { Id = forum.ParentForum.Id.ToString(), Name = forum.ParentForum.Name } : null
+				ParentForum = forum.ParentForum != null ? new Dtos.Forum { Id = forum.ParentForum.Id.ToString(), Name = forum.ParentForum.Name } : null,
+				Path = forum.Path.Select(p => p.ToString())
 				// TODO:
 				//,CustomProperties
 			};

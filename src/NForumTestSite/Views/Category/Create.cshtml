@@ -7,3 +7,34 @@
 	<input asp-for="Description" />
 	<button type="submit">Create</button>
 </form>
+
+
+<ul>
+	@foreach (var c in Model.ForumStructure.Categories) {
+		<li>
+			@c.Name
+		<ul>
+			@foreach (var f in c.Forums) {
+				<li>
+					@f.Name
+					<ul>
+						@foreach (var f1 in f.Forums) {
+							<li>
+								@f1.Name
+							</li>
+
+						}
+
+
+					</ul>
+				</li>
+
+			}
+
+
+		</ul>
+	</li>
+
+
+	}
+</ul>

@@ -1,19 +1,17 @@
-﻿using System;
+﻿using MongoDB.Bson;
 using NForum.Core.Dtos;
-using MongoDB.Driver;
 using NForum.Datastores.MongoDB.Dbos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace NForum.Datastores.MongoDB {
 
 	public class CategoryDatastore : ICategoryDatastore {
-		private readonly IMongoCollection<Dbos.Category> categories;
-		private readonly IMongoCollection<Dbos.CategoryStructure> structure;
+		protected readonly CommonDatastore datastore;
 
-		public CategoryDatastore(IMongoCollection<Dbos.Category> categories, IMongoCollection<Dbos.CategoryStructure> structure) {
-			this.categories = categories;
-			this.structure = structure;
+		public CategoryDatastore(CommonDatastore datastore) {
+			this.datastore = datastore;
 		}
 
 		public ICategoryDto Create(Domain.Category category) {
@@ -22,26 +20,57 @@ namespace NForum.Datastores.MongoDB {
 				Description = category.Description,
 				SortOrder = category.SortOrder
 			};
-			this.categories.InsertOne(c);
+			return this.datastore.CreateCategory(c).ToDto();
+		}
 
-			this.structure.InsertOne(new Dbos.CategoryStructure {
-				Description = c.Description,
-				Id = c.Id,
-				Name = c.Name,
-				SortOrder = c.SortOrder,
-				Forums = new ForumStructure[] { }
-			});
+		public void DeleteById(String id) {
+			throw new NotImplementedException();
+		}
 
-			return c.ToDto();
+		public void DeleteWithSubElementsById(String Id) {
+			throw new NotImplementedException();
 		}
 
 		public ICategoriesAndForumsDto ReadAllWithForums() {
-			IEnumerable<Dbos.CategoryStructure> categories = this.structure.Find(d => true).ToList();
+			Tuple<IEnumerable<Dbos.Category>, IEnumerable<Dbos.Forum>> all = this.datastore.ReadAllCategoriesAndForums();
 
 			return new Dtos.CategoriesAndForums {
-				Categories = categories.Select(c => c.ToDto()),
-				Forums = categories.SelectMany(c => c.Forums.Flatten()).Select(f => f.ToDto())
+				Categories = all.Item1.Select(c => c.ToDto()),
+				Forums = all.Item2.Select(f => f.ToDto())
 			};
 		}
+
+		//public IEnumerable<IForumDto> ReadByCategoryId(String categoryId) {
+		//	throw new NotImplementedException();
+		//}
+
+		public ICategoryDto ReadById(String id) {
+			ObjectId categoryId;
+			if (!ObjectId.TryParse(id, out categoryId)) {
+				throw new ArgumentException(nameof(id));
+			}
+			return this.datastore.ReadCategoryById(categoryId).ToDto();
+		}
+
+		//public IEnumerable<IForumDto> ReadByPath(IEnumerable<String> idStrings) {
+		//	ObjectId[] ids = idStrings.Select(i => ObjectId.Parse(i)).ToArray();
+		//	return this.forums
+		//		.Find(
+		//			Builders<Dbos.Forum>
+		//				.Filter
+		//				.In(f => f.Id, ids)
+		//			)
+		//		.ToList()
+		//		.Select(f => f.ToDto());
+		//}
+
+		public ICategoryDto Update(Domain.Category category) {
+			throw new NotImplementedException();
+		}
+
+		//IForumDto IForumDto.ReadById(String id) {
+		//	ObjectId forumId = ObjectId.Parse(id);
+		//	return this.forums.Find(c => c.Id == forumId).SingleOrDefault().ToDto();
+		//}
 	}
 }

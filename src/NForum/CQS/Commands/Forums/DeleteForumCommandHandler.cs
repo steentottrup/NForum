@@ -1,16 +1,24 @@
 ﻿using CreativeMinds.CQS.Commands;
+using NForum.Datastores;
 using System;
-using System.Threading.Tasks;
 
 namespace NForum.CQS.Commands.Forums {
 
 	public class DeleteForumCommandHandler : ICommandHandler<DeleteForumCommand> {
-		public void Execute(DeleteForumCommand command) {
-			throw new NotImplementedException();
+		protected readonly IForumDatastore forums;
+
+		public DeleteForumCommandHandler(IForumDatastore forums) {
+			this.forums = forums;
 		}
 
-		public Task ExecuteAsync(DeleteForumCommand command) {
-			throw new NotImplementedException();
+		public void Execute(DeleteForumCommand command) {
+			// Permissions have been checked and parameters validated!
+			if (!command.DeleteChildren) {
+				this.forums.DeleteById(command.Id);
+			}
+			else {
+				this.forums.DeleteWithSubElementsById(command.Id);
+			}
 		}
 	}
 }

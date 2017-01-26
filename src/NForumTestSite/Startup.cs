@@ -158,15 +158,23 @@ namespace NForumTestSite {
 					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Category>("categories");
 				});
 			config
-				.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.CategoryStructure>>()
-				.ToMethod((context) => {
-					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.CategoryStructure>("structure");
-				});
-			config
 				.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Forum>>()
 				.ToMethod((context) => {
 					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Forum>("forums");
 				});
+			config
+				.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Topic>>()
+				.ToMethod((context) => {
+					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Topic>("topics");
+				});
+			config
+				.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Reply>>()
+				.ToMethod((context) => {
+					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Reply>("replies");
+				});
+			config
+				.Bind<NForum.Datastores.MongoDB.CommonDatastore>()
+				.ToSelf();
 			// TODO: END MONGO
 
 

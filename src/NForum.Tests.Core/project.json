@@ -1,0 +1,27 @@
+﻿{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+  "testRunner": "nunit",
+
+  "dependencies": {
+    "NETStandard.Library": "1.6.0",
+    "NUnit": "3.6.0",
+    "dotnet-test-nunit": "3.4.0-beta-3",
+    "NSubstitute": "2.0.1-rc",
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.1"
+    },
+    "NForum": "1.0.0-*",
+    "CreativeMinds.CQS": "0.5.0-*",
+    "FluentAssertions": "4.18.0"
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "dnxcore50"
+    }
+  }
+}

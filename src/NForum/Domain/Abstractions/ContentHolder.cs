@@ -6,6 +6,14 @@ namespace NForum.Domain.Abstractions {
 
 	public abstract class ContentHolder : CustomPropertiesHolder {
 
+		public ContentHolder(String subject, String content, IAuthor author) : base() {
+			this.Subject = subject;
+			this.Content = content;
+			this.Created = this.LastEdited = DateTime.UtcNow;
+			//this.CreatedBy = this.LastEditedBy
+			// TODO:
+		}
+
 		protected ContentHolder(IContentHolder data) : base(data) {
 			this.Subject = data.Subject;
 			this.Content = data.Content;

@@ -16,6 +16,8 @@ namespace NForum.Datastores.MongoDB.Dbos {
 		public CategoryRef Category { get; set; }
 		[BsonElement(FieldNames.ParentForumId)]
 		public ForumRef ParentForum { get; set; }
+		[BsonElement(FieldNames.Path)]
+		public ObjectId[] Path { get; set; }
 
 		public static class FieldNames {
 			public const String Id = "_id";
@@ -23,7 +25,8 @@ namespace NForum.Datastores.MongoDB.Dbos {
 			public const String SortOrder = "s";
 			public const String Description = "d";
 			public const String CategoryId = "c";
-			public const String ParentForumId = "p";
+			public const String ParentForumId = "f";
+			public const String Path = "p";
 		}
 	}
 }

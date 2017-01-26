@@ -1,16 +1,33 @@
 ﻿using CreativeMinds.CQS.Commands;
+using NForum.Core.Dtos;
+using NForum.Datastores;
+using NForum.Domain;
 using System;
-using System.Threading.Tasks;
 
 namespace NForum.CQS.Commands.Forums {
 
 	public class UpdateForumCommandHandler : ICommandHandler<UpdateForumCommand> {
-		public void Execute(UpdateForumCommand command) {
-			throw new NotImplementedException();
+		protected readonly IForumDatastore forums;
+
+		public UpdateForumCommandHandler(IForumDatastore forums) {
+			this.forums = forums;
 		}
 
-		public Task ExecuteAsync(UpdateForumCommand command) {
-			throw new NotImplementedException();
+		public void Execute(UpdateForumCommand command) {
+			// Permissions have been checked and parameters validated!
+			IForumDto dto = this.forums.ReadById(command.Id);
+			if (dto == null) {
+				// TODO:
+				throw new ArgumentException("Forum does not exist");
+			}
+
+			Forum f = new Forum(dto);
+			f.Name = command.Name;
+			f.SortOrder = command.SortOrder;
+			f.Description = command.Description;
+			f.ClearAndAddProperties(f.Properties);
+
+			this.forums.Update(f);
 		}
 	}
 }

@@ -3,7 +3,6 @@ using NForum.Core.Dtos;
 using NForum.Datastores;
 using NForum.Domain;
 using System;
-using System.Threading.Tasks;
 
 namespace NForum.CQS.Commands.Categories {
 
@@ -15,12 +14,8 @@ namespace NForum.CQS.Commands.Categories {
 		}
 
 		public void Execute(CreateCategoryCommand command) {
+			// Nothing special to do here, permissions have been checked and parameters validated!
 			ICategoryDto category = this.datastore.Create(new Category(command.Name, command.SortOrder, command.Description));
 		}
-
-		//public async Task ExecuteAsync(CreateCategoryCommand command) {
-		//	ICategoryDto category = await this.datastore.Create(new Category(command.Name, command.SortOrder, command.Description));
-		//	// TODO: Task!!!
-		//}
 	}
 }

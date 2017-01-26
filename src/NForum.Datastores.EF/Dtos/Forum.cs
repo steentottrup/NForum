@@ -43,6 +43,12 @@ namespace NForum.Datastores.EF.Dtos {
 			}
 		}
 
+		public IEnumerable<String> Path {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+
 		public Int32 SortOrder {
 			get {
 				throw new NotImplementedException();

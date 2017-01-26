@@ -7,6 +7,17 @@ namespace NForum.Domain {
 
 	public class Forum : StructureElement {
 
+		public Forum(Category category, String name, Int32 sortOrder, String description) : base(name, sortOrder, description) {
+			this.CategoryId = category.Id;
+			// TODO:
+		}
+
+		public Forum(Forum parentForum, String name, Int32 sortOrder, String description) : base(name, sortOrder, description) {
+			this.ParentForumId = parentForum.Id;
+			this.CategoryId = parentForum.CategoryId;
+			// TODO:
+		}
+
 		public Forum(IForumDto data) : base(data) {
 			this.Category = data.Category;
 			this.CategoryId = data.Category.Id;

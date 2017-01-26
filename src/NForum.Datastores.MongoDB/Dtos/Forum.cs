@@ -19,5 +19,7 @@ namespace NForum.Datastores.MongoDB.Dtos {
 		public IForumRef ParentForum { get; set; }
 
 		public Int32 SortOrder { get; set; }
+
+		public IEnumerable<String> Path { get; set; }
 	}
 }

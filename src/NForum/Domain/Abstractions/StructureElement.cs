@@ -17,8 +17,8 @@ namespace NForum.Domain.Abstractions {
 			this.Description = data.Description;
 		}
 
-		public virtual Int32 SortOrder { get; protected set; }
-		public virtual String Name { get; protected set; }
-		public virtual String Description { get; protected set; }
+		public virtual Int32 SortOrder { get; set; }
+		public virtual String Name { get; set; }
+		public virtual String Description { get; set; }
 	}
 }

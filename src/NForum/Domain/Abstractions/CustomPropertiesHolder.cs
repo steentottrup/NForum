@@ -15,6 +15,13 @@ namespace NForum.Domain.Abstractions {
 			this.Id = data.Id;
 		}
 
+		public virtual void ClearAndAddProperties(IDictionary<String, Object> newProperties) {
+			this.ClearCustomProperties();
+			foreach (KeyValuePair<String, Object> pair in newProperties) {
+				this.AddCustomProperty(pair.Key, pair.Value);
+			}
+		}
+
 		public virtual void ClearCustomProperties() {
 			this.properties.Clear();
 		}
