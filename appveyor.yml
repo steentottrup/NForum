@@ -16,12 +16,16 @@ nuget:
 before_build:
   - nuget restore src\nforum.sln
 after_build:
-- cmd: >-
-    cd src
+- ps: >-
+    Set-Location src
 
-    cd NForum.Tests.Core
+    Set-Location NForum.Tests.Core
 
     dotnet test
+
+    $wc = New-Object 'System.Net.WebClient'
+
+    $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\testresult.xml))
 
 build:
   project: src\nforum.sln
