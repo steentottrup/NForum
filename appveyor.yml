@@ -15,11 +15,14 @@ nuget:
   project_feed: true
 before_build:
   - nuget restore src\nforum.sln
+after_build:
+- cmd: >-
+    cd src
+    cd NForum.Tests.Core
+    dotnet test
 build:
   project: src\nforum.sln
   publish_nuget: true
-test:
-  assemblies:
-    - '**\NForum.tests.*.dll'
+test: off
 artifacts:
 - path: '*.nupkg'
