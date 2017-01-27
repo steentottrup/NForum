@@ -18,8 +18,11 @@ before_build:
 after_build:
 - cmd: >-
     cd src
+
     cd NForum.Tests.Core
+
     dotnet test
+
 build:
   project: src\nforum.sln
   publish_nuget: true
