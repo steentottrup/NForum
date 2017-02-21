@@ -2,7 +2,7 @@
 using NForum.CQS.Commands.Forums;
 using System;
 
-namespace NForum.CQS.Validators.Categories {
+namespace NForum.CQS.Validators.Forums {
 
 	public class DeleteForumValidator : IValidator<DeleteForumCommand> {
 

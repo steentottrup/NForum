@@ -8,6 +8,7 @@ using System.Globalization;
 namespace NForumTestSite {
 
 	public static class AspNetCoreExtensions {
+		
 		public static void AddRequestScopingMiddleware(this IServiceCollection services,
 			Func<IDisposable> requestScopeProvider) {
 			if (services == null) {

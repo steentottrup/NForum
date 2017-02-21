@@ -90,7 +90,7 @@ namespace NForum.Tests.Core.ValidationTests {
 		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the name is not empty")]
 		public void CreateCategoryWithName() {
 			NForum.CQS.Commands.Categories.CreateCategoryCommand create = new CQS.Commands.Categories.CreateCategoryCommand {
-				Name = "Just enything"
+				Name = "Just anything"
 			};
 
 			NForum.CQS.Validators.Categories.CreateCategoryValidator validator = new CQS.Validators.Categories.CreateCategoryValidator();
@@ -112,7 +112,7 @@ namespace NForum.Tests.Core.ValidationTests {
 			result.IsValid.Should().Be(true, "A name and id was provide");
 		}
 
-		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation fails when the id is empty")]
+		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
 		public void DeleteCategoryWithId() {
 			NForum.CQS.Commands.Categories.DeleteCategoryCommand delete = new CQS.Commands.Categories.DeleteCategoryCommand {
 				Id = "fe"

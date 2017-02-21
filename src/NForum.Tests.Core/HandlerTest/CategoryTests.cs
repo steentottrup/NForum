@@ -1,5 +1,4 @@
 ﻿using CreativeMinds.CQS.Validators;
-using FluentAssertions;
 using NForum.Core.Dtos;
 using NForum.CQS.Commands.Categories;
 using NForum.CQS.Validators.Categories;
@@ -8,7 +7,6 @@ using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NForum.Tests.Core.HandlerTests {
 
@@ -36,7 +34,7 @@ namespace NForum.Tests.Core.HandlerTests {
 			datastore.ReceivedWithAnyArgs(1).Create(inputParameter);
 		}
 
-		[Test(Author = "Steen F. Tøttrup", Description = "Make sure that Update mthod gets called on the datastore, when a valid UpdateCategoryCommand is provided")]
+		[Test(Author = "Steen F. Tøttrup", Description = "Make sure that Update method gets called on the datastore, when a valid UpdateCategoryCommand is provided")]
 		public void UpdateCategory() {
 			var inputParameter = new Domain.Category("name", 1, "description");
 			var command = new UpdateCategoryCommand { Id = "1", Name = inputParameter.Name, SortOrder = inputParameter.SortOrder, Description = inputParameter.Description };

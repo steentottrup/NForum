@@ -16,6 +16,7 @@ using System.Reflection;
 namespace NForumTestSite {
 
 	public static class AspNetCoreMvcExtensions {
+
 		public static void AddCustomControllerActivation(this IServiceCollection services, Func<Type, object> activator) {
 			if (services == null) throw new ArgumentNullException(nameof(services));
 			if (activator == null) throw new ArgumentNullException(nameof(activator));
