@@ -13,8 +13,6 @@ cache: packages -> **\packages.config
 nuget:
   account_feed: true
   project_feed: true
-before_build:
-  - nuget restore src\nforum.sln
 after_build:
 - ps: >-
     Set-Location src
