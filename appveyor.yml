@@ -3,12 +3,19 @@ configuration: Release
 branches:
   only:
     - master
+  init:
+  - ps: "nuget sources add -Name CMD -Source $env:nuget_source -UserName $env:nuget_user -Password $env:nuget_password"
 assembly_info:
   patch: true
   file: AssemblyInfo.*
   assembly_version: "{version}"
   assembly_file_version: "{version}"
   assembly_informational_version: "{version}"
+  environment:
+    nuget_user: nugetrestore@creativeminds.dk
+    nuget_password:
+      secure: t7dwAMlxY0RY+Ln49o6EKg==
+    nuget_source: https://ci.appveyor.com/nuget/creativeminds
 cache: packages -> **\packages.config
 nuget:
   account_feed: true
