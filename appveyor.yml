@@ -4,7 +4,7 @@ branches:
   only:
     - master
 init:
-- ps: "nuget sources list"
+- ps: "nuget sources update -Name AppVeyorAccountFeed -Source $env:nuget_source -UserName $env:nuget_user -Password $env:nuget_password"
 assembly_info:
   patch: true
   file: AssemblyInfo.*
