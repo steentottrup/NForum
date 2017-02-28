@@ -3,7 +3,7 @@ configuration: Release
 branches:
   only:
     - master
-  init:
+init:
   - ps: "nuget sources add -Name CMD -Source $env:nuget_source -UserName $env:nuget_user -Password $env:nuget_password"
 assembly_info:
   patch: true
