@@ -1,20 +1,24 @@
 ﻿using System;
 using NForum.Core.Dtos;
-using NForum.Domain;
+using NForum.Datastores.Dapper.Dbos;
+using System.Data;
 
 namespace NForum.Datastores.Dapper {
 
-	public class CategoryDatastore : ICategoryDatastore {
+	public class CategoryDatastore : GenericRepository<Dbos.Category>, ICategoryDatastore {
 
-		public CategoryDatastore() {
-		}
+		public CategoryDatastore(IDbConnection connection) : base(connection) { }
 
-		public ICategoryDto Create(Category category) {
-			throw new NotImplementedException();
+		public ICategoryDto Create(Domain.Category category) {
+			return this.Create(new Dbos.Category {
+				Description = category.Description,
+				Name = category.Name,
+				SortOrder = category.SortOrder
+			}).ToDto();
 		}
 
 		public void DeleteById(String id) {
-			throw new NotImplementedException();
+			this.DeleteById(Int32.Parse(id));
 		}
 
 		public void DeleteWithSubElementsById(String Id) {
@@ -26,11 +30,16 @@ namespace NForum.Datastores.Dapper {
 		}
 
 		public ICategoryDto ReadById(String id) {
-			throw new NotImplementedException();
+			return this.FindById(Int32.Parse(id)).ToDto();
 		}
 
-		public ICategoryDto Update(Category category) {
-			throw new NotImplementedException();
+		public ICategoryDto Update(Domain.Category category) {
+			return this.Update(new Dbos.Category {
+				Id = Int32.Parse(category.Id),
+				Name = category.Name,
+				Description = category.Description,
+				SortOrder = category.SortOrder
+			}).ToDto();
 		}
 	}
 }

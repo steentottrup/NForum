@@ -19,6 +19,14 @@ namespace NForum.Datastores.MongoDB {
 			throw new NotImplementedException();
 		}
 
+		public void Move(String topicId, String destinationForumId) {
+			throw new NotImplementedException();
+		}
+
+		public ITopicDto ReadById(String id) {
+			throw new NotImplementedException();
+		}
+
 		public ITopicDto Update(Topic topic) {
 			throw new NotImplementedException();
 		}

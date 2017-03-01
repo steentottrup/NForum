@@ -12,12 +12,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using NForum.Datastores;
-using NForum.Datastores.EF;
 using NForum.Infrastructure;
 using Ninject;
 using Ninject.Activation;
 using Ninject.Infrastructure.Disposal;
 using System;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
@@ -139,10 +141,20 @@ namespace NForumTestSite {
 
 			config.BindValidators(coreAssembly);
 
-			// TODO: EF wire up!
+			// TODO: Dapper wire up!
+			//config
+			//	.Bind<IDbConnection>()
+			//	.ToMethod((context) => {
+			//		IDbConnection conn =  new SqlConnection("Server=.\\SQLEXPRESS2008R2; Database=nforum-dapper;User id=sa;Password=ivypqn63;");
+			//		conn.Open();
+
+			//		return conn;
+			//	}).InScope(RequestScope);
+
 			//config
 			//	.Bind<ICategoryDatastore>()
-			//	.To<CategoryDatastore>();
+			//	.To<NForum.Datastores.Dapper.CategoryDatastore>();
+			// TODO: End Dapper
 
 			// TODO: MongoDB wire up!
 			config

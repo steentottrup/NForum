@@ -3,7 +3,8 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "NForum": "1.0.0-*"
+    "NForum": "1.0.0-*",
+    "Dapper": "1.50.2"
   },
 
   "frameworks": {

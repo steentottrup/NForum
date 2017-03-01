@@ -13,11 +13,11 @@ namespace NForum.Tests.Core.ValidationTests {
 		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation fails when the name is empty")]
 		public void CreateForumWithEmptyName() {
 			NForum.CQS.Commands.Forums.CreateForumCommand create = new CQS.Commands.Forums.CreateForumCommand {
-				CategoryId = "1",
+				CategoryId = 765.ToString(),
 				Name = String.Empty
 			};
 
-			NForum.CQS.Validators.Forums.CreateForumValidator validator = new CQS.Validators.Forums.CreateForumValidator();
+			NForum.CQS.Validators.Forums.CreateForumValidator validator = new CQS.Validators.Forums.CreateForumValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(create);
 			result.IsValid.Should().Be(false, "An empty name is not allowed");
@@ -44,7 +44,7 @@ namespace NForum.Tests.Core.ValidationTests {
 				Name = "hep"
 			};
 
-			NForum.CQS.Validators.Forums.CreateForumValidator validator = new CQS.Validators.Forums.CreateForumValidator();
+			NForum.CQS.Validators.Forums.CreateForumValidator validator = new CQS.Validators.Forums.CreateForumValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(create);
 			result.IsValid.Should().Be(false, "Empty ids is not allowed");
@@ -72,7 +72,7 @@ namespace NForum.Tests.Core.ValidationTests {
 				Name = String.Empty
 			};
 
-			NForum.CQS.Validators.Forums.UpdateForumValidator validator = new NForum.CQS.Validators.Forums.UpdateForumValidator();
+			NForum.CQS.Validators.Forums.UpdateForumValidator validator = new NForum.CQS.Validators.Forums.UpdateForumValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(update);
 			result.IsValid.Should().Be(false, "An empty id/name is not allowed");
@@ -90,7 +90,7 @@ namespace NForum.Tests.Core.ValidationTests {
 			result.IsValid.Should().Be(false, "An empty id/name is not allowed");
 			result.Errors.Count().Should().Be(2, "An empty name and/or id is not allowed");
 
-			update.Id = "something";
+			update.Id = 2153.ToString();
 			update.Name = String.Empty;
 			result = validator.Validate(update);
 			result.IsValid.Should().Be(false, "An empty name is not allowed");
@@ -107,7 +107,7 @@ namespace NForum.Tests.Core.ValidationTests {
 				Id = String.Empty
 			};
 
-			NForum.CQS.Validators.Forums.DeleteForumValidator validator = new NForum.CQS.Validators.Forums.DeleteForumValidator();
+			NForum.CQS.Validators.Forums.DeleteForumValidator validator = new NForum.CQS.Validators.Forums.DeleteForumValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(delete);
 			result.IsValid.Should().Be(false, "An empty id is not allowed");
@@ -119,6 +119,10 @@ namespace NForum.Tests.Core.ValidationTests {
 			delete.Id = null;
 			result = validator.Validate(delete);
 			result.IsValid.Should().Be(false, "An empty id is not allowed");
+
+			delete.Id = "heherje";
+			result = validator.Validate(delete);
+			result.IsValid.Should().Be(false, "Id must be an Int32 value");
 		}
 
 		[Category("Validations")]
@@ -126,16 +130,16 @@ namespace NForum.Tests.Core.ValidationTests {
 		public void CreateForumWithNameAndParentId() {
 			NForum.CQS.Commands.Forums.CreateForumCommand create = new NForum.CQS.Commands.Forums.CreateForumCommand {
 				Name = "Just anything",
-				ParentForumId = "hep"
+				ParentForumId = 23456.ToString()
 			};
 
-			NForum.CQS.Validators.Forums.CreateForumValidator validator = new CQS.Validators.Forums.CreateForumValidator();
+			NForum.CQS.Validators.Forums.CreateForumValidator validator = new CQS.Validators.Forums.CreateForumValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(create);
 			result.IsValid.Should().Be(true, "A name and parent forum or category id was provided");
 
 			create.ParentForumId = String.Empty;
-			create.CategoryId = "he";
+			create.CategoryId = 34567.ToString();
 
 			result = validator.Validate(create);
 			result.IsValid.Should().Be(true, "A name and parent forum or category id was provided");
@@ -145,11 +149,11 @@ namespace NForum.Tests.Core.ValidationTests {
 		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id and name is not empty")]
 		public void UpdateForumWithNameAndId() {
 			NForum.CQS.Commands.Forums.UpdateForumCommand update = new CQS.Commands.Forums.UpdateForumCommand {
-				Id = "e",
+				Id = 634634.ToString(),
 				Name = "meh"
 			};
 
-			NForum.CQS.Validators.Forums.UpdateForumValidator validator = new NForum.CQS.Validators.Forums.UpdateForumValidator();
+			NForum.CQS.Validators.Forums.UpdateForumValidator validator = new NForum.CQS.Validators.Forums.UpdateForumValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(update);
 			result.IsValid.Should().Be(true, "A name and id was provide");
@@ -159,10 +163,10 @@ namespace NForum.Tests.Core.ValidationTests {
 		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
 		public void DeleteForumWithId() {
 			NForum.CQS.Commands.Categories.DeleteCategoryCommand delete = new CQS.Commands.Categories.DeleteCategoryCommand {
-				Id = "fe"
+				Id = 76554.ToString()
 			};
 
-			NForum.CQS.Validators.Categories.DeleteCategoryValidator validator = new CQS.Validators.Categories.DeleteCategoryValidator();
+			NForum.CQS.Validators.Categories.DeleteCategoryValidator validator = new CQS.Validators.Categories.DeleteCategoryValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(delete);
 			result.IsValid.Should().Be(true, "An id was provided");

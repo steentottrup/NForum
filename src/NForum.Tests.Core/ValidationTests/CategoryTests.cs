@@ -40,7 +40,7 @@ namespace NForum.Tests.Core.ValidationTests {
 				Name = String.Empty
 			};
 
-			NForum.CQS.Validators.Categories.UpdateCategoryValidator validator = new CQS.Validators.Categories.UpdateCategoryValidator();
+			NForum.CQS.Validators.Categories.UpdateCategoryValidator validator = new CQS.Validators.Categories.UpdateCategoryValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(update);
 			result.IsValid.Should().Be(false, "An empty id/name is not allowed");
@@ -73,7 +73,7 @@ namespace NForum.Tests.Core.ValidationTests {
 				Id = String.Empty
 			};
 
-			NForum.CQS.Validators.Categories.DeleteCategoryValidator validator = new CQS.Validators.Categories.DeleteCategoryValidator();
+			NForum.CQS.Validators.Categories.DeleteCategoryValidator validator = new CQS.Validators.Categories.DeleteCategoryValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(delete);
 			result.IsValid.Should().Be(false, "An empty id is not allowed");
@@ -102,11 +102,11 @@ namespace NForum.Tests.Core.ValidationTests {
 		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation fails when the id and name is empty")]
 		public void UpdateCategoryWithNameAndId() {
 			NForum.CQS.Commands.Categories.UpdateCategoryCommand update = new CQS.Commands.Categories.UpdateCategoryCommand {
-				Id = "e",
+				Id = 6554.ToString(),
 				Name = "meh"
 			};
 
-			NForum.CQS.Validators.Categories.UpdateCategoryValidator validator = new CQS.Validators.Categories.UpdateCategoryValidator();
+			NForum.CQS.Validators.Categories.UpdateCategoryValidator validator = new CQS.Validators.Categories.UpdateCategoryValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(update);
 			result.IsValid.Should().Be(true, "A name and id was provide");
@@ -115,10 +115,10 @@ namespace NForum.Tests.Core.ValidationTests {
 		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
 		public void DeleteCategoryWithId() {
 			NForum.CQS.Commands.Categories.DeleteCategoryCommand delete = new CQS.Commands.Categories.DeleteCategoryCommand {
-				Id = "fe"
+				Id = 23456.ToString()
 			};
 
-			NForum.CQS.Validators.Categories.DeleteCategoryValidator validator = new CQS.Validators.Categories.DeleteCategoryValidator();
+			NForum.CQS.Validators.Categories.DeleteCategoryValidator validator = new CQS.Validators.Categories.DeleteCategoryValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(delete);
 			result.IsValid.Should().Be(true, "An id was provided");

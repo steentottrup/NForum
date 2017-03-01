@@ -16,7 +16,6 @@ environment:
   nuget_password:
     secure: t7dwAMlxY0RY+Ln49o6EKg==
   nuget_source: https://ci.appveyor.com/nuget/creativeminds
-cache: packages -> **\packages.config
 nuget:
   account_feed: true
   project_feed: true

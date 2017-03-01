@@ -19,9 +19,19 @@ namespace NForum.Domain {
 			this.ForumId = data.Forum.Id;
 		}
 
+		public virtual void ChangeType(TopicType newType) {
+			this.ValidateEditorOrFail();
+			this.Type = newType;
+		}
+
+		public virtual void ChangeState(TopicState newState) {
+			this.ValidateEditorOrFail();
+			this.State = newState;
+		}
+
 		public virtual String ForumId { get; protected set; }
 		public virtual IForumRef Forum { get; protected set; }
 		public virtual TopicType Type { get; protected set; }
-		public TopicState State { get; protected set; }
+		public virtual TopicState State { get; protected set; }
 	}
 }

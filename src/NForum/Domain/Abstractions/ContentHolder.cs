@@ -1,6 +1,7 @@
 ﻿using NForum.Core.Dtos;
 using NForum.Core.Refs;
 using System;
+using System.Collections.Generic;
 
 namespace NForum.Domain.Abstractions {
 
@@ -21,6 +22,51 @@ namespace NForum.Domain.Abstractions {
 			this.Created = data.Created;
 			this.LastEditedBy = data.LastEditedBy;
 			this.LastEdited = data.LastEdited;
+		}
+
+		protected virtual Boolean EditorSet { get; set; }
+		public virtual void SetEditor(IAuthor editor) {
+			this.LastEdited = DateTime.UtcNow;
+			// TODO:
+			//this.LastEditedBy = new IAuthorRef
+			this.EditorSet = true;
+		}
+
+		public virtual void SetSubject(String newSubject) {
+			this.ValidateEditorOrFail();
+			this.Subject = newSubject;
+		}
+
+		public virtual void SetContent(String newContent) {
+			this.ValidateEditorOrFail();
+			this.Content = newContent;
+		}
+
+		public override void AddCustomProperty(String key, Object value) {
+			this.ValidateEditorOrFail();
+			base.AddCustomProperty(key, value);
+		}
+
+		public override void ClearAndAddProperties(IDictionary<String, Object> newProperties) {
+			this.ValidateEditorOrFail();
+			base.ClearAndAddProperties(newProperties);
+		}
+
+		public override void ClearCustomProperties() {
+			this.ValidateEditorOrFail();
+			base.ClearCustomProperties();
+		}
+
+		public override void RemoveCustomProperty(String key) {
+			this.ValidateEditorOrFail();
+			base.RemoveCustomProperty(key);
+		}
+
+		protected void ValidateEditorOrFail() {
+			if (!this.EditorSet) {
+				// TODO:
+				throw new Exception("You need to set the editor before changing properties");
+			}
 		}
 
 		public virtual String Subject { get; protected set; }

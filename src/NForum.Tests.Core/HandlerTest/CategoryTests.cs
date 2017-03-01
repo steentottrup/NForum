@@ -47,7 +47,7 @@ namespace NForum.Tests.Core.HandlerTests {
 			GenericValidationCommandHandlerDecorator<UpdateCategoryCommand> val =
 					new GenericValidationCommandHandlerDecorator<UpdateCategoryCommand>(
 						handler,
-						new List<IValidator<UpdateCategoryCommand>> { new UpdateCategoryValidator() }
+						new List<IValidator<UpdateCategoryCommand>> { new UpdateCategoryValidator(TestUtils.GetInt32IdValidator()) }
 					);
 
 			val.Execute(command);
