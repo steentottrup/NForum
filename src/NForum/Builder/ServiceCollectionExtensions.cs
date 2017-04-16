@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿//using Microsoft.Extensions.DependencyInjection;
+//using System;
 
-namespace NForum.Builder {
+//namespace NForum.Builder {
 
-	public static class ServiceCollectionExtensions {
+//	public static class ServiceCollectionExtensions {
 
-		public static INForumBuilder AddNForum(this IMvcBuilder services) {
-			// TODO:
+//		public static INForumBuilder AddNForum(this IMvcBuilder services) {
+//			// TODO:
 
-			return new NForumBuilder { Services = services.Services, PartManager = services.PartManager };
-		}
-	}
-}
+//			return new NForumBuilder { Services = services.Services, PartManager = services.PartManager };
+//		}
+//	}
+//}

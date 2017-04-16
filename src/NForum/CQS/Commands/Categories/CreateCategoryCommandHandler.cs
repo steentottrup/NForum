@@ -7,7 +7,7 @@ using System;
 namespace NForum.CQS.Commands.Categories {
 
 	public class CreateCategoryCommandHandler : ICommandHandler<CreateCategoryCommand> {
-		private readonly ICategoryDatastore datastore;
+		protected readonly ICategoryDatastore datastore;
 
 		public CreateCategoryCommandHandler(ICategoryDatastore datastore) {
 			this.datastore = datastore;

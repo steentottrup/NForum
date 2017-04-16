@@ -1,16 +1,20 @@
 ﻿using System;
 using NForum.Core.Dtos;
 using NForum.Datastores.Dapper.Dbos;
-using System.Data;
+using NForum.Datastores.Dapper.Repositories;
+using System.Collections.Generic;
 
 namespace NForum.Datastores.Dapper {
 
-	public class CategoryDatastore : GenericRepository<Dbos.Category>, ICategoryDatastore {
+	public class CategoryDatastore : ICategoryDatastore {
+		protected readonly Database database;
 
-		public CategoryDatastore(IDbConnection connection) : base(connection) { }
+		public CategoryDatastore(Database db) {
+			this.database = db;
+		}
 
 		public ICategoryDto Create(Domain.Category category) {
-			return this.Create(new Dbos.Category {
+			return new GenericRepository<Dbos.Category>(this.database).Create(new Dbos.Category {
 				Description = category.Description,
 				Name = category.Name,
 				SortOrder = category.SortOrder
@@ -18,28 +22,28 @@ namespace NForum.Datastores.Dapper {
 		}
 
 		public void DeleteById(String id) {
-			this.DeleteById(Int32.Parse(id));
+			new GenericRepository<Dbos.Category>(this.database).DeleteById(Int32.Parse(id));
 		}
 
 		public void DeleteWithSubElementsById(String Id) {
+			// TODO:
+
 			throw new NotImplementedException();
 		}
 
 		public ICategoriesAndForumsDto ReadAllWithForums() {
-			throw new NotImplementedException();
+			IEnumerable<Dbos.Category> categories = new GenericRepository<Dbos.Category>(this.database).FindAll();
+			IEnumerable<Dbos.Forum> forums = new GenericRepository<Dbos.Forum>(this.database).FindAll();
+
+			return null;
 		}
 
 		public ICategoryDto ReadById(String id) {
-			return this.FindById(Int32.Parse(id)).ToDto();
+			return new GenericRepository<Dbos.Category>(this.database).FindById(Int32.Parse(id)).ToDto();
 		}
 
 		public ICategoryDto Update(Domain.Category category) {
-			return this.Update(new Dbos.Category {
-				Id = Int32.Parse(category.Id),
-				Name = category.Name,
-				Description = category.Description,
-				SortOrder = category.SortOrder
-			}).ToDto();
+			throw new NotImplementedException();
 		}
 	}
 }

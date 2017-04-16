@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using NForum.Datastores;
+using NForum.Datastores.Dapper;
+using NForum.Datastores.Dapper.Repositories;
 using NForum.Infrastructure;
 using Ninject;
 using Ninject.Activation;
@@ -47,6 +49,9 @@ namespace NForumTestSite {
 		// This method gets called by the runtime. Use this method to add services to the container.
 		//public IServiceProvider ConigreServices(IServiceCollection services) { 
 		public void ConfigureServices(IServiceCollection services) {
+
+			//services.AddIdentity<UserManager, IIdentityRole>();
+
 			// Add framework services.
 			services
 				.AddMvc();
@@ -142,51 +147,61 @@ namespace NForumTestSite {
 			config.BindValidators(coreAssembly);
 
 			// TODO: Dapper wire up!
+			config
+				.Bind<Database>()
+				.ToSelf()
+				.InScope(RequestScope)
+				.WithConstructorArgument("connectionString", "Server=.\\SQLEXPRESS2008R2; Database=nforum-dapper;User id=sa;Password=ivypqn63;");
+			// Let's replace the command dispatcher, so we can have uow/transactions in the dapper provider!!
+			config.Unbind<ICommandDispatcher>();
+			config
+				.Bind<ICommandDispatcher>()
+				.To<UnitOfWorkCommandDispatcher>();
 			//config
-			//	.Bind<IDbConnection>()
-			//	.ToMethod((context) => {
-			//		IDbConnection conn =  new SqlConnection("Server=.\\SQLEXPRESS2008R2; Database=nforum-dapper;User id=sa;Password=ivypqn63;");
-			//		conn.Open();
+			//	.Bind(typeof(IRepository<>))
+			//	.To(typeof(GenericRepository<>));
+			// Let's replace the query dispatcher, so we can have uow/transactions in the dapper provider!!
+			config.Unbind<IQueryDispatcher>();
+			config
+				.Bind<IQueryDispatcher>()
+				.To<UnitOfWorkQueryDispatcher>();
 
-			//		return conn;
-			//	}).InScope(RequestScope);
-
-			//config
-			//	.Bind<ICategoryDatastore>()
-			//	.To<NForum.Datastores.Dapper.CategoryDatastore>();
+			config
+				.Bind<ICategoryDatastore>()
+				.To<NForum.Datastores.Dapper.CategoryDatastore>();
 			// TODO: End Dapper
 
 			// TODO: MongoDB wire up!
-			config
-				.Bind<ICategoryDatastore>()
-				.To<NForum.Datastores.MongoDB.CategoryDatastore>();
+			//config
+			//	.Bind<ICategoryDatastore>()
+			//	.To<NForum.Datastores.MongoDB.CategoryDatastore>();
 
-			MongoUrl url = new MongoUrl("mongodb://127.0.0.1/nforum");
-			db = new MongoClient(url).GetDatabase(url.DatabaseName);
+			//MongoUrl url = new MongoUrl("mongodb://127.0.0.1/nforum");
+			//db = new MongoClient(url).GetDatabase(url.DatabaseName);
 
-			config
-				.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Category>>()
-				.ToMethod((context) => {
-					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Category>("categories");
-				});
-			config
-				.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Forum>>()
-				.ToMethod((context) => {
-					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Forum>("forums");
-				});
-			config
-				.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Topic>>()
-				.ToMethod((context) => {
-					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Topic>("topics");
-				});
-			config
-				.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Reply>>()
-				.ToMethod((context) => {
-					return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Reply>("replies");
-				});
-			config
-				.Bind<NForum.Datastores.MongoDB.CommonDatastore>()
-				.ToSelf();
+			//config
+			//	.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Category>>()
+			//	.ToMethod((context) => {
+			//		return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Category>("categories");
+			//	});
+			//config
+			//	.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Forum>>()
+			//	.ToMethod((context) => {
+			//		return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Forum>("forums");
+			//	});
+			//config
+			//	.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Topic>>()
+			//	.ToMethod((context) => {
+			//		return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Topic>("topics");
+			//	});
+			//config
+			//	.Bind<IMongoCollection<NForum.Datastores.MongoDB.Dbos.Reply>>()
+			//	.ToMethod((context) => {
+			//		return db.GetCollection<NForum.Datastores.MongoDB.Dbos.Reply>("replies");
+			//	});
+			//config
+			//	.Bind<NForum.Datastores.MongoDB.CommonDatastore>()
+			//	.ToSelf();
 			// TODO: END MONGO
 
 

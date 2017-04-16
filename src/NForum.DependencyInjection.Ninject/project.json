@@ -4,6 +4,7 @@
   "dependencies": {
     "NETStandard.Library": "1.6.0",
     "NForum": "1.0.0-*",
+    "NForum.Web": "1.0.0-*",
     "CreativeMinds.CQS": "0.5.0-*",
     "CreativeMinds.CQS.Ninject": "0.1.0-*",
     "System.Reflection.Extensions": "4.3.0",

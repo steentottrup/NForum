@@ -2,6 +2,7 @@
 using NForum.Core.Dtos;
 using NForum.Datastores;
 using NForum.Domain;
+using NForum.Infrastructure;
 using System;
 
 namespace NForum.CQS.Commands.Forums {
@@ -31,7 +32,7 @@ namespace NForum.CQS.Commands.Forums {
 					// TODO:
 					throw new ArgumentException("Given forum not found");
 				}
-				this.forums.Create(new Forum(new Forum(parentForum), command.Name, command.SortOrder, command.Description));
+				this.forums.CreateAsForumChild(new Forum(new Forum(parentForum), command.Name, command.SortOrder, command.Description));
 			}
 		}
 	}

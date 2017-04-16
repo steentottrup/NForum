@@ -4,18 +4,14 @@ using NForum.Datastores;
 using NForum.Domain;
 using System;
 using System.Linq;
-using System.Security.Principal;
-using System.Threading.Tasks;
 
 namespace NForum.CQS.Queries {
 
 	public class ReadCategoriesWithForumsQueryHandler : IQueryHandler<ReadCategoriesWithForumsQuery, CategoriesAndForums> {
 		private readonly ICategoryDatastore datastore;
-		private readonly IPrincipal currentUser;
 
-		public ReadCategoriesWithForumsQueryHandler(ICategoryDatastore datastore, IPrincipal user) {
+		public ReadCategoriesWithForumsQueryHandler(ICategoryDatastore datastore) {
 			this.datastore = datastore;
-			this.currentUser = user;
 		}
 
 		public CategoriesAndForums Handle(ReadCategoriesWithForumsQuery query) {
@@ -29,8 +25,8 @@ namespace NForum.CQS.Queries {
 			};
 		}
 
-		public Task<CategoriesAndForums> HandleAsync(ReadCategoriesWithForumsQuery query) {
-			throw new NotImplementedException();
-		}
+		//public Task<CategoriesAndForums> HandleAsync(ReadCategoriesWithForumsQuery query) {
+		//	throw new NotImplementedException();
+		//}
 	}
 }

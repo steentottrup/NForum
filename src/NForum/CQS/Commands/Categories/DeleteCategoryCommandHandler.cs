@@ -1,5 +1,6 @@
 ﻿using CreativeMinds.CQS.Commands;
 using NForum.Datastores;
+using NForum.Infrastructure;
 using System;
 
 namespace NForum.CQS.Commands.Categories {

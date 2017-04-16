@@ -7,6 +7,7 @@ namespace NForum.Datastores {
 
 	public interface IForumDatastore {
 		IForumDto Create(Forum forum);
+		IForumDto CreateAsForumChild(Forum forum);
 		IForumDto ReadById(String id);
 		IEnumerable<IForumDto> ReadByPath(IEnumerable<String> ids);
 		IEnumerable<IForumDto> ReadByCategoryId(String categoryId);

@@ -26,7 +26,8 @@
     "NForum.DependencyInjection.Ninject": "1.0.0-*",
     "NForum.Datastores.EF": "1.0.0-*",
     "NForum.Datastores.Dapper": "1.0.0-*",
-    "NForum.Datastores.MongoDB": "1.0.0-*"
+    "NForum.Datastores.MongoDB": "1.0.0-*",
+    "Microsoft.AspNetCore.Identity": "1.1.0"
   },
 
   "tools": {

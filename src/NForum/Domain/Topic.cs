@@ -8,6 +8,12 @@ namespace NForum.Domain {
 	public class Topic : ContentHolder {
 
 		// TODO:
+		public Topic(Forum forum, String subject, String content, TopicType type) : base(subject, content, null) {
+			this.ForumId = forum.Id;
+			this.Type = type;
+			this.State = TopicState.Visible;
+		}
+
 		public Topic(Forum forum, String subject, String content, TopicType type, TopicState state) : base(subject, content, null) {
 			this.ForumId = forum.Id;
 			this.Type = type;
