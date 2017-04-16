@@ -64,7 +64,7 @@ namespace NForum.Tests.Core.HandlerTests {
 			datastore.ReceivedWithAnyArgs(1).Create(inputParameter);
 		}
 
-		[Test(Author = "Steen F. Tøttrup", Description = "Make sure that Update method gets called on the datastore, when a valid UpdateTopicCommand is provided")]
+		//b[Test(Author = "Steen F. Tøttrup", Description = "Make sure that Update method gets called on the datastore, when a valid UpdateTopicCommand is provided")]
 		//public void UpdateTopic() {
 		//	var parentCategory = Substitute.For<Domain.Category>("category", 1, "desc");
 		//	parentCategory.Id.Returns("1");

@@ -4,6 +4,7 @@ using NForum.Core.Dtos;
 using MongoDB.Bson;
 using NForum.Datastores.MongoDB.Dbos;
 using System.Linq;
+using NForum.Domain;
 
 namespace NForum.Datastores.MongoDB {
 
@@ -47,6 +48,10 @@ namespace NForum.Datastores.MongoDB {
 			}
 
 			return this.datastore.CreateForum(f).ToDto();
+		}
+
+		public IForumDto CreateAsForumChild(Domain.Forum forum) {
+			throw new NotImplementedException();
 		}
 
 		public void DeleteById(String id) {
