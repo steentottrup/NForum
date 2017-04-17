@@ -2,7 +2,5 @@
 
 namespace NForum.Domain.Abstractions {
 
-	public interface IAuthenticatedUser {
-		String GetId();
-	}
+	public interface IAuthenticatedUser : IAuthor { }
 }

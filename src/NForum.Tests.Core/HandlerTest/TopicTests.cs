@@ -5,6 +5,7 @@ using NForum.CQS.Commands.Topics;
 using NForum.CQS.Validators.Forums;
 using NForum.CQS.Validators.Topics;
 using NForum.Datastores;
+using NForum.Domain.Abstractions;
 using NForum.Infrastructure;
 using NSubstitute;
 using NUnit.Framework;
@@ -64,30 +65,35 @@ namespace NForum.Tests.Core.HandlerTests {
 			datastore.ReceivedWithAnyArgs(1).Create(inputParameter);
 		}
 
-		//b[Test(Author = "Steen F. Tøttrup", Description = "Make sure that Update method gets called on the datastore, when a valid UpdateTopicCommand is provided")]
-		//public void UpdateTopic() {
-		//	var parentCategory = Substitute.For<Domain.Category>("category", 1, "desc");
-		//	parentCategory.Id.Returns("1");
-		//	var parentForum = Substitute.For<Domain.Forum>(parentCategory, "forum", 1, "desc");
-		//	parentForum.Id.Returns("1");
+		[Test(Author = "Steen F. Tøttrup", Description = "Make sure that Update method gets called on the datastore, when a valid UpdateTopicCommand is provided")]
+		public void UpdateTopic() {
+			var parentCategory = Substitute.For<Domain.Category>("category", 1, "desc");
+			parentCategory.Id.Returns("1");
+			var parentForum = Substitute.For<Domain.Forum>(parentCategory, "forum", 1, "desc");
+			parentForum.Id.Returns("1");
 
-		//	var inputParameter = new Domain.Topic(parentForum, "subject, topic2", "bla blalba", Domain.TopicType.Regular);
-		//	var command = new UpdateTopicCommand { Id = "1", Subject = inputParameter.Subject, Content = inputParameter.Content, State = inputParameter.State, Type = inputParameter.Type };
-		//	var dto = Substitute.For<ITopicDto>();
+			var inputParameter = new Domain.Topic(parentForum, "subject, topic2", "bla blalba", Domain.TopicType.Regular);
+			var command = new UpdateTopicCommand { Id = "1", Subject = inputParameter.Subject, Content = inputParameter.Content, State = inputParameter.State, Type = inputParameter.Type };
+			var dto = Substitute.For<ITopicDto>();
 
-		//	var datastore = Substitute.For<ITopicDatastore>();
-		//	datastore.Update(inputParameter).Returns<ITopicDto>(dto);
+			var datastore = Substitute.For<ITopicDatastore>();
+			datastore.Update(inputParameter).Returns<ITopicDto>(dto);
 
-		//	UpdateTopicCommandHandler handler = new UpdateTopicCommandHandler(datastore);
-		//	GenericValidationCommandHandlerDecorator<UpdateTopicCommand> val =
-		//			new GenericValidationCommandHandlerDecorator<UpdateTopicCommand>(
-		//				handler,
-		//				new List<IValidator<UpdateTopicCommand>> { new UpdateTopicValidator(TestUtils.GetInt32IdValidator()) }
-		//			);
+			var userProvider = Substitute.For<IUserProvider>();
+			var user = Substitute.For<IPrincipal>();
+			var author = Substitute.For<IAuthenticatedUser>();
+			userProvider.Get(user).Returns<IAuthor>(author);
 
-		//	val.Execute(command);
+			UpdateTopicCommandHandler handler = new UpdateTopicCommandHandler(datastore, user, userProvider);
+			GenericValidationCommandHandlerDecorator<UpdateTopicCommand> val =
+					new GenericValidationCommandHandlerDecorator<UpdateTopicCommand>(
+						handler,
+						new List<IValidator<UpdateTopicCommand>> { new UpdateTopicValidator(TestUtils.GetInt32IdValidator()) }
+					);
 
-		//	datastore.ReceivedWithAnyArgs(1).Update(inputParameter);
-		//}
+			val.Execute(command);
+
+			datastore.ReceivedWithAnyArgs(1).Update(inputParameter);
+		}
 	}
 }

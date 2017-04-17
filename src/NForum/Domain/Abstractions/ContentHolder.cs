@@ -26,6 +26,9 @@ namespace NForum.Domain.Abstractions {
 
 		protected virtual Boolean EditorSet { get; set; }
 		public virtual void SetEditor(IAuthor editor) {
+			if (editor == null) {
+				throw new ArgumentNullException(nameof(editor));
+			}
 			this.LastEdited = DateTime.UtcNow;
 			// TODO:
 			//this.LastEditedBy = new IAuthorRef
@@ -33,11 +36,17 @@ namespace NForum.Domain.Abstractions {
 		}
 
 		public virtual void SetSubject(String newSubject) {
+			if (String.IsNullOrWhiteSpace(newSubject)) {
+				throw new ArgumentNullException(nameof(newSubject));
+			}
 			this.ValidateEditorOrFail();
 			this.Subject = newSubject;
 		}
 
 		public virtual void SetContent(String newContent) {
+			if (String.IsNullOrWhiteSpace(newContent)) {
+				throw new ArgumentNullException(nameof(newContent));
+			}
 			this.ValidateEditorOrFail();
 			this.Content = newContent;
 		}
