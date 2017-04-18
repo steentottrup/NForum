@@ -17,8 +17,7 @@ namespace NForum.CQS.Commands.Forums {
 			// Permissions have been checked and parameters validated!
 			IForumDto dto = this.forums.ReadById(command.Id);
 			if (dto == null) {
-				// TODO:
-				throw new ArgumentException("Forum does not exist");
+				throw new ForumNotFoundException(command.Id);
 			}
 
 			Forum f = new Forum(dto);

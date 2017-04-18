@@ -30,8 +30,7 @@ namespace NForum.Domain.Abstractions {
 				throw new ArgumentNullException(nameof(editor));
 			}
 			this.LastEdited = DateTime.UtcNow;
-			// TODO:
-			//this.LastEditedBy = new IAuthorRef
+			this.LastEditedBy = editor;
 			this.EditorSet = true;
 		}
 
@@ -73,8 +72,7 @@ namespace NForum.Domain.Abstractions {
 
 		protected void ValidateEditorOrFail() {
 			if (!this.EditorSet) {
-				// TODO:
-				throw new Exception("You need to set the editor before changing properties");
+				throw new MissingEditorException();
 			}
 		}
 

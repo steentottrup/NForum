@@ -6,5 +6,6 @@ namespace NForum.Infrastructure {
 
 	public interface IUserProvider {
 		IAuthenticatedUser Get(IPrincipal user);
+		IAuthor GetAuthor(IPrincipal user);
 	}
 }

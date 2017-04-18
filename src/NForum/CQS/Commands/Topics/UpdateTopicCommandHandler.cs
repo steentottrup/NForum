@@ -23,18 +23,16 @@ namespace NForum.CQS.Commands.Topics {
 			// Permissions have been checked and parameters validated!
 			ITopicDto dto = this.topics.ReadById(command.Id);
 			if (dto == null) {
-				// TODO:
-				throw new ArgumentException("Forum does not exist");
+				throw new TopicNotFoundException(command.Id);
 			}
 
 			Topic t = new Topic(dto);
-			t.SetEditor(this.userProvider.Get(this.user));
+			t.SetEditor(this.userProvider.GetAuthor(this.user));
 			t.SetSubject(command.Subject);
 			t.SetContent(command.Content);
+			t.ChangeType(command.Type);
 			// TODO:
-			//t.Type
-			//t.State
-			t.ClearAndAddProperties(t.Properties);
+			//t.ClearAndAddProperties(command.Properties);
 
 			this.topics.Update(t);
 		}

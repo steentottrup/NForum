@@ -62,6 +62,7 @@ namespace NForum.Tests.Core.HandlerTests {
 
 			val.Execute(command);
 
+			// Let's make sure the Create method on the datastore is actually called once. Nevermind the input argument.
 			datastore.ReceivedWithAnyArgs(1).Create(inputParameter);
 		}
 
@@ -72,17 +73,17 @@ namespace NForum.Tests.Core.HandlerTests {
 			var parentForum = Substitute.For<Domain.Forum>(parentCategory, "forum", 1, "desc");
 			parentForum.Id.Returns("1");
 
-			var inputParameter = new Domain.Topic(parentForum, "subject, topic2", "bla blalba", Domain.TopicType.Regular);
-			var command = new UpdateTopicCommand { Id = "1", Subject = inputParameter.Subject, Content = inputParameter.Content, State = inputParameter.State, Type = inputParameter.Type };
-			var dto = Substitute.For<ITopicDto>();
+			Domain.Topic oldTopic = new Domain.Topic(parentForum, "subject, topic2", "bla blalba", Domain.TopicType.Regular);
+			UpdateTopicCommand command = new UpdateTopicCommand { Id = "1", Subject = "a new subject", Content = "and new content" };
+			ITopicDto dto = Substitute.For<ITopicDto>();
 
 			var datastore = Substitute.For<ITopicDatastore>();
-			datastore.Update(inputParameter).Returns<ITopicDto>(dto);
+			datastore.Update(oldTopic).Returns<ITopicDto>(dto);
 
 			var userProvider = Substitute.For<IUserProvider>();
 			var user = Substitute.For<IPrincipal>();
 			var author = Substitute.For<IAuthenticatedUser>();
-			userProvider.Get(user).Returns<IAuthor>(author);
+			userProvider.Get(user).Returns<IAuthenticatedUser>(author);
 
 			UpdateTopicCommandHandler handler = new UpdateTopicCommandHandler(datastore, user, userProvider);
 			GenericValidationCommandHandlerDecorator<UpdateTopicCommand> val =
@@ -93,7 +94,8 @@ namespace NForum.Tests.Core.HandlerTests {
 
 			val.Execute(command);
 
-			datastore.ReceivedWithAnyArgs(1).Update(inputParameter);
+			// Let's make sure the Update method on the datastore is actually called once. Nevermind the input argument.
+			datastore.ReceivedWithAnyArgs(1).Update(oldTopic);
 		}
 	}
 }

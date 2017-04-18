@@ -162,14 +162,71 @@ namespace NForum.Tests.Core.ValidationTests {
 		[Category("Validations")]
 		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
 		public void DeleteForumWithId() {
-			NForum.CQS.Commands.Categories.DeleteCategoryCommand delete = new CQS.Commands.Categories.DeleteCategoryCommand {
+			NForum.CQS.Commands.Forums.DeleteForumCommand delete = new CQS.Commands.Forums.DeleteForumCommand {
 				Id = 76554.ToString()
 			};
 
-			NForum.CQS.Validators.Categories.DeleteCategoryValidator validator = new CQS.Validators.Categories.DeleteCategoryValidator(TestUtils.GetInt32IdValidator());
+			NForum.CQS.Validators.Forums.DeleteForumValidator validator = new CQS.Validators.Forums.DeleteForumValidator(TestUtils.GetInt32IdValidator());
 
 			ValidationResult result = validator.Validate(delete);
 			result.IsValid.Should().Be(true, "An id was provided");
+		}
+
+		[Category("Validations")]
+		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
+		public void MoveForumWithEmptyId() {
+			NForum.CQS.Commands.Forums.MoveForumCommand delete = new CQS.Commands.Forums.MoveForumCommand {
+				Id = String.Empty,
+				DestinationCategoryId = 32435657.ToString()
+			};
+
+			NForum.CQS.Validators.Forums.MoveForumValidator validator = new CQS.Validators.Forums.MoveForumValidator(TestUtils.GetInt32IdValidator());
+
+			ValidationResult result = validator.Validate(delete);
+			result.IsValid.Should().Be(false, "No Id was provided");
+		}
+
+		[Category("Validations")]
+		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
+		public void MoveForumWithIdAndEmptyDestinationIds() {
+			NForum.CQS.Commands.Forums.MoveForumCommand delete = new CQS.Commands.Forums.MoveForumCommand {
+				Id = 32456.ToString(),
+				DestinationCategoryId = String.Empty,
+				DestinationForumId = String.Empty
+			};
+
+			NForum.CQS.Validators.Forums.MoveForumValidator validator = new CQS.Validators.Forums.MoveForumValidator(TestUtils.GetInt32IdValidator());
+
+			ValidationResult result = validator.Validate(delete);
+			result.IsValid.Should().Be(false, "No destination was given");
+		}
+
+		[Category("Validations")]
+		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
+		public void MoveForumWithForumEmpty() {
+			NForum.CQS.Commands.Forums.MoveForumCommand delete = new CQS.Commands.Forums.MoveForumCommand {
+				Id = 3454657.ToString(),
+				DestinationCategoryId = 32435657.ToString()
+			};
+
+			NForum.CQS.Validators.Forums.MoveForumValidator validator = new CQS.Validators.Forums.MoveForumValidator(TestUtils.GetInt32IdValidator());
+
+			ValidationResult result = validator.Validate(delete);
+			result.IsValid.Should().Be(true, "Ids was provided");
+		}
+
+		[Category("Validations")]
+		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
+		public void MoveForumWithCategoryEmpty() {
+			NForum.CQS.Commands.Forums.MoveForumCommand delete = new CQS.Commands.Forums.MoveForumCommand {
+				Id = 3454657.ToString(),
+				DestinationForumId = 32435657.ToString()
+			};
+
+			NForum.CQS.Validators.Forums.MoveForumValidator validator = new CQS.Validators.Forums.MoveForumValidator(TestUtils.GetInt32IdValidator());
+
+			ValidationResult result = validator.Validate(delete);
+			result.IsValid.Should().Be(true, "Ids was provided");
 		}
 	}
 }

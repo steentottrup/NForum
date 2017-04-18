@@ -2,5 +2,9 @@
 
 namespace NForum.Domain.Abstractions {
 
-	public interface IAuthenticatedUser : IAuthor { }
+	public interface IAuthenticatedUser {
+		String GetId();
+		String GetUsername();
+		String GetFullname();
+	}
 }

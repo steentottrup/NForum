@@ -17,8 +17,7 @@ namespace NForum.CQS.Commands.Categories {
 			// Permissions have been checked and parameters validated!
 			ICategoryDto dto = this.categories.ReadById(command.Id);
 			if (dto == null) {
-				// TODO:
-				throw new ArgumentException("Category does not exist");
+				throw new CategoryNotFoundException(command.Id);
 			}
 
 			Category c = new Category(dto);
