@@ -3,10 +3,10 @@ using NForum.Infrastructure;
 using System;
 using System.Security.Principal;
 
-namespace NForum.CQS.PermissionChecks {
+namespace NForum.CQS.PermissionChecks.Queries {
 
 	public class ReadCategoriesWithForumsPermissionCheck : QueryPermissionCheckBase<ReadCategoriesWithForumsQuery, CategoriesAndForums> {
-		private readonly IBoardConfiguration boardConfiguration;
+		protected readonly IBoardConfiguration boardConfiguration;
 
 		protected override Int32 ErrorCode { get; set; }
 		protected override String ErrorMessage { get; set; }
@@ -19,12 +19,9 @@ namespace NForum.CQS.PermissionChecks {
 		}
 
 		protected override Boolean CheckPermissions(ReadCategoriesWithForumsQuery command, IPrincipal user) {
-			// TODO:
-			if (boardConfiguration.AllowAnonymousVisitors || user.Identity.IsAuthenticated) {
-				return true;
-			}
-
-			return false;
+			// We're not going to check each and every category/forum here, that should be done in the actual query!
+			// We're just making sure that the board either allows anonymous users, or that the user is authenticated.
+			return (this.boardConfiguration.AllowAnonymousVisitors || user.Identity.IsAuthenticated);
 		}
 	}
 }

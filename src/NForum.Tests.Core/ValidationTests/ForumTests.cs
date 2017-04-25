@@ -173,7 +173,7 @@ namespace NForum.Tests.Core.ValidationTests {
 		}
 
 		[Category("Validations")]
-		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
+		[Test(Author = "Steen F. Tøttrup", Description = "")]
 		public void MoveForumWithEmptyId() {
 			NForum.CQS.Commands.Forums.MoveForumCommand delete = new CQS.Commands.Forums.MoveForumCommand {
 				Id = String.Empty,
@@ -187,7 +187,7 @@ namespace NForum.Tests.Core.ValidationTests {
 		}
 
 		[Category("Validations")]
-		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
+		[Test(Author = "Steen F. Tøttrup", Description = "")]
 		public void MoveForumWithIdAndEmptyDestinationIds() {
 			NForum.CQS.Commands.Forums.MoveForumCommand delete = new CQS.Commands.Forums.MoveForumCommand {
 				Id = 32456.ToString(),
@@ -202,7 +202,7 @@ namespace NForum.Tests.Core.ValidationTests {
 		}
 
 		[Category("Validations")]
-		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
+		[Test(Author = "Steen F. Tøttrup", Description = "")]
 		public void MoveForumWithForumEmpty() {
 			NForum.CQS.Commands.Forums.MoveForumCommand delete = new CQS.Commands.Forums.MoveForumCommand {
 				Id = 3454657.ToString(),
@@ -216,7 +216,7 @@ namespace NForum.Tests.Core.ValidationTests {
 		}
 
 		[Category("Validations")]
-		[Test(Author = "Steen F. Tøttrup", Description = "Test that the validation succeeds when the id is not empty")]
+		[Test(Author = "Steen F. Tøttrup", Description = "")]
 		public void MoveForumWithCategoryEmpty() {
 			NForum.CQS.Commands.Forums.MoveForumCommand delete = new CQS.Commands.Forums.MoveForumCommand {
 				Id = 3454657.ToString(),

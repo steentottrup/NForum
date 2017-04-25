@@ -5,7 +5,7 @@ using System.Security.Principal;
 using NForum.Infrastructure;
 using NForum.Datastores;
 
-namespace NForum.Core.Refs {
+namespace NForum.Core {
 
 	public class ElementPermissionCheck : IElementPermissionCheck {
 		protected readonly IUserProvider userProvider;

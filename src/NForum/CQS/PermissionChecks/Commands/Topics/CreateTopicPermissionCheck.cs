@@ -4,7 +4,7 @@ using NForum.Infrastructure;
 using System;
 using System.Security.Principal;
 
-namespace NForum.CQS.PermissionChecks.Topics {
+namespace NForum.CQS.PermissionChecks.Commands.Topics {
 
 	public class CreateTopicPermissionCheck : CommandPermissionCheckBase<CreateTopicCommand> {
 		protected readonly IElementPermissionCheck permissions;

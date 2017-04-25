@@ -1,7 +1,6 @@
 ﻿using CreativeMinds.CQS.Queries;
 using NForum.Core.Dtos;
 using NForum.Datastores;
-using NForum.Infrastructure;
 using System;
 using System.Collections.Generic;
 
