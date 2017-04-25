@@ -3,6 +3,7 @@ using NForum.Core.Dtos;
 using NForum.CQS.Commands.Forums;
 using NForum.CQS.Validators.Forums;
 using NForum.Datastores;
+using NForum.Infrastructure;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -37,8 +38,9 @@ namespace NForum.Tests.Core.HandlerTests {
 
 			var datastore = Substitute.For<IForumDatastore>();
 			datastore.Create(inputParameter).Returns<IForumDto>(dto);
+			var taskDatastore = Substitute.For<ITaskDatastore>();
 
-			CreateForumCommandHandler handler = new CreateForumCommandHandler(categoryDatastore, datastore);
+			CreateForumCommandHandler handler = new CreateForumCommandHandler(categoryDatastore, datastore, taskDatastore);
 			GenericValidationCommandHandlerDecorator<CreateForumCommand> val =
 					new GenericValidationCommandHandlerDecorator<CreateForumCommand>(
 						handler,
@@ -72,8 +74,9 @@ namespace NForum.Tests.Core.HandlerTests {
 
 			var datastore = Substitute.For<IForumDatastore>();
 			datastore.CreateAsForumChild(inputParameter).Returns<IForumDto>(dto);
+			var taskDatastore = Substitute.For<ITaskDatastore>();
 
-			CreateForumCommandHandler handler = new CreateForumCommandHandler(categoryDatastore, datastore);
+			CreateForumCommandHandler handler = new CreateForumCommandHandler(categoryDatastore, datastore, taskDatastore);
 			GenericValidationCommandHandlerDecorator<CreateForumCommand> val =
 					new GenericValidationCommandHandlerDecorator<CreateForumCommand>(
 						handler,
@@ -96,8 +99,9 @@ namespace NForum.Tests.Core.HandlerTests {
 
 			var datastore = Substitute.For<IForumDatastore>();
 			datastore.Update(inputParameter).Returns<IForumDto>(dto);
+			var taskDatastore = Substitute.For<ITaskDatastore>();
 
-			UpdateForumCommandHandler handler = new UpdateForumCommandHandler(datastore);
+			UpdateForumCommandHandler handler = new UpdateForumCommandHandler(datastore, taskDatastore);
 			GenericValidationCommandHandlerDecorator<UpdateForumCommand> val =
 					new GenericValidationCommandHandlerDecorator<UpdateForumCommand>(
 						handler,

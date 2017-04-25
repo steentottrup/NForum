@@ -13,10 +13,9 @@ namespace NForum.CQS.Commands.Topics {
 		protected readonly ITopicDatastore topics;
 		protected readonly IPrincipal principal;
 
-		public CreateTopicCommandHandler(IForumDatastore forums, ITopicDatastore topics, ITaskDatastore tasks, IPrincipal principal) : base(taskDatastore) {
+		public CreateTopicCommandHandler(IForumDatastore forums, ITopicDatastore topics, ITaskDatastore taskDatastore, IPrincipal principal) : base(taskDatastore) {
 			this.forums = forums;
 			this.topics = topics;
-			this.tasks = tasks;
 			this.principal = principal;
 		}
 

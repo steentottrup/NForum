@@ -16,7 +16,7 @@ namespace NForum.CQS.Commands.Replies {
 			this.replies = replies;
 		}
 
-		public void Execute(CreateReplyCommand command) {
+		public override void Execute(CreateReplyCommand command) {
 			// Nothing special to do here, permissions have been checked and parameters validated!
 			ITopicDto topic = null;
 			IReplyDto reply = null;
@@ -44,6 +44,8 @@ namespace NForum.CQS.Commands.Replies {
 				r = new Reply(new Topic(topic), command.Subject, command.Content, command.State);
 			}
 			this.replies.Create(r);
+
+			this.SetTaskStatus(command.TaskId, r.Id, "Reply");
 		}
 	}
 }

@@ -3,6 +3,7 @@ using NForum.Core.Dtos;
 using NForum.CQS.Commands.Categories;
 using NForum.CQS.Validators.Categories;
 using NForum.Datastores;
+using NForum.Infrastructure;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -21,8 +22,9 @@ namespace NForum.Tests.Core.HandlerTests {
 
 			var datastore = Substitute.For<ICategoryDatastore>();
 			datastore.Create(inputParameter).Returns<ICategoryDto>(dto);
+			var taskDatastore = Substitute.For<ITaskDatastore>();
 
-			CreateCategoryCommandHandler handler = new CreateCategoryCommandHandler(datastore);
+			CreateCategoryCommandHandler handler = new CreateCategoryCommandHandler(datastore, taskDatastore);
 			GenericValidationCommandHandlerDecorator<CreateCategoryCommand> val =
 					new GenericValidationCommandHandlerDecorator<CreateCategoryCommand>(
 						handler,
@@ -42,8 +44,9 @@ namespace NForum.Tests.Core.HandlerTests {
 
 			var datastore = Substitute.For<ICategoryDatastore>();
 			datastore.Create(inputParameter).Returns<ICategoryDto>(dto);
+			var taskDatastore = Substitute.For<ITaskDatastore>();
 
-			UpdateCategoryCommandHandler handler = new UpdateCategoryCommandHandler(datastore);
+			UpdateCategoryCommandHandler handler = new UpdateCategoryCommandHandler(datastore, taskDatastore);
 			GenericValidationCommandHandlerDecorator<UpdateCategoryCommand> val =
 					new GenericValidationCommandHandlerDecorator<UpdateCategoryCommand>(
 						handler,

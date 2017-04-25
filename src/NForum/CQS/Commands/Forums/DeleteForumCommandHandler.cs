@@ -1,5 +1,4 @@
-﻿using CreativeMinds.CQS.Commands;
-using NForum.Datastores;
+﻿using NForum.Datastores;
 using NForum.Infrastructure;
 using System;
 

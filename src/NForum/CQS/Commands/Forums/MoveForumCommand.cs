@@ -1,5 +1,4 @@
-﻿using CreativeMinds.CQS.Commands;
-using System;
+﻿using System;
 
 namespace NForum.CQS.Commands.Forums {
 

@@ -84,8 +84,9 @@ namespace NForum.Tests.Core.HandlerTests {
 			var user = Substitute.For<IPrincipal>();
 			var author = Substitute.For<IAuthenticatedUser>();
 			userProvider.Get(user).Returns<IAuthenticatedUser>(author);
+			var taskDatastore = Substitute.For<ITaskDatastore>();
 
-			UpdateTopicCommandHandler handler = new UpdateTopicCommandHandler(datastore, user, userProvider);
+			UpdateTopicCommandHandler handler = new UpdateTopicCommandHandler(datastore, user, userProvider, taskDatastore);
 			GenericValidationCommandHandlerDecorator<UpdateTopicCommand> val =
 					new GenericValidationCommandHandlerDecorator<UpdateTopicCommand>(
 						handler,
