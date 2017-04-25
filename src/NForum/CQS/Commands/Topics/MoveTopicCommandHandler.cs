@@ -6,20 +6,18 @@ using System;
 
 namespace NForum.CQS.Commands.Topics {
 
-	public class MoveTopicCommandHandler : ICommandHandler<MoveTopicCommand> {
+	public class MoveTopicCommandHandler : CommandWithStatusHandler<MoveTopicCommand> {
 		protected readonly ITopicDatastore topics;
 		protected readonly IForumDatastore forums;
 		protected readonly ICommandDispatcher commandDispatcher;
-		protected readonly ITaskDatastore tasks;
 
-		public MoveTopicCommandHandler(IForumDatastore forums, ITopicDatastore topics, ICommandDispatcher commandDispatcher, ITaskDatastore tasks) {
+		public MoveTopicCommandHandler(IForumDatastore forums, ITopicDatastore topics, ICommandDispatcher commandDispatcher, ITaskDatastore taskDatastore) : base(taskDatastore) {
 			this.topics = topics;
 			this.forums = forums;
 			this.commandDispatcher = commandDispatcher;
-			this.tasks = tasks;
 		}
 
-		public void Execute(MoveTopicCommand command) {
+		public override void Execute(MoveTopicCommand command) {
 			// Nothing special to do here, permissions have been checked and parameters validated!
 			ITopicDto topic = this.topics.ReadById(command.TopicId);
 			if (topic == null) {
@@ -45,7 +43,7 @@ namespace NForum.CQS.Commands.Topics {
 					this.commandDispatcher.Dispatch<CreateTopicCommand>(ctc);
 
 					// TODO:
-					String newTopicId = this.tasks.GetTaskStatus(ctc.TaskId).Item1;
+					String newTopicId = this.taskDatastore.GetTaskStatus(ctc.TaskId).Item1;
 
 					this.commandDispatcher.Dispatch<MergeTopicsCommand>(new MergeTopicsCommand {
 						CreateReplyForTopics = false,
@@ -59,6 +57,8 @@ namespace NForum.CQS.Commands.Topics {
 					this.topics.Move(topic.Id, forum.Id);
 				}
 			}
+
+			this.SetTaskStatus(command.TaskId, command.TopicId, "Topic");
 		}
 	}
 }

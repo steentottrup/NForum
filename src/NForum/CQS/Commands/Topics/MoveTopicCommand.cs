@@ -4,7 +4,7 @@ using System;
 
 namespace NForum.CQS.Commands.Topics {
 
-	public class MoveTopicCommand : ICommand {
+	public class MoveTopicCommand : CommandWithStatus {
 		/// <summary>
 		/// The id of the topic that will be moved from one forum to another.
 		/// </summary>

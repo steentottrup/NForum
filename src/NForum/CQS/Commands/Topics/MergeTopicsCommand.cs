@@ -4,7 +4,7 @@ using System;
 
 namespace NForum.CQS.Commands.Topics {
 
-	public class MergeTopicsCommand : ICommand {
+	public class MergeTopicsCommand : CommandWithStatus {
 		/// <summary>
 		/// The destination topic, the topic the other topics are merged into.
 		/// The subject and content of this topic will be the subject and content of the merged topic.

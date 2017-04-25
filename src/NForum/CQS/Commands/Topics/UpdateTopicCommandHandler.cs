@@ -8,18 +8,18 @@ using System.Security.Principal;
 
 namespace NForum.CQS.Commands.Topics {
 
-	public class UpdateTopicCommandHandler : ICommandHandler<UpdateTopicCommand> {
+	public class UpdateTopicCommandHandler : CommandWithStatusHandler<UpdateTopicCommand> {
 		protected readonly ITopicDatastore topics;
 		protected readonly IPrincipal user;
 		protected readonly IUserProvider userProvider;
 
-		public UpdateTopicCommandHandler(ITopicDatastore topics, IPrincipal user, IUserProvider userProvider) {
+		public UpdateTopicCommandHandler(ITopicDatastore topics, IPrincipal user, IUserProvider userProvider, ITaskDatastore taskDatastore) : base(taskDatastore) {
 			this.topics = topics;
 			this.user = user;
 			this.userProvider = userProvider;
 		}
 
-		public void Execute(UpdateTopicCommand command) {
+		public override void Execute(UpdateTopicCommand command) {
 			// Permissions have been checked and parameters validated!
 			ITopicDto dto = this.topics.ReadById(command.Id);
 			if (dto == null) {
@@ -35,6 +35,8 @@ namespace NForum.CQS.Commands.Topics {
 			//t.ClearAndAddProperties(command.Properties);
 
 			this.topics.Update(t);
+
+			this.SetTaskStatus(command.TaskId, command.Id, "Topic");
 		}
 	}
 }

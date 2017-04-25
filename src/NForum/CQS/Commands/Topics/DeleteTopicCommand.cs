@@ -3,7 +3,7 @@ using System;
 
 namespace NForum.CQS.Commands.Topics {
 
-	public class DeleteTopicCommand : ICommand {
+	public class DeleteTopicCommand : CommandWithStatus {
 		public String Id { get; set; }
 	}
 }

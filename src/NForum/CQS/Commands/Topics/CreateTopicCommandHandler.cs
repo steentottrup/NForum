@@ -8,20 +8,19 @@ using System.Security.Principal;
 
 namespace NForum.CQS.Commands.Topics {
 
-	public class CreateTopicCommandHandler : ICommandHandler<CreateTopicCommand> {
+	public class CreateTopicCommandHandler : CommandWithStatusHandler<CreateTopicCommand> {
 		protected readonly IForumDatastore forums;
 		protected readonly ITopicDatastore topics;
-		protected readonly ITaskDatastore tasks;
 		protected readonly IPrincipal principal;
 
-		public CreateTopicCommandHandler(IForumDatastore forums, ITopicDatastore topics, ITaskDatastore tasks, IPrincipal principal) {
+		public CreateTopicCommandHandler(IForumDatastore forums, ITopicDatastore topics, ITaskDatastore tasks, IPrincipal principal) : base(taskDatastore) {
 			this.forums = forums;
 			this.topics = topics;
 			this.tasks = tasks;
 			this.principal = principal;
 		}
 
-		public void Execute(CreateTopicCommand command) {
+		public override void Execute(CreateTopicCommand command) {
 			// Nothing special to do here, permissions have been checked and parameters validated!
 			IForumDto forum = this.forums.ReadById(command.ForumId);
 			if (forum == null) {
@@ -32,7 +31,7 @@ namespace NForum.CQS.Commands.Topics {
 			Topic t = new Topic(new Forum(forum), command.Subject, command.Content, command.Type, command.State);
 			ITopicDto newTopic = this.topics.Create(t);
 
-			tasks.SetTaskStatus(command.TaskId, newTopic.Id, "Topic");
+			this.SetTaskStatus(command.TaskId, newTopic.Id, "Topic");
 		}
 	}
 }

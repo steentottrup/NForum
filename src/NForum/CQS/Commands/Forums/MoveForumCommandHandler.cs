@@ -1,17 +1,17 @@
-﻿using CreativeMinds.CQS.Commands;
-using NForum.Datastores;
+﻿using NForum.Datastores;
+using NForum.Infrastructure;
 using System;
 
 namespace NForum.CQS.Commands.Forums {
 
-	public class MoveForumCommandHandler : ICommandHandler<MoveForumCommand> {
+	public class MoveForumCommandHandler : CommandWithStatusHandler<MoveForumCommand> {
 		protected readonly IForumDatastore forums;
 
-		public MoveForumCommandHandler(IForumDatastore forums) {
+		public MoveForumCommandHandler(IForumDatastore forums, ITaskDatastore taskDatastore) : base(taskDatastore) {
 			this.forums = forums;
 		}
 
-		public void Execute(MoveForumCommand command) {
+		public override void Execute(MoveForumCommand command) {
 			// Permissions have been checked and parameters validated!
 			if (String.IsNullOrWhiteSpace(command.DestinationForumId)) {
 				this.forums.MoveToCategory(command.Id, command.DestinationCategoryId);
@@ -19,6 +19,8 @@ namespace NForum.CQS.Commands.Forums {
 			else {
 				this.forums.MoveToForum(command.Id, command.DestinationCategoryId);
 			}
+
+			this.SetTaskStatus(command.TaskId, command.Id, "Forum");
 		}
 	}
 }

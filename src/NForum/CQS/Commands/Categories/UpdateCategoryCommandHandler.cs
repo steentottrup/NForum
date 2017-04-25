@@ -2,18 +2,19 @@
 using NForum.Core.Dtos;
 using NForum.Datastores;
 using NForum.Domain;
+using NForum.Infrastructure;
 using System;
 
 namespace NForum.CQS.Commands.Categories {
 
-	public class UpdateCategoryCommandHandler : ICommandHandler<UpdateCategoryCommand> {
+	public class UpdateCategoryCommandHandler : CommandWithStatusHandler<UpdateCategoryCommand> {
 		protected readonly ICategoryDatastore categories;
 
-		public UpdateCategoryCommandHandler(ICategoryDatastore categories) {
+		public UpdateCategoryCommandHandler(ICategoryDatastore categories, ITaskDatastore taskDatastore) : base(taskDatastore) {
 			this.categories = categories;
 		}
 
-		public void Execute(UpdateCategoryCommand command) {
+		public override void Execute(UpdateCategoryCommand command) {
 			// Permissions have been checked and parameters validated!
 			ICategoryDto dto = this.categories.ReadById(command.Id);
 			if (dto == null) {
@@ -27,6 +28,8 @@ namespace NForum.CQS.Commands.Categories {
 			c.ClearAndAddProperties(c.Properties);
 
 			this.categories.Update(c);
+
+			this.SetTaskStatus(command.TaskId, command.Id, "Category");
 		}
 	}
 }

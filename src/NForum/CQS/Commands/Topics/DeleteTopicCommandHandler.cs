@@ -1,11 +1,16 @@
 ﻿using CreativeMinds.CQS.Commands;
+using NForum.Infrastructure;
 using System;
 
 namespace NForum.CQS.Commands.Topics {
 
-	public class DeleteTopicCommandHandler : ICommandHandler<DeleteTopicCommand> {
+	public class DeleteTopicCommandHandler : CommandWithStatusHandler<DeleteTopicCommand> {
 
-		public void Execute(DeleteTopicCommand command) {
+		public DeleteTopicCommandHandler(ITaskDatastore taskDatastore) : base(taskDatastore) {
+
+		}
+
+		public override void Execute(DeleteTopicCommand command) {
 			throw new NotImplementedException();
 		}
 	}

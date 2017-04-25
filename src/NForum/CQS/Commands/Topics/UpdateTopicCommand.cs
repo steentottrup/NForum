@@ -4,7 +4,7 @@ using System;
 
 namespace NForum.CQS.Commands.Topics {
 
-	public class UpdateTopicCommand : ICommand {
+	public class UpdateTopicCommand : CommandWithStatus {
 		public String Id { get; set; }
 		public String Subject { get; set; }
 		public String Content { get; set; }

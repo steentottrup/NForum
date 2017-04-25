@@ -2,15 +2,16 @@
 using NForum.Core.Dtos;
 using NForum.Datastores;
 using NForum.Domain;
+using NForum.Infrastructure;
 using System;
 
 namespace NForum.CQS.Commands.Replies {
 
-	public class CreateReplyCommandHandler : ICommandHandler<CreateReplyCommand> {
+	public class CreateReplyCommandHandler : CommandWithStatusHandler<CreateReplyCommand> {
 		protected readonly IReplyDatastore replies;
 		protected readonly ITopicDatastore topics;
 
-		public CreateReplyCommandHandler(ITopicDatastore topics, IReplyDatastore replies) {
+		public CreateReplyCommandHandler(ITopicDatastore topics, IReplyDatastore replies, ITaskDatastore taskDatastore) : base(taskDatastore) {
 			this.topics = topics;
 			this.replies = replies;
 		}

@@ -2,18 +2,19 @@
 using NForum.Core.Dtos;
 using NForum.Datastores;
 using NForum.Domain;
+using NForum.Infrastructure;
 using System;
 
 namespace NForum.CQS.Commands.Forums {
 
-	public class UpdateForumCommandHandler : ICommandHandler<UpdateForumCommand> {
+	public class UpdateForumCommandHandler : CommandWithStatusHandler<UpdateForumCommand> {
 		protected readonly IForumDatastore forums;
 
-		public UpdateForumCommandHandler(IForumDatastore forums) {
+		public UpdateForumCommandHandler(IForumDatastore forums, ITaskDatastore taskDatastore) : base(taskDatastore) {
 			this.forums = forums;
 		}
 
-		public void Execute(UpdateForumCommand command) {
+		public override void Execute(UpdateForumCommand command) {
 			// Permissions have been checked and parameters validated!
 			IForumDto dto = this.forums.ReadById(command.Id);
 			if (dto == null) {
@@ -27,6 +28,8 @@ namespace NForum.CQS.Commands.Forums {
 			f.ClearAndAddProperties(f.Properties);
 
 			this.forums.Update(f);
+
+			this.SetTaskStatus(command.TaskId, command.Id, "Forum");
 		}
 	}
 }
